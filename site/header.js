@@ -137,7 +137,7 @@ document.addEventListener(
 // ====================================================
 
 const API_BASE_URL =
-    'http://localhost:3000';
+    'https://bm36-sistema-production.up.railway.app';
 
 
 function atualizarAvatarUsuario(
