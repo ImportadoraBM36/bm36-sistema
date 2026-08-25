@@ -1,0 +1,840 @@
+:root {
+
+    --perfil-bg: #fbfaf7;
+
+    --perfil-card: #ffffff;
+
+    --perfil-border: #ebe7f2;
+
+    --perfil-ink: #1c1a3d;
+
+    --perfil-muted: #71717f;
+
+    --perfil-pink: #e94b8c;
+
+    --perfil-pink-hover: #d83c7c;
+
+    --perfil-blue: #12233d;
+
+    --perfil-blue-2: #102039;
+
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    background: var(--perfil-bg);
+}
+
+
+/* ============================================================
+   PÁGINA
+   ============================================================ */
+
+.perfil-page {
+
+    width: 100%;
+
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    padding:
+        38px
+        40px
+        80px;
+
+}
+
+
+.perfil-topo h1 {
+
+    margin: 4px 0 0;
+
+    font-family:
+        'Sora',
+        sans-serif;
+
+    font-size: 28px;
+
+}
+
+
+.perfil-topo p {
+
+    margin-top: 6px;
+
+    color: var(--perfil-muted);
+
+    font-size: 13px;
+
+}
+
+
+.breadcrumb {
+
+    color: var(--perfil-muted);
+
+    font-size: 11px;
+
+}
+
+
+.breadcrumb span {
+
+    color: var(--perfil-ink);
+
+    font-weight: 800;
+
+}
+
+
+/* ============================================================
+   GRID
+   ============================================================ */
+
+.perfil-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1.2fr .8fr;
+
+    gap: 20px;
+
+    margin-top: 26px;
+
+}
+
+
+/* ============================================================
+   CARD
+   ============================================================ */
+
+.perfil-card {
+
+    padding: 26px;
+
+    border:
+        1px solid
+        var(--perfil-border);
+
+    border-radius: 16px;
+
+    background:
+        var(--perfil-card);
+
+    box-shadow:
+        0 8px 24px
+        rgba(29, 26, 61, .05);
+
+}
+
+
+.perfil-card h2 {
+
+    margin: 0;
+
+    font-size: 17px;
+
+}
+
+
+.card-descricao {
+
+    margin:
+        7px
+        0
+        20px;
+
+    color:
+        var(--perfil-muted);
+
+    font-size: 11px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ============================================================
+   FOTO
+   ============================================================ */
+
+.foto-area {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    margin:
+        22px
+        0
+        28px;
+
+    padding-bottom: 24px;
+
+    border-bottom:
+        1px solid
+        var(--perfil-border);
+
+}
+
+
+.foto-preview {
+
+    position: relative;
+
+    width: 105px;
+
+    height: 105px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: hidden;
+
+    border:
+        3px solid
+        #e8e3f1;
+
+    border-radius: 50%;
+
+    background:
+        #302d70;
+
+    color: #fff;
+
+    font-size: 23px;
+
+    font-weight: 800;
+
+}
+
+
+.foto-preview img {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    display: none;
+
+}
+
+
+.foto-info {
+
+    flex: 1;
+
+}
+
+
+.foto-info > strong {
+
+    display: block;
+
+    font-size: 13px;
+
+}
+
+
+.foto-info p {
+
+    margin:
+        4px
+        0
+        12px;
+
+    color: var(--perfil-muted);
+
+    font-size: 10px;
+
+}
+
+
+.foto-acoes {
+
+    display: flex;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.btn-trocar-foto,
+.btn-enviar-foto {
+
+    min-height: 36px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:
+        0
+        14px;
+
+    border-radius: 8px;
+
+    font-family: inherit;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+}
+
+
+.btn-trocar-foto {
+
+    border:
+        1px solid
+        #ded8e9;
+
+    background:
+        #f7f4fa;
+
+    color:
+        var(--perfil-ink);
+
+}
+
+
+.btn-enviar-foto {
+
+    border: none;
+
+    background:
+        var(--perfil-pink);
+
+    color: white;
+
+}
+
+
+.btn-enviar-foto:disabled {
+
+    opacity: .45;
+
+    cursor: default;
+
+}
+
+
+.foto-status {
+
+    min-height: 14px;
+
+    margin-top: 8px;
+
+    color: var(--perfil-muted);
+
+    font-size: 9px;
+
+}
+
+
+/* ============================================================
+   CAMPOS
+   ============================================================ */
+
+#formPerfil,
+#formSenha {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+
+}
+
+
+.campo {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+
+}
+
+
+.campo label {
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+
+.campo input {
+
+    width: 100%;
+
+    height: 44px;
+
+    padding:
+        0
+        13px;
+
+    border:
+        1px solid
+        #ddd8e8;
+
+    border-radius: 9px;
+
+    background:
+        #fff;
+
+    color:
+        var(--perfil-ink);
+
+    font-family: inherit;
+
+    outline: none;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.campo input:focus {
+
+    border-color:
+        #5a7fa8;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(75, 120, 167, .12);
+
+}
+
+
+.campo input[readonly] {
+
+    background:
+        #f3f1f6;
+
+    color:
+        #7b7785;
+
+    cursor: not-allowed;
+
+}
+
+
+.campo small {
+
+    color: var(--perfil-muted);
+
+    font-size: 9px;
+
+    line-height: 1.4;
+
+}
+
+
+/* ============================================================
+   SENHA
+   ============================================================ */
+
+.senha-wrapper {
+
+    position: relative;
+
+}
+
+
+.senha-wrapper input {
+
+    padding-right: 45px;
+
+}
+
+
+.mostrar-senha {
+
+    position: absolute;
+
+    top: 50%;
+
+    right: 5px;
+
+    transform:
+        translateY(-50%);
+
+    width: 34px;
+
+    height: 32px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background:
+        transparent;
+
+    cursor: pointer;
+
+}
+
+
+/* ============================================================
+   BOTÕES
+   ============================================================ */
+
+.btn-salvar-perfil,
+.btn-alterar-senha {
+
+    height: 44px;
+
+    margin-top: 3px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background:
+        var(--perfil-pink);
+
+    color:
+        white;
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        transform .15s ease;
+
+}
+
+
+.btn-salvar-perfil:hover,
+.btn-alterar-senha:hover {
+
+    background:
+        var(--perfil-pink-hover);
+
+}
+
+
+.btn-salvar-perfil:active,
+.btn-alterar-senha:active {
+
+    transform:
+        scale(.99);
+
+}
+
+
+.btn-salvar-perfil:disabled,
+.btn-alterar-senha:disabled {
+
+    opacity: .55;
+
+    cursor: default;
+
+}
+
+
+/* ============================================================
+   ERROS
+   ============================================================ */
+
+.form-erro {
+
+    min-height: 15px;
+
+    color:
+        #db4a5c;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+}
+
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+
+.perfil-toast {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 28px;
+
+    z-index: 8000;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding:
+        12px
+        18px;
+
+    border-radius: 10px;
+
+    background:
+        #168247;
+
+    color: white;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transform:
+        translate(-50%, 15px);
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+
+}
+
+
+.perfil-toast.show {
+
+    opacity: 1;
+
+    transform:
+        translate(-50%, 0);
+
+}
+
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+
+html.dark-mode body {
+
+    background:
+        #0b1628;
+
+}
+
+
+html.dark-mode .perfil-card {
+
+    border-color:
+        #29415f;
+
+    background:
+        #12233d;
+
+    color:
+        white;
+
+}
+
+
+html.dark-mode .perfil-topo h1,
+html.dark-mode .breadcrumb span {
+
+    color:
+        white;
+
+}
+
+
+html.dark-mode .campo input {
+
+    border-color:
+        #29415f;
+
+    background:
+        #102039;
+
+    color:
+        white;
+
+}
+
+
+html.dark-mode .campo input[readonly] {
+
+    background:
+        #162946;
+
+    color:
+        #8ea1b8;
+
+}
+
+
+html.dark-mode .btn-trocar-foto {
+
+    border-color:
+        #29415f;
+
+    background:
+        #162946;
+
+    color:
+        white;
+
+}
+
+
+html.dark-mode .foto-area {
+
+    border-color:
+        #29415f;
+
+}
+
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+
+@media (max-width: 800px) {
+
+    .perfil-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .perfil-page {
+
+        padding:
+            26px
+            16px
+            60px;
+
+    }
+
+
+    .perfil-card {
+
+        padding:
+            20px;
+
+    }
+
+
+    .foto-area {
+
+        flex-direction:
+            column;
+
+        align-items:
+            flex-start;
+
+    }
+
+
+    .foto-preview {
+
+        width: 92px;
+
+        height: 92px;
+
+    }
+
+}
+.btn-remover-foto {
+
+    min-height: 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 14px;
+
+    border: 1px solid #efb8be;
+    border-radius: 8px;
+
+    background: transparent;
+    color: #cf4353;
+
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease;
+}
+
+
+.btn-remover-foto:hover {
+
+    background: #fff0f1;
+    border-color: #db5967;
+}
+
+
+.btn-remover-foto:disabled {
+
+    opacity: .4;
+    cursor: default;
+}
+
+
+html.dark-mode
+.btn-remover-foto {
+
+    border-color: #76404c;
+    color: #ff8995;
+}
+
+
+html.dark-mode
+.btn-remover-foto:hover {
+
+    background: #3a1d29;
+}

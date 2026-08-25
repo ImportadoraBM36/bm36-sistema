@@ -1,0 +1,420 @@
+:root {
+    --bg: #0b1628;
+    --card: #12233d;
+
+    --border: #29415f;
+
+    --text: #f2f6fc;
+    --muted: #a9b8cc;
+
+    --pink: #e94b8c;
+    --pink-dark: #d63a79;
+
+    --input: #102039;
+
+    font-family:
+        'Inter',
+        Arial,
+        sans-serif;
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+}
+
+
+body {
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #16345b 0%,
+            #0b1628 45%,
+            #07101d 100%
+        );
+
+    color: var(--text);
+}
+
+
+.login-page {
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+}
+
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+
+    padding:
+        38px
+        34px;
+
+    background:
+        rgba(
+            18,
+            35,
+            61,
+            .96
+        );
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 28px 70px
+        rgba(
+            0,
+            0,
+            0,
+            .35
+        );
+
+    backdrop-filter:
+        blur(10px);
+}
+
+
+/* ============================================================
+   LOGO
+   ============================================================ */
+
+.login-logo {
+    display: flex;
+
+    justify-content: center;
+
+    margin-bottom: 28px;
+}
+
+
+.login-logo img {
+    width: 92px;
+    height: 92px;
+
+    object-fit: cover;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 12px 30px
+        rgba(
+            0,
+            0,
+            0,
+            .25
+        );
+}
+
+
+/* ============================================================
+   TITULO
+   ============================================================ */
+
+.login-title {
+    text-align: center;
+
+    margin-bottom: 30px;
+}
+
+
+.login-title h1 {
+    font-family:
+        'Sora',
+        sans-serif;
+
+    font-size: 27px;
+
+    font-weight: 800;
+
+    margin-bottom: 7px;
+}
+
+
+.login-title p {
+    color:
+        var(--muted);
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* ============================================================
+   FORM
+   ============================================================ */
+
+#loginForm {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+.field {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.field label {
+    color:
+        #d7e0ed;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.field input {
+    width: 100%;
+
+    height: 46px;
+
+    padding:
+        0
+        14px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: 10px;
+
+    background:
+        var(--input);
+
+    color:
+        white;
+
+    font-family:
+        inherit;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+
+.field input::placeholder {
+    color:
+        #71849d;
+}
+
+
+.field input:focus {
+    border-color:
+        #4d79a8;
+
+    background:
+        #132641;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(
+            77,
+            121,
+            168,
+            .18
+        );
+}
+
+
+/* ============================================================
+   SENHA
+   ============================================================ */
+
+.password-wrap {
+    position: relative;
+}
+
+
+.password-wrap input {
+    padding-right: 50px;
+}
+
+
+.show-password {
+    position: absolute;
+
+    right: 7px;
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    width: 36px;
+    height: 34px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background:
+        transparent;
+
+    color:
+        white;
+
+    cursor: pointer;
+
+    opacity: .72;
+
+    transition:
+        background .2s ease,
+        opacity .2s ease;
+}
+
+
+.show-password:hover {
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .08
+        );
+
+    opacity: 1;
+}
+
+
+/* ============================================================
+   ERRO
+   ============================================================ */
+
+.login-error {
+    min-height: 16px;
+
+    color:
+        #ff7d89;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+
+/* ============================================================
+   BOTAO
+   ============================================================ */
+
+.login-button {
+    width: 100%;
+
+    height: 48px;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background:
+        var(--pink);
+
+    color:
+        white;
+
+    font-family:
+        inherit;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        transform .15s ease,
+        box-shadow .2s ease;
+}
+
+
+.login-button:hover {
+    background:
+        var(--pink-dark);
+
+    box-shadow:
+        0 8px 20px
+        rgba(
+            233,
+            75,
+            140,
+            .22
+        );
+}
+
+
+.login-button:active {
+    transform:
+        scale(.98);
+}
+
+
+.login-button:disabled {
+    opacity: .55;
+
+    cursor: default;
+}
+
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+
+@media (max-width: 500px) {
+
+    .login-page {
+        padding: 16px;
+    }
+
+
+    .login-card {
+        padding:
+            30px
+            22px;
+
+        border-radius: 16px;
+    }
+
+
+    .login-logo img {
+        width: 78px;
+        height: 78px;
+    }
+
+
+    .login-title h1 {
+        font-size: 24px;
+    }
+
+}

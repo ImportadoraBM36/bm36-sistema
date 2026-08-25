@@ -1,0 +1,1667 @@
+/* ============================================================
+   EVENTOS - BM36
+   TEMA CLARO / ESCURO + ANIMAÇÕES
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+
+/* ============================================================
+   TEMA CLARO - PADRÃO
+   ============================================================ */
+
+:root {
+
+    --eventos-bg: #f5f7fb;
+    --eventos-surface: #ffffff;
+    --eventos-surface-2: #f3f6fa;
+    --eventos-surface-3: #edf2f7;
+
+    --eventos-text: #172033;
+    --eventos-text-soft: #65758b;
+    --eventos-text-muted: #8190a5;
+
+    --eventos-border: #dce4ee;
+    --eventos-border-hover: #b7c6d9;
+
+    --eventos-input-bg: #ffffff;
+
+    --eventos-primary: #e83e84;
+    --eventos-primary-hover: #d92e74;
+
+    --eventos-secondary: #e9eef5;
+    --eventos-secondary-hover: #dce5ef;
+    --eventos-secondary-text: #334155;
+
+    --eventos-shadow:
+        0 8px 24px rgba(15, 23, 42, 0.07);
+
+    --eventos-shadow-hover:
+        0 14px 32px rgba(15, 23, 42, 0.13);
+
+}
+
+
+/* ============================================================
+   TEMA ESCURO
+   Aceita diferentes formas usadas pelo sistema
+   ============================================================ */
+
+html[data-theme="dark"],
+body[data-theme="dark"],
+html[data-tema="escuro"],
+body[data-tema="escuro"],
+html.dark,
+body.dark,
+html.escuro,
+body.tema-escuro {
+
+    --eventos-bg: #071425;
+    --eventos-surface: #102746;
+    --eventos-surface-2: #0b1d35;
+    --eventos-surface-3: #142d4d;
+
+    --eventos-text: #ffffff;
+    --eventos-text-soft: #a9bad1;
+    --eventos-text-muted: #8195b3;
+
+    --eventos-border: #284262;
+    --eventos-border-hover: #456b9b;
+
+    --eventos-input-bg: #102746;
+
+    --eventos-primary: #e83e84;
+    --eventos-primary-hover: #f04d91;
+
+    --eventos-secondary: #365272;
+    --eventos-secondary-hover: #46698f;
+    --eventos-secondary-text: #ffffff;
+
+    --eventos-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.18);
+
+    --eventos-shadow-hover:
+        0 14px 32px rgba(0, 0, 0, 0.28);
+}
+/* ============================================================
+   BODY
+   ============================================================ */
+
+body {
+
+    margin: 0;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        var(--eventos-bg);
+
+    color:
+        var(--eventos-text);
+
+    transition:
+        background-color .25s ease,
+        color .25s ease;
+
+}
+
+
+/* ============================================================
+   PÁGINA
+   ============================================================ */
+
+.eventos-page {
+
+    width:
+        min(
+            1200px,
+            calc(100% - 40px)
+        );
+
+    margin:
+        0 auto;
+
+    padding:
+        36px 0 60px;
+
+}
+
+
+/* ============================================================
+   CABEÇALHO
+   ============================================================ */
+
+.eventos-topo {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-end;
+
+    gap:
+        24px;
+
+    margin-bottom:
+        28px;
+
+}
+
+
+.breadcrumb {
+
+    color:
+        var(--eventos-text-muted);
+
+    font-size:
+        13px;
+
+}
+
+
+.eventos-topo h1 {
+
+    margin:
+        6px 0 4px;
+
+    font-size:
+        34px;
+
+    color:
+        var(--eventos-text);
+
+}
+
+
+.eventos-topo p {
+
+    margin:
+        0;
+
+    color:
+        var(--eventos-text-soft);
+
+}
+
+
+/* ============================================================
+   BOTÕES PRINCIPAIS
+   ============================================================ */
+
+.btn-novo-evento,
+.btn-salvar {
+
+    position:
+        relative;
+
+    overflow:
+        hidden;
+
+    border:
+        0;
+
+    border-radius:
+        10px;
+
+    padding:
+        13px 20px;
+
+    background:
+        var(--eventos-primary);
+
+    color:
+        #ffffff;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+        0 5px 14px rgba(232, 62, 132, .20);
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        background-color .18s ease;
+
+}
+
+
+/* HOVER */
+
+.btn-novo-evento:hover,
+.btn-salvar:hover {
+
+    background:
+        var(--eventos-primary-hover);
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 9px 20px rgba(232, 62, 132, .28);
+
+}
+
+
+/* CLIQUE */
+
+.btn-novo-evento:active,
+.btn-salvar:active {
+
+    transform:
+        translateY(0)
+        scale(.97);
+
+    box-shadow:
+        0 3px 8px rgba(232, 62, 132, .18);
+
+}
+
+
+/* BRILHO PASSANDO PELO BOTÃO */
+
+.btn-novo-evento::before,
+.btn-salvar::before {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    top:
+        0;
+
+    left:
+        -120%;
+
+    width:
+        80%;
+
+    height:
+        100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.20),
+            transparent
+        );
+
+    transform:
+        skewX(-20deg);
+
+    transition:
+        left .55s ease;
+
+}
+
+
+.btn-novo-evento:hover::before,
+.btn-salvar:hover::before {
+
+    left:
+        140%;
+
+}
+
+
+/* ============================================================
+   FILTROS
+   ============================================================ */
+
+.eventos-filtros {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 220px;
+
+    gap:
+        14px;
+
+    margin-bottom:
+        24px;
+
+}
+
+
+.eventos-filtros input,
+.eventos-filtros select,
+.form-group input,
+.form-group textarea,
+.form-group select {
+
+    width:
+        100%;
+
+    border:
+        1px solid var(--eventos-border);
+
+    border-radius:
+        10px;
+
+    background:
+        var(--eventos-input-bg);
+
+    color:
+        var(--eventos-text);
+
+    padding:
+        13px 14px;
+
+    outline:
+        none;
+
+    transition:
+        border-color .18s ease,
+        box-shadow .18s ease,
+        background-color .25s ease,
+        color .25s ease;
+
+}
+
+
+.eventos-filtros input:focus,
+.eventos-filtros select:focus,
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+
+    border-color:
+        var(--eventos-primary);
+
+    box-shadow:
+        0 0 0 3px rgba(232, 62, 132, .12);
+
+}
+
+
+.eventos-filtros input::placeholder,
+.form-group textarea::placeholder {
+
+    color:
+        var(--eventos-text-muted);
+
+}
+
+
+/* ============================================================
+   GRID DE EVENTOS
+   ============================================================ */
+
+.eventos-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(290px, 1fr)
+        );
+
+    gap:
+        18px;
+
+}
+
+
+/* ============================================================
+   CARD
+   ============================================================ */
+/* ============================================================
+   CARD DE EVENTO
+   ============================================================ */
+
+.evento-card {
+    background: #ffffff;
+    color: #172033;
+
+    border: 1px solid #dce4ee;
+    border-radius: 16px;
+
+    padding: 20px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 24px rgba(15, 23, 42, 0.08);
+
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease,
+        background-color .22s ease;
+}
+
+
+.evento-card:hover {
+    transform: translateY(-5px);
+
+    border-color: #b7c6d9;
+
+    box-shadow:
+        0 14px 32px rgba(15, 23, 42, 0.14);
+}
+
+
+.evento-card:active {
+    transform:
+        translateY(-2px)
+        scale(.99);
+}
+
+
+/* ============================================================
+   TEXTO DO CARD
+   ============================================================ */
+
+.evento-card h2 {
+    margin: 0;
+
+    font-size: 20px;
+
+    color: #172033;
+}
+
+
+.evento-descricao {
+    color: #5f6f84;
+
+    min-height: 38px;
+
+    margin: 13px 0;
+}
+
+
+.evento-datas {
+    color: #718096;
+
+    font-size: 13px;
+
+    margin-bottom: 18px;
+}
+
+
+/* ============================================================
+   RESUMO DO CARD
+   ============================================================ */
+
+.evento-resumo {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 10px;
+}
+
+
+.evento-resumo div {
+    background: #f1f4f8;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    transition:
+        transform .18s ease,
+        background-color .18s ease;
+}
+
+
+.evento-resumo span {
+    display: block;
+
+    color: #75839a;
+
+    font-size: 11px;
+
+    margin-bottom: 4px;
+}
+
+
+.evento-resumo strong {
+    color: #172033;
+
+    font-size: 17px;
+}
+
+
+/* ============================================================
+   CARD NO MODO ESCURO
+   ============================================================ */
+
+body.tema-escuro .evento-card {
+    background: #102746;
+
+    color: #ffffff;
+
+    border-color: #284262;
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, .18);
+}
+
+
+body.tema-escuro .evento-card:hover {
+    border-color: #456b9b;
+
+    box-shadow:
+        0 14px 32px rgba(0, 0, 0, .28);
+}
+
+
+body.tema-escuro .evento-card h2 {
+    color: #ffffff;
+}
+
+
+body.tema-escuro .evento-descricao {
+    color: #a9bad1;
+}
+
+
+body.tema-escuro .evento-datas {
+    color: #9eb0cb;
+}
+
+
+body.tema-escuro .evento-resumo div {
+    background: #0b1d35;
+}
+
+
+body.tema-escuro .evento-resumo span {
+    color: #8195b3;
+}
+
+
+body.tema-escuro .evento-resumo strong {
+    color: #ffffff;
+}
+
+@keyframes eventoCardEntrada {
+
+    from {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(10px);
+
+    }
+
+    to {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+/* ============================================================
+   CABEÇALHO DO CARD
+   ============================================================ */
+
+.evento-card-topo {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    gap:
+        15px;
+
+    align-items:
+        flex-start;
+
+}
+
+
+.evento-card h2 {
+
+    margin:
+        0;
+
+    font-size:
+        20px;
+
+    color:
+        var(--eventos-text);
+
+}
+
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+
+.evento-status {
+
+    padding:
+        5px 9px;
+
+    border-radius:
+        999px;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+    transition:
+        transform .18s ease;
+
+}
+
+
+.evento-card:hover .evento-status {
+
+    transform:
+        scale(1.04);
+
+}
+
+
+.evento-status.ativo {
+
+    background:
+        rgba(38, 166, 91, .14);
+
+    color:
+        #20a05a;
+
+}
+
+
+.evento-status.finalizado {
+
+    background:
+        rgba(65, 105, 190, .14);
+
+    color:
+        #5579c6;
+
+}
+
+
+.evento-status.cancelado {
+
+    background:
+        rgba(220, 53, 69, .14);
+
+    color:
+        #dc3545;
+
+}
+
+
+/* ============================================================
+   INFORMAÇÕES DO CARD
+   ============================================================ */
+
+.evento-descricao {
+
+    color:
+        var(--eventos-text-soft);
+
+    min-height:
+        38px;
+
+    margin:
+        13px 0;
+
+}
+
+
+.evento-datas {
+
+    color:
+        var(--eventos-text-soft);
+
+    font-size:
+        13px;
+
+    margin-bottom:
+        18px;
+
+}
+
+
+/* ============================================================
+   RESUMO DO CARD
+   ============================================================ */
+
+.evento-resumo {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        10px;
+
+}
+
+
+.evento-resumo div {
+
+    background:
+        var(--eventos-surface-2);
+
+    border-radius:
+        10px;
+
+    padding:
+        12px;
+
+    transition:
+        transform .18s ease,
+        background-color .25s ease;
+
+}
+
+
+.evento-card:hover
+.evento-resumo div {
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+.evento-resumo span {
+
+    display:
+        block;
+
+    color:
+        var(--eventos-text-muted);
+
+    font-size:
+        11px;
+
+    margin-bottom:
+        4px;
+
+}
+
+
+.evento-resumo strong {
+
+    font-size:
+        17px;
+
+    color:
+        var(--eventos-text);
+
+}
+
+
+/* ============================================================
+   CARREGANDO
+   ============================================================ */
+
+.carregando {
+
+    color:
+        var(--eventos-text-muted);
+
+}
+
+
+/* ============================================================
+   OVERLAY
+   ============================================================ */
+
+.overlay {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    background:
+        rgba(0, 0, 0, .55);
+
+    display:
+        none;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        20px;
+
+    z-index:
+        9999;
+
+    backdrop-filter:
+        blur(3px);
+
+}
+
+
+.overlay.show {
+
+    display:
+        flex;
+
+    animation:
+        overlayEntrada .18s ease;
+
+}
+
+
+@keyframes overlayEntrada {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+
+/* ============================================================
+   MODAIS
+   ============================================================ */
+
+.modal-evento,
+.modal-detalhes {
+
+    width:
+        min(560px, 100%);
+
+    max-height:
+        90vh;
+
+    overflow:
+        auto;
+
+    background:
+        var(--eventos-surface);
+
+    color:
+        var(--eventos-text);
+
+    border:
+        1px solid var(--eventos-border);
+
+    border-radius:
+        16px;
+
+    padding:
+        24px;
+
+    box-shadow:
+        0 24px 70px rgba(0, 0, 0, .22);
+
+    animation:
+        modalEntrada .22s ease;
+
+    transition:
+        background-color .25s ease,
+        color .25s ease,
+        border-color .25s ease;
+
+}
+
+
+.modal-detalhes {
+
+    width:
+        min(1000px, 100%);
+
+}
+
+
+@keyframes modalEntrada {
+
+    from {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(12px)
+            scale(.98);
+
+    }
+
+    to {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+/* ============================================================
+   CABEÇALHO DO MODAL
+   ============================================================ */
+
+.modal-head {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-start;
+
+    margin-bottom:
+        20px;
+
+}
+
+
+.modal-head span {
+
+    color:
+        var(--eventos-primary);
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+}
+
+
+.modal-head h2 {
+
+    margin:
+        4px 0 0;
+
+    color:
+        var(--eventos-text);
+
+}
+
+
+/* X DO MODAL */
+
+.modal-head button {
+
+    width:
+        36px;
+
+    height:
+        36px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    background:
+        transparent;
+
+    border:
+        0;
+
+    border-radius:
+        9px;
+
+    color:
+        var(--eventos-text);
+
+    font-size:
+        18px;
+
+    cursor:
+        pointer;
+
+    transition:
+        background-color .18s ease,
+        transform .18s ease,
+        color .18s ease;
+
+}
+
+
+.modal-head button:hover {
+
+    background:
+        rgba(232, 62, 132, .12);
+
+    color:
+        var(--eventos-primary);
+
+    transform:
+        rotate(5deg)
+        scale(1.08);
+
+}
+
+
+.modal-head button:active {
+
+    transform:
+        scale(.92);
+
+}
+
+
+/* ============================================================
+   FORMULÁRIO
+   ============================================================ */
+
+.form-group {
+
+    margin-bottom:
+        15px;
+
+}
+
+
+.form-group label {
+
+    display:
+        block;
+
+    margin-bottom:
+        7px;
+
+    font-size:
+        13px;
+
+    font-weight:
+        700;
+
+    color:
+        var(--eventos-text);
+
+}
+
+
+.form-group textarea {
+
+    min-height:
+        90px;
+
+    resize:
+        vertical;
+
+}
+
+
+.form-row {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        14px;
+
+}
+
+
+/* ============================================================
+   AÇÕES
+   ============================================================ */
+
+.modal-actions {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        10px;
+
+    margin-top:
+        20px;
+
+}
+
+
+/* BOTÃO SECUNDÁRIO */
+
+.btn-secundario {
+
+    position:
+        relative;
+
+    border:
+        1px solid transparent;
+
+    border-radius:
+        10px;
+
+    padding:
+        13px;
+
+    background:
+        var(--eventos-secondary);
+
+    color:
+        var(--eventos-secondary-text);
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        background-color .18s ease,
+        border-color .18s ease;
+
+}
+
+
+.btn-secundario:hover {
+
+    background:
+        var(--eventos-secondary-hover);
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 6px 15px rgba(15, 23, 42, .12);
+
+}
+
+
+.btn-secundario:active {
+
+    transform:
+        scale(.97);
+
+}
+
+
+/* CANCELAR EVENTO EM DESTAQUE */
+
+#cancelarEventoStatusBtn:hover {
+
+    background:
+        #dc3545;
+
+    color:
+        #ffffff;
+
+    border-color:
+        #dc3545;
+
+}
+
+
+/* FINALIZAR EVENTO */
+
+#finalizarEventoBtn:hover {
+
+    background:
+        #20a05a;
+
+    color:
+        #ffffff;
+
+    border-color:
+        #20a05a;
+
+}
+
+
+/* ============================================================
+   DETALHES
+   ============================================================ */
+
+.evento-detalhes-info {
+
+    color:
+        var(--eventos-text-soft);
+
+    line-height:
+        1.6;
+
+    margin-bottom:
+        18px;
+
+}
+
+
+/* ============================================================
+   RESUMO DO EVENTO
+   ============================================================ */
+
+.resumo-evento {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        14px;
+
+    margin-bottom:
+        26px;
+
+}
+
+
+.resumo-card {
+
+    background:
+        var(--eventos-surface-2);
+
+    border:
+        1px solid var(--eventos-border);
+
+    border-radius:
+        12px;
+
+    padding:
+        15px;
+
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        background-color .25s ease;
+
+}
+
+
+.resumo-card:hover {
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        var(--eventos-border-hover);
+
+}
+
+
+.resumo-card span {
+
+    color:
+        var(--eventos-text-muted);
+
+    font-size:
+        12px;
+
+}
+
+
+.resumo-card strong {
+
+    display:
+        block;
+
+    margin-top:
+        5px;
+
+    font-size:
+        22px;
+
+    color:
+        var(--eventos-text);
+
+}
+
+
+/* ============================================================
+   SEÇÕES
+   ============================================================ */
+
+.detalhes-section {
+
+    margin-top:
+        24px;
+
+}
+
+
+.detalhes-section h3 {
+
+    margin-bottom:
+        12px;
+
+    color:
+        var(--eventos-text);
+
+}
+
+
+/* ============================================================
+   TABELAS
+   ============================================================ */
+
+.table-wrapper {
+
+    overflow-x:
+        auto;
+
+    border:
+        1px solid var(--eventos-border);
+
+    border-radius:
+        10px;
+
+}
+
+
+table {
+
+    width:
+        100%;
+
+    border-collapse:
+        collapse;
+
+}
+
+
+th {
+
+    color:
+        var(--eventos-text-muted);
+
+    background:
+        var(--eventos-surface-2);
+
+    font-size:
+        11px;
+
+    text-align:
+        left;
+
+    padding:
+        10px;
+
+}
+
+
+td {
+
+    padding:
+        12px 10px;
+
+    border-top:
+        1px solid var(--eventos-border);
+
+    color:
+        var(--eventos-text);
+
+    font-size:
+        13px;
+
+    transition:
+        background-color .15s ease;
+
+}
+
+
+tbody tr:hover td {
+
+    background:
+        var(--eventos-surface-2);
+
+}
+
+
+/* ============================================================
+   SCROLL DO MODAL
+   ============================================================ */
+
+.modal-evento::-webkit-scrollbar,
+.modal-detalhes::-webkit-scrollbar {
+
+    width:
+        8px;
+
+}
+
+
+.modal-evento::-webkit-scrollbar-thumb,
+.modal-detalhes::-webkit-scrollbar-thumb {
+
+    background:
+        var(--eventos-border-hover);
+
+    border-radius:
+        10px;
+
+}
+/* ============================================================
+   CORREÇÃO DAS LETRAS DO MODAL DE EVENTOS
+   ============================================================ */
+
+.evento-card-topo{
+    color: #172033 !important;
+}
+.modal-detalhes h2 {
+    color: #172033 !important;
+}
+
+/* Títulos das seções:
+   Pedidos do evento
+   Produtos vendidos
+*/
+.modal-detalhes h3 {
+    color: #172033 !important;
+}
+
+/* Textos normais */
+.modal-detalhes {
+    color: #172033;
+}
+
+/* Informações do evento */
+.modal-detalhes .evento-detalhes-info {
+    color: #5f6f84 !important;
+}
+
+/* Números dos cards */
+.modal-detalhes .resumo-card strong {
+    color: #172033 !important;
+}
+
+/* Texto pequeno: Pedidos / Total vendido */
+.modal-detalhes .resumo-card span {
+    color: #718096 !important;
+}
+
+/* Cabeçalho das tabelas */
+.modal-detalhes th {
+    color: #64748b !important;
+}
+
+/* Conteúdo das tabelas */
+.modal-detalhes td {
+    color: #172033 !important;
+}
+
+/* X de fechar */
+.modal-detalhes .modal-head button {
+    color: #172033 !important;
+}
+
+/* Botões de finalizar/cancelar */
+.modal-detalhes .btn-secundario {
+    color: #172033 !important;
+}
+/* CORRIGIR TÍTULO DO CARD DO EVENTO */
+.eventos-grid .evento-card h2,
+.evento-card .evento-card-topo h2 {
+    color: #172033 !important;
+}
+/* =====================================================
+   CORREÇÃO DE CORES - MODAL NOVO EVENTO
+===================================================== */
+
+/* Título "Novo Evento" */
+.modal-evento .modal-head h2 {
+    color: #172033 !important;
+}
+
+/* Labels dos campos */
+.modal-evento .form-group label {
+    color: #334155 !important;
+}
+
+/* Botão X */
+.modal-evento .modal-head button {
+    color: #172033 !important;
+}
+
+/* Texto digitado nos campos */
+.modal-evento input,
+.modal-evento textarea,
+.modal-evento select {
+    color: #ffffff !important;
+}
+
+/* Placeholder */
+.modal-evento input::placeholder,
+.modal-evento textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Datas */
+.modal-evento input[type="date"] {
+    color: #ffffff !important;
+}
+
+/* Botão cancelar */
+.modal-evento .btn-secundario {
+    color: #172033 !important;
+}
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+    .eventos-page {
+
+        width:
+            min(
+                100% - 24px,
+                1200px
+            );
+
+        padding-top:
+            24px;
+
+    }
+
+
+    .eventos-topo {
+
+        align-items:
+            stretch;
+
+        flex-direction:
+            column;
+
+    }
+
+
+    .eventos-filtros,
+    .form-row,
+    .resumo-evento {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .modal-actions {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .btn-novo-evento {
+
+        width:
+            100%;
+
+    }
+
+}
+
+
+/* ============================================================
+   ACESSIBILIDADE - REDUZIR ANIMAÇÕES
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+
+        animation-duration:
+            .01ms !important;
+
+        transition-duration:
+            .01ms !important;
+
+    }
+
+}

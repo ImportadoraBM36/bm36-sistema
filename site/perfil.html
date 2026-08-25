@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Meu Perfil - BM36</title>
+
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <link
+        rel="stylesheet"
+        href="./header.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="./perfil.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="logo">
+
+            <img
+                src="./imagem/logo2.jpg"
+                alt="BM36"
+            >
+
+        </div>
+
+        <span class="wordmark"></span>
+
+    </div>
+
+
+    <nav
+        class="mainnav"
+        id="mainnav"
+    >
+
+        <a href="./inicio.html">
+            Início
+        </a>
+
+        <a href="./venda.html">
+            Venda
+        </a>
+
+        <a href="./produtos.html">
+            Produtos
+        </a>
+
+        <a href="./estoque.html">
+            Estoque
+        </a>
+
+        <a href="./CadastroCliente.html">
+            Clientes
+        </a>
+
+        <a href="./vendido.html">
+            Pedidos
+        </a>
+<a href="./eventos.html">
+    Eventos
+</a>
+    </nav>
+
+
+    <div class="topbar-right">
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema"
+        >
+            🌙
+        </button>
+
+
+        <div
+            class="avatar"
+            id="avatarInitials"
+            title="Minha conta"
+        >
+            FN
+        </div>
+
+
+        <button
+            class="menu-toggle"
+            id="menuToggle"
+            type="button"
+            aria-label="Abrir menu"
+        >
+            <span></span>
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- ============================================================
+     CONTEÚDO
+     ============================================================ -->
+
+<main class="perfil-page">
+
+
+    <div class="perfil-topo">
+
+        <div>
+
+            <div class="breadcrumb">
+
+                Minha conta /
+
+                <span>
+                    Perfil
+                </span>
+
+            </div>
+
+
+            <h1>
+                Meu Perfil
+            </h1>
+
+
+            <p>
+                Gerencie suas informações pessoais e sua segurança.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="perfil-grid">
+
+
+        <!-- ====================================================
+             PERFIL PRINCIPAL
+             ==================================================== -->
+
+        <section class="perfil-card">
+
+
+            <h2>
+                Informações da conta
+            </h2>
+
+
+            <!-- FOTO -->
+
+            <div class="foto-area">
+
+
+                <div
+                    class="foto-preview"
+                    id="fotoPreview"
+                >
+
+                    <span id="fotoIniciais">
+                        US
+                    </span>
+
+
+                    <img
+                        id="fotoUsuario"
+                        alt="Foto de perfil"
+                    >
+
+                </div>
+
+
+                <div class="foto-info">
+
+
+                    <strong>
+                        Foto de perfil
+                    </strong>
+
+
+                    <p>
+                        JPG, PNG ou WEBP. Máximo de 5 MB.
+                    </p>
+
+
+                    <div class="foto-acoes">
+
+                        <input
+                            type="file"
+                            id="inputFoto"
+                            accept="image/jpeg,image/png,image/webp"
+                            hidden
+                        >
+
+
+                       <div class="foto-acoes">
+
+    <label
+        for="inputFoto"
+        class="btn-trocar-foto"
+    >
+        Escolher foto
+    </label>
+
+
+    <input
+        type="file"
+        id="inputFoto"
+        accept="image/jpeg,image/png,image/webp"
+        hidden
+    >
+
+
+    <button
+        type="button"
+        id="btnEnviarFoto"
+        class="btn-enviar-foto"
+        disabled
+    >
+        Salvar foto
+    </button>
+
+
+    <button
+        type="button"
+        id="btnRemoverFoto"
+        class="btn-remover-foto"
+    >
+        Remover foto
+    </button>
+
+</div>
+                    </div>
+
+
+                    <div
+                        class="foto-status"
+                        id="fotoStatus"
+                    >
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FORM DADOS -->
+
+            <form id="formPerfil">
+
+
+                <div class="campo">
+
+                    <label for="perfilNome">
+                        Nome completo
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="perfilNome"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="perfilEmail">
+                        E-mail
+                    </label>
+
+
+                    <input
+                        type="email"
+                        id="perfilEmail"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="perfilTipo">
+                        Perfil de acesso
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="perfilTipo"
+                        readonly
+                    >
+
+
+                    <small>
+                        O perfil de acesso só pode ser alterado por um administrador.
+                    </small>
+
+                </div>
+
+
+                <div
+                    class="form-erro"
+                    id="perfilErro"
+                >
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn-salvar-perfil"
+                    id="btnSalvarPerfil"
+                >
+                    Salvar alterações
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- ====================================================
+             SENHA
+             ==================================================== -->
+
+        <section class="perfil-card">
+
+
+            <h2>
+                Segurança
+            </h2>
+
+
+            <p class="card-descricao">
+                Para alterar sua senha, confirme primeiro sua senha atual.
+            </p>
+
+
+            <form id="formSenha">
+
+
+                <div class="campo">
+
+                    <label for="senhaAtual">
+                        Senha atual
+                    </label>
+
+
+                    <div class="senha-wrapper">
+
+                        <input
+                            type="password"
+                            id="senhaAtual"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="mostrar-senha"
+                            data-target="senhaAtual"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="novaSenha">
+                        Nova senha
+                    </label>
+
+
+                    <div class="senha-wrapper">
+
+                        <input
+                            type="password"
+                            id="novaSenha"
+                            minlength="6"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="mostrar-senha"
+                            data-target="novaSenha"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="confirmarNovaSenha">
+                        Confirmar nova senha
+                    </label>
+
+
+                    <div class="senha-wrapper">
+
+                        <input
+                            type="password"
+                            id="confirmarNovaSenha"
+                            minlength="6"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="mostrar-senha"
+                            data-target="confirmarNovaSenha"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="form-erro"
+                    id="senhaErro"
+                >
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn-alterar-senha"
+                    id="btnAlterarSenha"
+                >
+                    Alterar senha
+                </button>
+
+            </form>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<!-- ============================================================
+     TOAST
+     ============================================================ -->
+
+<div
+    class="perfil-toast"
+    id="perfilToast"
+>
+
+    <span>
+        ✓
+    </span>
+
+    <strong id="perfilToastTexto">
+        Alterações salvas!
+    </strong>
+
+</div>
+
+
+<script src="./header.js"></script>
+<script src="./perfil.js"></script>
+
+
+</body>
+
+</html>
