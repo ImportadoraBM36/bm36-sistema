@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Funcionários - BM36</title>
+
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <link
+        rel="stylesheet"
+        href="./funcionarios.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="./header.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="logo">
+
+            <img
+                src="./imagem/logo2.jpg"
+                alt="BM36"
+            >
+
+        </div>
+
+        <span class="wordmark"></span>
+
+    </div>
+
+
+    <nav
+        class="mainnav"
+        id="mainnav"
+    >
+
+        <a
+            href="./inicio.html"
+            data-page="inicio"
+        >
+            Início
+        </a>
+
+
+        <a
+            href="./venda.html"
+            data-page="venda"
+        >
+            Venda
+        </a>
+
+
+        <a
+            href="./produtos.html"
+            data-page="produtos"
+        >
+            Produtos
+        </a>
+
+
+        <a
+            href="./estoque.html"
+            data-page="estoque"
+        >
+            Estoque
+        </a>
+
+
+        <a
+            href="./CadastroCliente.html"
+            data-page="clientes"
+        >
+            Clientes
+        </a>
+
+
+        <a
+            href="./vendido.html"
+            data-page="pedidos"
+        >
+            Pedidos
+        </a>
+<a href="./eventos.html">
+    Eventos
+</a>
+    </nav>
+
+
+    <div class="topbar-right">
+
+        <!-- TEMA -->
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema"
+            title="Alternar tema"
+        >
+            🌙
+        </button>
+
+
+        <!-- USUÁRIO -->
+
+        <div
+            class="avatar"
+            id="avatarInitials"
+            title="Minha conta"
+        >
+            FN
+        </div>
+
+
+        <!-- MENU MOBILE -->
+
+        <button
+            class="menu-toggle"
+            id="menuToggle"
+            type="button"
+            aria-label="Abrir menu"
+        >
+            <span></span>
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- ============================================================
+     PÁGINA
+     ============================================================ -->
+
+<main class="funcionarios-page">
+
+
+    <!-- ========================================================
+         TOPO
+         ======================================================== -->
+
+    <div class="funcionarios-topo">
+
+        <div>
+
+            <div class="breadcrumb">
+
+                Administração /
+
+                <span>
+                    Funcionários
+                </span>
+
+            </div>
+
+
+            <h1>
+                Funcionários
+            </h1>
+
+
+            <p>
+                Gerencie os usuários que possuem acesso ao sistema.
+            </p>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="btn-novo-funcionario"
+            id="btnNovoFuncionario"
+        >
+            + NOVO FUNCIONÁRIO
+        </button>
+
+    </div>
+
+
+    <!-- ========================================================
+         RESUMO
+         ======================================================== -->
+
+    <section class="resumo-funcionarios">
+
+
+        <div class="resumo-card">
+
+            <span class="resumo-label">
+                Total
+            </span>
+
+            <strong id="totalFuncionarios">
+                0
+            </strong>
+
+            <small>
+                funcionários cadastrados
+            </small>
+
+        </div>
+
+
+        <div class="resumo-card">
+
+            <span class="resumo-label">
+                Ativos
+            </span>
+
+            <strong id="totalAtivos">
+                0
+            </strong>
+
+            <small>
+                com acesso liberado
+            </small>
+
+        </div>
+
+
+        <div class="resumo-card">
+
+            <span class="resumo-label">
+                Administradores
+            </span>
+
+            <strong id="totalAdmins">
+                0
+            </strong>
+
+            <small>
+                acesso administrativo
+            </small>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- ========================================================
+         LISTA
+         ======================================================== -->
+
+    <section class="funcionarios-card">
+
+
+        <!-- PESQUISA -->
+
+        <div class="funcionarios-toolbar">
+
+
+            <div class="busca-funcionario">
+
+                <span>
+                    🔎
+                </span>
+
+
+                <input
+                    type="text"
+                    id="buscaFuncionario"
+                    placeholder="Buscar por nome ou e-mail..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div class="filtros-funcionario">
+
+                <button
+                    type="button"
+                    class="filtro-funcionario ativo"
+                    data-filtro="todos"
+                >
+                    Todos
+                </button>
+
+
+                <button
+                    type="button"
+                    class="filtro-funcionario"
+                    data-filtro="ativos"
+                >
+                    Ativos
+                </button>
+
+
+                <button
+                    type="button"
+                    class="filtro-funcionario"
+                    data-filtro="inativos"
+                >
+                    Inativos
+                </button>
+
+
+                <button
+                    type="button"
+                    class="filtro-funcionario"
+                    data-filtro="admins"
+                >
+                    Administradores
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- TABELA -->
+
+        <div class="funcionarios-table-wrapper">
+
+            <table class="funcionarios-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Funcionário
+                        </th>
+
+                        <th>
+                            E-mail
+                        </th>
+
+                        <th>
+                            Perfil
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Cadastro
+                        </th>
+
+                        <th>
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="funcionariosBody">
+
+                    <tr>
+
+                        <td colspan="6">
+                            Carregando funcionários...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- PAGINAÇÃO -->
+
+        <div class="funcionarios-footer">
+
+            <span id="contadorFuncionarios">
+                Carregando...
+            </span>
+
+
+            <div class="funcionarios-paginacao">
+
+                <button
+                    type="button"
+                    id="paginaAnteriorFuncionario"
+                >
+                    ◀
+                </button>
+
+
+                <div id="paginasFuncionarios">
+                </div>
+
+
+                <button
+                    type="button"
+                    id="proximaPaginaFuncionario"
+                >
+                    ▶
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ============================================================
+     MODAL NOVO / EDITAR FUNCIONÁRIO
+     ============================================================ -->
+
+<div
+    class="modal-overlay"
+    id="modalFuncionario"
+>
+
+    <div class="modal-funcionario">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="modal-mini-title">
+                    USUÁRIO
+                </span>
+
+
+                <h2 id="modalFuncionarioTitulo">
+                    Novo Funcionário
+                </h2>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="btn-fechar-modal"
+                id="btnFecharFuncionario"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="formFuncionario">
+
+
+            <!-- NOME -->
+
+            <div class="campo">
+
+                <label for="funcionarioNome">
+                    Nome completo
+                </label>
+
+
+                <input
+                    type="text"
+                    id="funcionarioNome"
+                    placeholder="Ex.: João da Silva"
+                    autocomplete="name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="campo">
+
+                <label for="funcionarioEmail">
+                    E-mail
+                </label>
+
+
+                <input
+                    type="email"
+                    id="funcionarioEmail"
+                    placeholder="funcionario@empresa.com"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <div class="campos-duplos">
+
+
+                <!-- PERFIL -->
+
+                <div class="campo">
+
+                    <label for="funcionarioPerfil">
+                        Perfil
+                    </label>
+
+
+                    <select
+                        id="funcionarioPerfil"
+                        required
+                    >
+
+                        <option value="VENDEDOR">
+                            Vendedor
+                        </option>
+
+                        <option value="ADMIN">
+                            Administrador
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="campo">
+
+                    <label>
+                        Status
+                    </label>
+
+
+                    <div class="status-funcionario-area">
+
+                        <div
+                            class="switch-funcionario on"
+                            id="statusFuncionario"
+                        >
+                        </div>
+
+
+                        <span
+                            class="status-texto-funcionario"
+                            id="statusFuncionarioTexto"
+                        >
+                            Ativo
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- SENHA -->
+
+            <div
+                class="campo"
+                id="campoSenhaFuncionario"
+            >
+
+                <label for="funcionarioSenha">
+                    Senha inicial
+                </label>
+
+
+                <div class="senha-wrapper">
+
+                    <input
+                        type="password"
+                        id="funcionarioSenha"
+                        placeholder="Digite uma senha"
+                        autocomplete="new-password"
+                    >
+
+
+                    <button
+                        type="button"
+                        id="mostrarSenhaFuncionario"
+                        class="mostrar-senha"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+
+                <small class="campo-ajuda">
+
+                    O funcionário poderá usar essa senha
+                    para entrar no sistema.
+
+                </small>
+
+            </div>
+
+
+            <!-- CONFIRMAR SENHA -->
+
+            <div
+                class="campo"
+                id="campoConfirmarSenhaFuncionario"
+            >
+
+                <label for="funcionarioConfirmarSenha">
+                    Confirmar senha
+                </label>
+
+
+                <input
+                    type="password"
+                    id="funcionarioConfirmarSenha"
+                    placeholder="Digite novamente"
+                    autocomplete="new-password"
+                >
+
+            </div>
+
+
+            <!-- ERRO -->
+
+            <div
+                class="form-erro"
+                id="funcionarioErro"
+            >
+            </div>
+
+
+            <!-- AÇÕES -->
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-cancelar"
+                    id="btnCancelarFuncionario"
+                >
+                    CANCELAR
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="btn-salvar"
+                    id="btnSalvarFuncionario"
+                >
+                    SALVAR FUNCIONÁRIO
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     TOAST
+     ============================================================ -->
+
+<div
+    class="toast-funcionario"
+    id="toastFuncionario"
+>
+
+    <span>
+        ✓
+    </span>
+
+    <strong id="toastFuncionarioTexto">
+        Funcionário salvo com sucesso!
+    </strong>
+
+</div>
+
+
+<script src="./header.js"></script>
+<script src="./funcionarios.js"></script>
+
+
+</body>
+
+</html>

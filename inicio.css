@@ -1,0 +1,973 @@
+:root {
+
+  --amber: #F5B700;
+  --amber-dark: #D99C00;
+
+  --ink: #1C1B2E;
+
+  --panel: #21204A;
+  --panel-2: #2B2A5C;
+
+  --cream: #FBF8F2;
+  --card: #FFFFFF;
+
+  --muted: #6B6880;
+  --line: #EAE5D9;
+
+  --coral: #E6483C;
+  --gold: #F0B429;
+  --tangerine: #F2784B;
+  --magenta: #E63E8C;
+  --green: #2E9E6D;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+
+  --shadow:
+    0 8px 24px rgba(28, 27, 46, 0.08);
+
+}
+
+
+* {
+
+  box-sizing: border-box;
+
+}
+
+
+html,
+body {
+
+  margin: 0;
+
+  padding: 0;
+
+}
+
+
+body {
+
+  background:
+    var(--cream);
+
+  color:
+    var(--ink);
+
+  font-family:
+    'Inter',
+    system-ui,
+    sans-serif;
+
+  -webkit-font-smoothing:
+    antialiased;
+
+}
+
+
+h1,
+h2,
+h3,
+.display {
+
+  font-family:
+    'Sora',
+    system-ui,
+    sans-serif;
+
+}
+
+
+a {
+
+  color: inherit;
+
+  text-decoration: none;
+
+}
+
+
+button {
+
+  font-family: inherit;
+
+  cursor: pointer;
+
+}
+
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+
+main {
+
+  width: 100%;
+
+  padding:
+    32px 40px 80px;
+
+}
+
+
+/* ============================================================
+   SAUDAÇÃO
+   ============================================================ */
+
+.greeting-row {
+
+  display: flex;
+
+  align-items:
+    baseline;
+
+  justify-content:
+    space-between;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-bottom:
+    22px;
+
+}
+
+
+.greeting h1 {
+
+  margin:
+    0 0 4px;
+
+  font-size:
+    26px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    -.3px;
+
+}
+
+
+.greeting p {
+
+  margin: 0;
+
+  color:
+    var(--muted);
+
+  font-size:
+    14.5px;
+
+}
+
+
+.date {
+
+  color:
+    var(--ink);
+
+  font-size:
+    14px;
+
+  font-weight:
+    500;
+
+}
+
+
+/* ============================================================
+   PESQUISA
+   ============================================================ */
+
+.search-wrap {
+
+  position:
+    relative;
+
+  margin-bottom:
+    22px;
+
+}
+
+
+.search-wrap input {
+
+  width:
+    100%;
+
+  padding:
+    14px 18px 14px 46px;
+
+  border:
+    1px solid var(--line);
+
+  border-radius:
+    var(--radius-sm);
+
+  background:
+    var(--card);
+
+  color:
+    var(--ink);
+
+  font-family:
+    inherit;
+
+  font-size:
+    14.5px;
+
+  outline:
+    none;
+
+  box-shadow:
+    var(--shadow);
+
+  transition:
+    border-color .15s ease;
+
+}
+
+
+.search-wrap input:focus {
+
+  border-color:
+    var(--amber-dark);
+
+}
+
+
+.search-wrap svg {
+
+  position:
+    absolute;
+
+  left:
+    16px;
+
+  top:
+    50%;
+
+  transform:
+    translateY(-50%);
+
+  color:
+    var(--muted);
+
+}
+
+
+/* ============================================================
+   ALERTAS
+   ============================================================ */
+
+.alerts-panel {
+
+  background:
+
+    repeating-linear-gradient(135deg,
+      rgba(255, 255, 255, .035) 0 2px,
+      transparent 2px 14px),
+
+    linear-gradient(160deg,
+      var(--panel) 0%,
+      var(--panel-2) 100%);
+
+  border-radius:
+    var(--radius);
+
+  padding:
+    20px 30px 38px;
+
+  margin-bottom:
+    24px;
+
+  box-shadow:
+    var(--shadow);
+
+}
+
+
+.alerts-panel .label {
+
+  color:
+    rgba(255, 255, 255, .55);
+
+  font-size:
+    11.5px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    1.2px;
+
+  text-transform:
+    uppercase;
+
+  margin:
+    2px 6px 12px;
+
+}
+
+
+.alert-stack {
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  gap:
+    8px;
+
+}
+
+
+.alert-row {
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  padding:
+    25px 18px;
+
+  border-radius:
+    12px;
+
+  color:
+    white;
+
+  font-weight:
+    700;
+
+  font-size:
+    14px;
+
+  letter-spacing:
+    .1px;
+
+  cursor:
+    pointer;
+
+  transition:
+    transform .12s ease,
+    filter .12s ease;
+
+}
+
+
+.alert-row:hover {
+
+  transform:
+    translateX(3px);
+
+  filter:
+    brightness(1.05);
+
+}
+
+
+.alert-row .count {
+
+  min-width:
+    36px;
+
+  text-align:
+    center;
+
+  font-family:
+    'Sora';
+
+  font-size:
+    16px;
+
+  background:
+    rgba(255, 255, 255, .22);
+
+  padding:
+    2px 12px;
+
+  border-radius:
+    999px;
+
+}
+
+
+.alert-row.coral {
+
+  background:
+    linear-gradient(90deg,
+      var(--coral),
+      #c93a30);
+
+}
+
+
+.alert-row.gold {
+
+  background:
+    linear-gradient(90deg,
+      var(--gold),
+      #d99c14);
+
+  color:
+    var(--ink);
+
+}
+
+
+.alert-row.gold .count {
+
+  background:
+    rgba(28, 27, 46, .14);
+
+}
+
+
+.alert-row.tangerine {
+
+  background:
+    linear-gradient(90deg,
+      var(--tangerine),
+      #d8622f);
+
+}
+
+
+.alert-row.magenta {
+
+  background:
+    linear-gradient(90deg,
+      var(--magenta),
+      #c22c76);
+
+}
+
+
+/* ============================================================
+   ATALHOS
+   ============================================================ */
+
+.actions-row {
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap:
+    16px;
+
+  margin:
+    0 38px 28px;
+
+}
+
+
+.action-card {
+
+  min-height:
+    180px;
+
+  background:
+    var(--card);
+
+  border:
+    1px solid var(--line);
+
+  border-radius:
+    var(--radius);
+
+  display:
+    flex;
+
+  justify-content:
+    center;
+
+  align-items:
+    center;
+
+  gap:
+    14px;
+ box-shadow: -10px 10px 5px rgba(0, 0, 0, 0.5);
+
+  cursor:
+    pointer;
+
+  transition:
+    transform .15s linear,
+    box-shadow .15s ease,
+    border-color .15s ease;
+
+}
+
+
+.action-card:hover {
+
+  transform:
+    translateY(-3px) translateX(7px);
+
+  border-color:
+    rgba(0, 57, 80, 0.35);
+
+  box-shadow: -18px 10px 5px rgba(0, 0, 0, 0.5);
+
+}
+
+
+.action-card:focus-visible {
+
+  outline:
+    3px solid rgba(245, 183, 0, .45);
+
+  outline-offset:
+    3px;
+
+}
+
+
+.action-card .icon {
+
+  width:
+    44px;
+
+  height:
+    44px;
+
+  border-radius:
+    12px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  flex-shrink:
+    0;
+
+}
+
+
+.action-card.new .icon {
+
+  background:
+    rgba(46, 158, 109, .12);
+
+  color:
+    var(--green);
+
+}
+
+
+.action-card.search .icon {
+
+  background:
+    rgba(242, 120, 75, .14);
+
+  color:
+    var(--tangerine);
+
+}
+
+
+.action-card.stock .icon {
+
+  background:
+    rgba(230, 62, 140, .12);
+
+  color:
+    var(--magenta);
+
+}
+
+
+.action-card.sale .icon {
+
+  background:
+    rgba(245, 183, 0, .15);
+
+  color:
+    var(--ink);
+
+}
+
+
+.action-card .title {
+
+  font-family:
+    'Sora';
+
+  font-weight:
+    700;
+
+  font-size:
+    15px;
+
+}
+
+
+.action-card .sub {
+
+  margin-top:
+    2px;
+
+  color:
+    var(--muted);
+
+  font-size:
+    12.5px;
+
+}
+
+
+/* ============================================================
+   PEDIDOS RECENTES
+   ============================================================ */
+
+.section-head {
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  margin-bottom:
+    14px;
+
+}
+
+
+.section-head h2 {
+
+  margin:
+    0;
+
+  font-size:
+    17px;
+
+  font-weight:
+    700;
+
+}
+
+
+.section-head a {
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    4px;
+
+  color:
+    var(--tangerine);
+
+  font-size:
+    13.5px;
+
+  font-weight:
+    600;
+
+}
+
+
+.table-card {
+
+  background:
+    var(--card);
+
+  border:
+    1px solid var(--line);
+
+  border-radius:
+    var(--radius);
+
+  overflow:
+    hidden;
+
+  box-shadow:
+    var(--shadow);
+
+}
+
+
+table {
+
+  width:
+    100%;
+
+  border-collapse:
+    collapse;
+
+}
+
+
+thead th {
+
+  padding:
+    13px 20px;
+
+  background:
+    #F6F3EA;
+
+  border-bottom:
+    1px solid var(--line);
+
+  color:
+    var(--muted);
+
+  text-align:
+    left;
+
+  font-size:
+    11.5px;
+
+  font-weight:
+    700;
+
+  text-transform:
+    uppercase;
+
+  letter-spacing:
+    .8px;
+
+}
+
+
+tbody td {
+
+  padding:
+    15px 20px;
+
+  border-bottom:
+    1px solid var(--line);
+
+  font-size:
+    14px;
+
+}
+
+
+tbody tr:last-child td {
+
+  border-bottom:
+    none;
+
+}
+
+
+tbody tr:not(.empty-row) {
+
+  cursor:
+    pointer;
+
+}
+
+
+tbody tr:hover {
+
+  background:
+    #FCFAF4;
+
+}
+
+
+td.code {
+
+  font-family:
+    'Sora';
+
+  font-size:
+    13.5px;
+
+  font-weight:
+    700;
+
+}
+
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+.badge {
+
+  display:
+    inline-block;
+
+  padding:
+    4px 12px;
+
+  border-radius:
+    999px;
+
+  font-size:
+    12px;
+
+  font-weight:
+    700;
+
+}
+
+
+.badge.separacao {
+
+  background:
+    rgba(242, 120, 75, .14);
+
+  color:
+    var(--tangerine);
+
+}
+
+
+.badge.finalizado {
+
+  background:
+    rgba(46, 158, 109, .14);
+
+  color:
+    var(--green);
+
+}
+
+
+.badge.parado {
+
+  background:
+    rgba(230, 62, 140, .14);
+
+  color:
+    var(--magenta);
+
+}
+
+
+.badge.cancelado {
+
+  background:
+    #fee2e2;
+
+  color:
+    #dc2626;
+
+}
+
+
+/* ============================================================
+   VAZIO
+   ============================================================ */
+
+.empty-row td {
+
+  padding:
+    26px;
+
+  color:
+    var(--muted);
+
+  text-align:
+    center;
+
+  font-style:
+    italic;
+
+}
+
+.dark-mode body {
+  background: #171626;
+  color: #f5f5f5;
+}
+
+.dark-mode .card {
+  background: #24224d;
+  color: white;
+}
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+
+@media (max-width: 860px) {
+
+  main {
+
+    padding:
+      22px 14px 70px;
+
+  }
+
+
+  .actions-row {
+
+    grid-template-columns:
+      1fr;
+
+    margin:
+      0 0 28px;
+
+  }
+
+
+  .action-card {
+
+    min-height:
+      130px;
+
+  }
+
+
+  .alerts-panel {
+
+    padding:
+      18px;
+
+  }
+
+
+  .alert-row {
+
+    padding:
+      20px 14px;
+
+  }
+
+
+  .table-card {
+
+    overflow-x:
+      auto;
+
+  }
+
+
+  table {
+
+    min-width:
+      650px;
+
+  }
+
+}

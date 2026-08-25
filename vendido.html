@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Pedidos - BM36</title>
+
+    <link
+        rel="stylesheet"
+        href="header.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="vendido.css"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap"
+        rel="stylesheet"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="logo">
+
+            <img
+                src="./imagem/logo2.jpg"
+                alt="BM36"
+            >
+
+        </div>
+
+        <span class="wordmark"></span>
+
+    </div>
+
+
+    <nav
+        class="mainnav"
+        id="mainnav"
+    >
+
+        <a
+            href="./inicio.html"
+            data-page="inicio"
+        >
+            Início
+        </a>
+
+
+        <a
+            href="./venda.html"
+            data-page="venda"
+        >
+            Venda
+        </a>
+
+
+        <a
+            href="./produtos.html"
+            data-page="produtos"
+        >
+            Produtos
+        </a>
+
+
+        <a
+            href="./estoque.html"
+            data-page="estoque"
+        >
+            Estoque
+        </a>
+
+
+        <a
+            href="./CadastroCliente.html"
+            data-page="clientes"
+        >
+            Clientes
+        </a>
+
+
+        <a
+            href="./vendido.html"
+            class="active"
+            data-page="pedidos"
+        >
+            Pedidos
+        </a>
+<a href="./eventos.html">
+    Eventos
+</a>
+    </nav>
+
+
+    <div class="topbar-right">
+
+        <!-- TEMA -->
+
+      <button
+    class="theme-toggle"
+    id="themeToggle"
+    type="button"
+    aria-label="Usar modo escuro"
+    title="Usar modo escuro"
+>
+    🌙
+</button>
+
+
+        <!-- USUÁRIO -->
+
+        <div
+            class="avatar"
+            id="avatarInitials"
+            title="Minha conta"
+        >
+            FN
+        </div>
+
+
+        <!-- MOBILE -->
+
+        <button
+            class="menu-toggle"
+            id="menuToggle"
+            type="button"
+            aria-label="Abrir menu"
+        >
+            <span></span>
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- ============================================================
+     PÁGINA
+     ============================================================ -->
+
+<main>
+
+    <div class="page-title">
+        Pedidos
+    </div>
+
+
+    <div class="page-sub">
+        Consulte, altere ou cancele pedidos realizados.
+    </div>
+
+
+    <section class="card">
+
+
+        <!-- ====================================================
+             PESQUISA
+             ==================================================== -->
+
+        <div class="search-wrap">
+
+            <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#171528"
+                stroke-width="2"
+            >
+
+                <circle
+                    cx="11"
+                    cy="11"
+                    r="7"
+                ></circle>
+
+
+                <line
+                    x1="21"
+                    y1="21"
+                    x2="16.65"
+                    y2="16.65"
+                ></line>
+
+            </svg>
+
+
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="Buscar por nº do pedido, cliente, CPF/CNPJ..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <!-- ====================================================
+             FILTROS
+             ==================================================== -->
+
+        <div
+            class="filters"
+            id="filters"
+        >
+
+            <button
+                class="pill active"
+                data-filter="todas"
+                type="button"
+            >
+                Todos
+            </button>
+
+
+            <button
+                class="pill"
+                data-filter="finalizadas"
+                type="button"
+            >
+                Finalizados
+            </button>
+
+
+            <button
+                class="pill"
+                data-filter="canceladas"
+                type="button"
+            >
+                Cancelados
+            </button>
+
+
+            <button
+                class="pill"
+                data-filter="hoje"
+                type="button"
+            >
+                Hoje
+            </button>
+
+
+            <button
+                class="pill"
+                data-filter="mes"
+                type="button"
+            >
+                Este mês
+            </button>
+
+        </div>
+
+
+        <!-- ====================================================
+             TABELA
+             ==================================================== -->
+
+        <div class="table-wrapper">
+
+            <table class="sales-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            Cliente
+                        </th>
+
+                        <th>
+                            Data
+                        </th>
+
+                        <th>
+                            Total
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="salesBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- ====================================================
+             PAGINAÇÃO
+             ==================================================== -->
+
+        <div class="pagination">
+
+            <span id="pageInfo">
+                Carregando pedidos...
+            </span>
+
+
+            <div
+                class="page-nums"
+                id="pageNums"
+            >
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ============================================================
+     MODAL DETALHES / EDIÇÃO
+     ============================================================ -->
+<!-- ============================================================
+     MODAL DETALHES / EDIÇÃO
+     ============================================================ -->
+
+<div
+    class="overlay"
+    id="overlay"
+>
+
+    <div class="modal modal-grande">
+
+        <!-- =========================
+             CABEÇALHO
+             ========================= -->
+
+        <div class="modal-head">
+
+            <h2 id="modalTitle">
+                Pedido
+            </h2>
+
+            <button
+                class="modal-close-x"
+                id="closeX"
+                type="button"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <!-- =========================
+             INFORMAÇÕES
+             ========================= -->
+
+        <div class="modal-info">
+
+            <div>
+
+                <b>
+                    Cliente:
+                </b>
+
+                <span id="modalCliente">
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <b>
+                    Vendedor:
+                </b>
+
+                <span id="modalVendedor">
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <b>
+                    Data:
+                </b>
+
+                <span id="modalData">
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <b>
+                    Status:
+                </b>
+
+                <span id="modalStatus">
+                </span>
+
+            </div>
+
+
+            <div
+                id="cancelamentoInfo"
+                class="cancelamento-info"
+            >
+            </div>
+
+        </div>
+<!-- =========================
+     EVENTO
+     ========================= -->
+
+<div
+    class="campo-evento-edicao"
+    id="campoEventoEdicao"
+    style="display: none;"
+>
+    <label for="eventoPedido">
+        Evento
+    </label>
+
+    <select id="eventoPedido">
+        <option value="">
+            Sem evento
+        </option>
+    </select>
+</div>
+
+        <!-- =========================
+             ITENS
+             ========================= -->
+
+        <div class="modal-section-title">
+            Itens
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="items-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Produto
+                        </th>
+
+                        <th>
+                            Qtd.
+                        </th>
+
+                        <th>
+                            Unit.
+                        </th>
+
+                        <th>
+                            Subtotal
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="modalItems">
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- =========================
+             RESUMO
+             ========================= -->
+
+        <div class="modal-summary">
+
+            <div class="row">
+
+                <span>
+                    Subtotal
+                </span>
+
+                <span id="modalSubtotal">
+                    R$ 0,00
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span>
+                    Desconto
+                </span>
+
+                <span id="modalDesconto">
+                    R$ 0,00
+                </span>
+
+            </div>
+
+
+            <div class="row total">
+
+                <span>
+                    Total
+                </span>
+
+                <span id="modalTotal">
+                    R$ 0,00
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             AÇÕES
+             ========================= -->
+
+        <div class="modal-actions">
+
+            <button
+                class="btn btn-secondary"
+                id="closeBtn"
+                type="button"
+            >
+                Fechar
+            </button>
+
+
+            <button
+                class="btn btn-edit"
+                id="editarBtn"
+                type="button"
+            >
+                Editar Pedido
+            </button>
+
+
+            <button
+                class="btn btn-danger"
+                id="cancelarPedidoBtn"
+                type="button"
+            >
+                Cancelar Pedido
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- ============================================================
+     MODAL CANCELAMENTO
+     ============================================================ -->
+
+<div
+    class="overlay"
+    id="cancelOverlay"
+>
+
+    <div class="modal modal-cancelamento">
+
+        <div class="modal-head">
+
+            <h2 id="cancelTitle">
+                Cancelar Pedido
+            </h2>
+
+
+            <button
+                class="modal-close-x"
+                id="cancelCloseX"
+                type="button"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <p class="cancel-warning">
+
+            O pedido continuará no histórico,
+            mas os produtos serão devolvidos ao estoque.
+
+        </p>
+
+
+        <div class="campo-cancelamento">
+
+            <label for="motivoCancelamento">
+                Motivo do cancelamento
+            </label>
+
+
+            <textarea
+                id="motivoCancelamento"
+                rows="4"
+                maxlength="500"
+                placeholder="Ex.: Cliente desistiu da compra"
+            ></textarea>
+
+        </div>
+
+
+        <div class="cancel-actions">
+
+            <button
+                class="btn btn-secondary"
+                id="voltarCancelamentoBtn"
+                type="button"
+            >
+                Voltar
+            </button>
+
+
+            <button
+                class="btn btn-danger"
+                id="confirmarCancelamentoBtn"
+                type="button"
+            >
+                Confirmar Cancelamento
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="header.js"></script>
+<script src="vendido.js"></script>
+
+
+</body>
+
+</html>

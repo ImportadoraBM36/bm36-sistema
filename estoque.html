@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Estoque - BM36</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="./header.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="./estoque.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="logo">
+
+            <img
+                src="./imagem/logo2.jpg"
+                alt="BM36"
+            >
+
+        </div>
+
+        <span class="wordmark"></span>
+
+    </div>
+
+
+    <nav
+        class="mainnav"
+        id="mainnav"
+    >
+
+        <a
+            href="./inicio.html"
+            data-page="inicio"
+        >
+            Início
+        </a>
+
+
+        <a
+            href="./venda.html"
+            data-page="venda"
+        >
+            Venda
+        </a>
+
+
+        <a
+            href="./produtos.html"
+            data-page="produtos"
+        >
+            Produtos
+        </a>
+
+
+        <a
+            href="./estoque.html"
+            data-page="estoque"
+            class="active"
+        >
+            Estoque
+        </a>
+
+
+        <a
+            href="./CadastroCliente.html"
+            data-page="clientes"
+        >
+            Clientes
+        </a>
+
+
+        <a
+            href="./vendido.html"
+            data-page="pedidos"
+        >
+            Pedidos
+        </a>
+<a href="./eventos.html">
+    Eventos
+</a>
+    </nav>
+
+
+    <div class="topbar-right">
+
+        <!-- TEMA -->
+
+       <button
+    class="theme-toggle"
+    id="themeToggle"
+    type="button"
+    aria-label="Usar modo escuro"
+    title="Usar modo escuro"
+>
+    🌙
+</button>
+
+
+        <!-- USUÁRIO -->
+
+        <div
+            class="avatar"
+            id="avatarInitials"
+            title="Minha conta"
+        >
+            FN
+        </div>
+
+
+        <!-- MENU MOBILE -->
+
+        <button
+            class="menu-toggle"
+            id="menuToggle"
+            type="button"
+            aria-label="Abrir menu"
+        >
+            <span></span>
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- ============================================================
+     CONTEÚDO
+     ============================================================ -->
+
+<main class="estoque-page">
+
+
+    <!-- ========================================================
+         TOPO
+         ======================================================== -->
+
+    <div class="estoque-topo">
+
+        <div>
+
+            <h1>
+
+                Bom dia,
+
+                <span id="nomeFuncionario">
+                    Funcionário
+                </span>
+
+            </h1>
+
+
+            <p>
+                Aqui está a situação do estoque.
+            </p>
+
+        </div>
+
+
+        <button
+            id="btnMovimentarEstoque"
+            class="btn-movimentar"
+            type="button"
+        >
+            MOVIMENTAR ESTOQUE
+        </button>
+
+    </div>
+
+
+    <!-- ========================================================
+         ESTOQUE
+         ======================================================== -->
+
+    <section class="painel-estoque">
+
+
+        <!-- BARRA SUPERIOR -->
+
+        <div class="barra-estoque">
+
+
+            <!-- PESQUISA -->
+
+            <div class="busca-area">
+
+                <label for="buscaEstoque">
+                    Pesquisa de produto:
+                </label>
+
+
+                <input
+                    type="text"
+                    id="buscaEstoque"
+                    placeholder="Digite código ou nome"
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <!-- FILTROS -->
+
+            <div class="filtros-estoque">
+
+                <button
+                    type="button"
+                    class="filtro-estoque filtro-todos ativo"
+                    data-filtro="todos"
+                >
+                    TODOS
+                </button>
+
+
+                <button
+                    type="button"
+                    class="filtro-estoque filtro-baixo"
+                    data-filtro="baixo"
+                >
+                    ESTOQUE ACABANDO
+                </button>
+
+
+                <button
+                    type="button"
+                    class="filtro-estoque filtro-sem"
+                    data-filtro="sem"
+                >
+                    SEM ESTOQUE
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ====================================================
+             TABELA ESTOQUE
+             ==================================================== -->
+
+        <div class="tabela-wrapper">
+
+            <table class="tabela-estoque">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            CÓDIGO
+                        </th>
+
+                        <th>
+                            PRODUTO
+                        </th>
+
+                        <th>
+                            ORIGEM
+                        </th>
+
+                        <th>
+                            EMBALAGEM
+                        </th>
+
+                        <th>
+                            ESTOQUE
+                        </th>
+
+                        <th>
+                            MÍNIMO
+                        </th>
+
+                        <th>
+                            STATUS
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="tabelaEstoque">
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- ====================================================
+             RODAPÉ ESTOQUE
+             ==================================================== -->
+
+        <div class="rodape-tabela">
+
+            <span id="contadorEstoque">
+                Mostrando 0 produtos
+            </span>
+
+
+            <div class="paginacao">
+
+                <button
+                    id="estoqueAnterior"
+                    type="button"
+                >
+                    ◀
+                </button>
+
+
+                <div id="paginasEstoque">
+                </div>
+
+
+                <button
+                    id="estoqueProximo"
+                    type="button"
+                >
+                    ▶
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================================
+         HISTÓRICO
+         ======================================================== -->
+
+    <div class="titulo-historico">
+
+        <h2>
+            HISTÓRICO DE MOVIMENTAÇÕES
+        </h2>
+
+    </div>
+
+
+    <section class="painel-historico">
+
+        <div class="tabela-wrapper">
+
+            <table class="tabela-historico">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            DATA
+                        </th>
+
+                        <th>
+                            PRODUTO
+                        </th>
+
+                        <th>
+                            TIPO
+                        </th>
+
+                        <th>
+                            QUANTIDADE
+                        </th>
+
+                        <th>
+                            MOTIVO
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="tabelaHistorico">
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- RODAPÉ HISTÓRICO -->
+
+        <div class="rodape-tabela">
+
+            <span id="contadorHistorico">
+                Mostrando 0 movimentações
+            </span>
+
+
+            <div class="paginacao">
+
+                <button
+                    id="historicoAnterior"
+                    type="button"
+                >
+                    ◀
+                </button>
+
+
+                <div id="paginasHistorico">
+                </div>
+
+
+                <button
+                    id="historicoProximo"
+                    type="button"
+                >
+                    ▶
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ============================================================
+     MODAL MOVIMENTAR ESTOQUE
+     ============================================================ -->
+
+<div
+    id="modalMovimentarEstoque"
+    class="modal-overlay"
+>
+
+    <div class="modal-estoque">
+
+
+        <div class="modal-header">
+
+            <h2>
+                Movimentar Estoque
+            </h2>
+
+
+            <button
+                id="btnFecharModalEstoque"
+                class="btn-fechar-modal"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="formMovimentarEstoque">
+
+
+            <!-- PRODUTO -->
+
+            <div class="campo">
+
+                <label for="produtoMovimentacao">
+                    Produto
+                </label>
+
+
+                <input
+                    type="text"
+                    id="produtoMovimentacao"
+                    placeholder="Selecione um produto"
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <!-- ESTOQUE ATUAL -->
+
+            <div class="estoque-atual-modal">
+
+                Estoque atual:
+
+                <strong id="estoqueAtualModal">
+                    0
+                </strong>
+
+            </div>
+
+
+            <!-- TIPO -->
+
+            <div class="campo">
+
+                <label for="tipoMovimentacao">
+                    Tipo
+                </label>
+
+
+                <select id="tipoMovimentacao">
+
+                    <option value="ENTRADA">
+                        Entrada
+                    </option>
+
+                    <option value="SAIDA">
+                        Saída
+                    </option>
+
+                    <option value="AJUSTE_POSITIVO">
+                        Ajuste positivo
+                    </option>
+
+                    <option value="AJUSTE_NEGATIVO">
+                        Ajuste negativo
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- QUANTIDADE -->
+
+            <div class="campo">
+
+                <label for="quantidadeMovimentacao">
+                    Quantidade
+                </label>
+
+
+                <input
+                    type="number"
+                    id="quantidadeMovimentacao"
+                    min="1"
+                    value="1"
+                    required
+                >
+
+            </div>
+
+
+            <!-- MOTIVO -->
+
+            <div class="campo">
+
+                <label for="motivoMovimentacao">
+                    Motivo
+                </label>
+
+
+                <textarea
+                    id="motivoMovimentacao"
+                    rows="3"
+                    placeholder="Ex: Recebimento de mercadoria"
+                ></textarea>
+
+            </div>
+
+
+            <!-- BOTÕES -->
+
+            <div class="acoes-modal">
+
+                <button
+                    id="btnCancelarMovimentacao"
+                    class="btn-cancelar"
+                    type="button"
+                >
+                    CANCELAR
+                </button>
+
+
+                <button
+                    class="btn-salvar"
+                    type="submit"
+                >
+                    SALVAR
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script src="./header.js"></script>
+<script src="./estoque.js"></script>
+
+
+</body>
+
+</html>

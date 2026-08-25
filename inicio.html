@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>bMb · Painel</title>
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="./inicio.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="./header.css"
+  >
+
+</head>
+
+
+<body>
+
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+
+  <header class="topbar">
+
+    <div class="brand">
+
+      <div class="logo">
+
+        <img
+          src="./imagem/logo2.jpg"
+          alt="BM36"
+        >
+
+      </div>
+
+      <span class="wordmark"></span>
+
+    </div>
+
+
+    <nav
+      class="mainnav"
+      id="mainnav"
+    >
+
+      <a
+        href="./inicio.html"
+        class="active"
+        data-page="inicio"
+      >
+        Início
+      </a>
+
+
+      <a
+        href="./venda.html"
+        data-page="venda"
+      >
+        Venda
+      </a>
+
+
+      <a
+        href="./produtos.html"
+        data-page="produtos"
+      >
+        Produtos
+      </a>
+
+
+ 
+
+
+      <a
+        href="./estoque.html"
+        data-page="estoque"
+      >
+        Estoque
+      </a>
+
+
+      <a
+        href="./CadastroCliente.html"
+        data-page="clientes"
+      >
+        Clientes
+      </a>
+
+
+      <a
+        href="./vendido.html"
+        data-page="pedidos"
+      >
+        Pedidos
+      </a>
+<a href="./eventos.html">
+    Eventos
+</a>
+    </nav>
+
+
+    <div class="topbar-right">
+
+      <div
+        class="avatar"
+        id="avatarInitials"
+      >
+        FN
+      </div>
+
+
+      <button
+        class="menu-toggle"
+        id="menuToggle"
+        type="button"
+        aria-label="Abrir menu"
+      >
+
+        <span></span>
+
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- ============================================================
+       CONTEÚDO
+       ============================================================ -->
+
+  <main>
+
+
+    <!-- ============================================================
+         SAUDAÇÃO
+         ============================================================ -->
+
+    <div class="greeting-row">
+
+      <div class="greeting">
+
+        <h1 id="greetingText">
+          Bom dia, Funcionário
+        </h1>
+
+        <p>
+          Aqui está o que está acontecendo hoje.
+        </p>
+
+      </div>
+
+
+      <div
+        class="date"
+        id="todayDate"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <!-- ============================================================
+         PESQUISA
+         ============================================================ -->
+
+    <div class="search-wrap">
+
+      <svg
+        width="17"
+        height="17"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+
+        <circle
+          cx="11"
+          cy="11"
+          r="7"
+        ></circle>
+
+        <line
+          x1="21"
+          y1="21"
+          x2="16.65"
+          y2="16.65"
+        ></line>
+
+      </svg>
+
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Buscar pedido, produto ou código..."
+        autocomplete="off"
+      >
+
+    </div>
+
+
+    <!-- ============================================================
+         ALERTAS
+         ============================================================ -->
+
+    <section class="alerts-panel">
+
+      <div class="label">
+        Precisa da sua atenção
+      </div>
+
+
+      <div class="alert-stack">
+
+
+        <!-- SEM ESTOQUE -->
+
+        <div
+          class="alert-row coral"
+          id="alertSemEstoque"
+        >
+
+          <span>
+            Sem estoque
+          </span>
+
+          <span
+            class="count"
+            id="countSemEstoque"
+          >
+            0
+          </span>
+
+        </div>
+
+
+        <!-- ESTOQUE ACABANDO -->
+
+        <div
+          class="alert-row gold"
+          id="alertEstoqueBaixo"
+        >
+
+          <span>
+            Estoque acabando
+          </span>
+
+          <span
+            class="count"
+            id="countEstoqueBaixo"
+          >
+            0
+          </span>
+
+        </div>
+
+
+        <!-- PEDIDOS AGUARDANDO -->
+
+        <div
+          class="alert-row tangerine"
+          id="alertPedidosSeparacao"
+        >
+
+          <span>
+            Pedidos aguardando separação
+          </span>
+
+          <span
+            class="count"
+            id="countPedidosSeparacao"
+          >
+            0
+          </span>
+
+        </div>
+
+
+        <!-- PEDIDOS PARADOS -->
+
+        <div
+          class="alert-row magenta"
+          id="alertPedidosParados"
+        >
+
+          <span>
+            Pedidos parados há mais de 1 dia
+          </span>
+
+          <span
+            class="count"
+            id="countPedidosParados"
+          >
+            0
+          </span>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ============================================================
+         ATALHOS
+         ============================================================ -->
+
+    <div class="actions-row">
+
+
+      <!-- NOVO PEDIDO -->
+
+      <div
+        class="action-card new"
+        id="btnNovoPedido"
+        tabindex="0"
+      >
+
+        <div class="icon">
+
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+          >
+
+            <line
+              x1="12"
+              y1="5"
+              x2="12"
+              y2="19"
+            ></line>
+
+            <line
+              x1="5"
+              y1="12"
+              x2="19"
+              y2="12"
+            ></line>
+
+          </svg>
+
+        </div>
+
+
+        <div>
+
+          <div class="title">
+            Novo Pedido
+          </div>
+
+          <div class="sub">
+            Criar um pedido do zero
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- BUSCAR PRODUTO -->
+
+      <div
+        class="action-card search"
+        id="btnBuscarProduto"
+        tabindex="0"
+      >
+
+        <div class="icon">
+
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+          >
+
+            <circle
+              cx="11"
+              cy="11"
+              r="7"
+            ></circle>
+
+            <line
+              x1="21"
+              y1="21"
+              x2="16.65"
+              y2="16.65"
+            ></line>
+
+          </svg>
+
+        </div>
+
+
+        <div>
+
+          <div class="title">
+            Buscar produto
+          </div>
+
+          <div class="sub">
+            Ver preço e disponibilidade
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ENTRADA ESTOQUE -->
+
+      <div
+        class="action-card stock"
+        id="btnEntradaEstoque"
+        tabindex="0"
+      >
+
+        <div class="icon">
+
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+          >
+
+            <path
+              d="M21 8l-9-5-9 5 9 5 9-5z"
+            ></path>
+
+            <path
+              d="M3 8v8l9 5 9-5V8"
+            ></path>
+
+          </svg>
+
+        </div>
+
+
+        <div>
+
+          <div class="title">
+            Entrada estoque
+          </div>
+
+          <div class="sub">
+            Registrar nova mercadoria
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- NOVA VENDA -->
+
+      <div
+        class="action-card sale"
+        id="btnNovaVenda"
+        tabindex="0"
+      >
+
+        <div class="icon">
+
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+
+            <circle
+              cx="9"
+              cy="20"
+              r="1"
+            ></circle>
+
+            <circle
+              cx="19"
+              cy="20"
+              r="1"
+            ></circle>
+
+            <path
+              d="M3 4h2l2.5 11h10.5l2-7H6"
+            ></path>
+
+          </svg>
+
+        </div>
+
+
+        <div>
+
+          <div class="title">
+            Nova Venda
+          </div>
+
+          <div class="sub">
+            Iniciar uma nova venda
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ============================================================
+         PEDIDOS RECENTES
+         ============================================================ -->
+
+    <section class="section-head">
+
+      <h2>
+        Pedidos recentes
+      </h2>
+
+
+
+
+    </section>
+
+
+    <div class="table-card">
+
+
+<!-- ============================================================
+     VENDAS RECENTES
+     ============================================================ -->
+
+<section class="section-head">
+
+  <h2>
+    <br>
+    Vendas recentes
+  </h2>
+
+  <a href="./vendido.html">
+    Ver todas →
+  </a>
+
+</section>
+
+
+<div class="table-card">
+
+  <table>
+
+    <thead>
+
+      <tr>
+
+        <th>
+          Venda
+        </th>
+
+        <th>
+          Cliente
+        </th>
+
+        <th>
+          Data
+        </th>
+
+        <th>
+          Total
+        </th>
+
+        <th>
+          Status
+        </th>
+
+      </tr>
+
+    </thead>
+
+
+    <tbody id="salesBody">
+
+      <tr class="empty-row">
+
+        <td colspan="5">
+          Carregando vendas...
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
+
+
+
+  <script src="./header.js"></script>
+
+  <script src="./inicio.js"></script>
+
+</body>
+
+</html>

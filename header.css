@@ -1,0 +1,1338 @@
+:root {
+    --amber: #F5B700;
+    --amber-dark: #D99C00;
+    --ink: #1C1B2E;
+    --magenta: #E63E8C;
+}
+
+
+/* =========================
+   HEADER
+   ========================= */
+
+
+
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3,
+.display {
+    font-family: 'Sora', system-ui, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+header.topbar {
+    background: linear-gradient(180deg,
+            var(--amber) 0%,
+            var(--amber-dark) 100%);
+
+    padding: 30px 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 1000;
+
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.06);
+
+    /*
+       Animação para esconder/mostrar
+    */
+    transform: translateY(0);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+
+    will-change: transform;
+}
+
+
+/* HEADER ESCONDIDO */
+
+header.topbar.header-escondido {
+    transform: translateY(-100%);
+}
+
+
+/* =========================
+   LOGO
+   ========================= */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.brand .logo {
+    width: 38px;
+    height: 38px;
+
+    background: var(--ink);
+
+    border-radius: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--amber);
+
+    font-family: 'Sora', system-ui, sans-serif;
+
+    font-weight: 800;
+    font-size: 13px;
+
+    letter-spacing: -0.5px;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+.brand .logo img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    display: block;
+}
+
+
+.brand .logo::after {
+    content: "";
+
+    position: absolute;
+
+    top: -4px;
+    right: -4px;
+
+    width: 14px;
+    height: 14px;
+
+    background: var(--magenta);
+
+    border-radius: 50%;
+
+    border: 2px solid var(--amber);
+}
+
+
+.brand .wordmark {
+    font-family: 'Sora', system-ui, sans-serif;
+
+    font-weight: 700;
+    font-size: 18px;
+
+    color: var(--ink);
+
+    letter-spacing: -0.3px;
+}
+
+
+/* =========================
+   NAVEGAÇÃO
+   ========================= */
+
+nav.mainnav {
+    display: flex;
+    gap: 32px;
+}
+
+
+nav.mainnav a {
+    font-weight: 600;
+
+    font-size: 14.5px;
+
+    color: rgba(28, 27, 46, 0.65);
+
+    padding-bottom: 6px;
+
+    border-bottom: 2px solid transparent;
+
+    transition:
+        color .15s ease,
+        border-color .15s ease;
+}
+
+
+nav.mainnav a:hover {
+    color: var(--ink);
+}
+
+
+nav.mainnav a.active {
+    color: var(--ink);
+
+    border-bottom-color: var(--ink);
+}
+
+
+/* =========================
+   LADO DIREITO
+   ========================= */
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+
+.avatar {
+    width: 36px;
+    height: 36px;
+
+    border-radius: 50%;
+
+    background: var(--ink);
+
+    color: var(--amber);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 700;
+    font-size: 13px;
+
+    font-family: 'Sora', system-ui, sans-serif;
+}
+
+
+/* =========================
+   MENU MOBILE
+   ========================= */
+
+.menu-toggle {
+    display: none;
+
+    width: 34px;
+    height: 34px;
+
+    align-items: center;
+    justify-content: center;
+}
+
+
+.menu-toggle span,
+.menu-toggle span::before,
+.menu-toggle span::after {
+
+    content: "";
+
+    display: block;
+
+    width: 20px;
+    height: 2px;
+
+    background: var(--ink);
+
+    position: relative;
+}
+
+
+.menu-toggle span::before {
+    position: absolute;
+    top: -6px;
+}
+
+
+.menu-toggle span::after {
+    position: absolute;
+    top: 6px;
+}
+
+.dark-mode body {
+    background: #171626;
+    color: #f5f5f5;
+}
+
+.dark-mode .card {
+    background: #24224d;
+    color: white;
+}
+
+
+
+
+/* ============================================================
+   BOTÃO TEMA
+   ============================================================ */
+
+.theme-toggle {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(28, 27, 46, 0.12);
+    color: #1C1B2E;
+
+    font-size: 20px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        transform .15s ease;
+}
+
+
+.theme-toggle:hover {
+    background: rgba(28, 27, 46, 0.20);
+
+    transform: translateY(-1px);
+}
+
+
+/* ============================================================
+   DARK MODE GLOBAL
+   ============================================================ */
+
+html.dark-mode {
+    color-scheme: dark;
+}
+
+
+html.dark-mode body {
+    background: #171625 !important;
+    color: #f4f3fa !important;
+}
+
+
+/* =========================
+   TEXTOS GERAIS
+   ========================= */
+
+html.dark-mode h1,
+html.dark-mode h2,
+html.dark-mode h3,
+html.dark-mode h4,
+html.dark-mode p,
+html.dark-mode label {
+    color: #f4f3fa;
+}
+
+
+html.dark-mode .page-title {
+    color: #ffffff !important;
+}
+
+
+html.dark-mode .page-sub {
+    color: #aaa7bd !important;
+}
+
+
+/* =========================
+   CARDS BRANCOS
+   ========================= */
+
+html.dark-mode .action-card,
+html.dark-mode .table-card,
+html.dark-mode .card:not(.painel-estoque):not(.painel-historico) {
+    background: #25233d;
+    color: #f4f3fa;
+
+    border-color: #3a3755;
+}
+
+
+/* =========================
+   INPUTS
+   ========================= */
+
+html.dark-mode input,
+html.dark-mode select,
+html.dark-mode textarea {
+    background: #292741;
+    color: #ffffff;
+
+    border-color: #44415e;
+}
+
+
+html.dark-mode input::placeholder,
+html.dark-mode textarea::placeholder {
+    color: #8d899f;
+}
+
+
+/* =========================
+   TABELAS CLARAS
+   ========================= */
+
+html.dark-mode .table-card {
+    background: #25233d;
+}
+
+
+html.dark-mode .table-card thead th {
+    background: #302e49;
+
+    color: #bcb8cc;
+
+    border-color: #413e58;
+}
+
+
+html.dark-mode .table-card tbody td {
+    color: #eeeeF4;
+
+    border-color: #3a3751;
+}
+
+
+html.dark-mode .table-card tbody tr:hover {
+    background: #302e49;
+}
+
+
+/* =========================
+   HOME
+   ========================= */
+
+html.dark-mode .greeting p {
+    color: #aaa7bd;
+}
+
+
+html.dark-mode .date {
+    color: #f4f3fa;
+}
+
+
+html.dark-mode .search-wrap input {
+    background: #25233d;
+
+    border-color: #3d3957;
+
+    color: white;
+}
+
+
+/* =========================
+   PRODUTOS
+   ========================= */
+
+html.dark-mode .produtos-page,
+html.dark-mode .estoque-page {
+    color: #f4f3fa;
+}
+
+
+/* =========================
+   CLIENTES
+   ========================= */
+
+html.dark-mode .cliente-resultado {
+    background: #292741;
+
+    color: #ffffff;
+
+    border-color: #3d3957;
+}
+
+
+html.dark-mode .cliente-resultado:hover {
+    background: #332f4e;
+}
+
+
+/* =========================
+   MODAIS
+   ========================= */
+
+html.dark-mode .modal-aviso,
+html.dark-mode .modal-estoque,
+html.dark-mode .modal-produto {
+    background: #25233d !important;
+
+    color: #f4f3fa !important;
+}
+
+
+html.dark-mode .modal-aviso h2,
+html.dark-mode .modal-estoque h2,
+html.dark-mode .modal-produto h2 {
+    color: #ffffff !important;
+}
+
+
+html.dark-mode .btn-fechar-modal {
+    color: #ffffff;
+}
+
+
+html.dark-mode .btn-fechar-modal:hover {
+    background: #37344f;
+}
+
+
+/* =========================
+   BOTÃO DO TEMA ESCURO
+   ========================= */
+
+/* ============================================================
+   DARK MODE BM36 - AZUL MARINHO
+   ============================================================ */
+
+html.dark-mode {
+    color-scheme: dark;
+}
+
+
+html.dark-mode body {
+    background: #0B1628 !important;
+    color: #F2F6FC !important;
+}
+
+
+/* =========================
+   TEXTOS
+   ========================= */
+
+html.dark-mode h1,
+html.dark-mode h2,
+html.dark-mode h3,
+html.dark-mode h4,
+html.dark-mode p,
+html.dark-mode label {
+    color: #F2F6FC;
+}
+
+
+html.dark-mode .page-title {
+    color: #FFFFFF !important;
+}
+
+
+html.dark-mode .page-sub {
+    color: #A9B8CC !important;
+}
+
+
+/* =========================
+   CARDS
+   ========================= */
+
+html.dark-mode .action-card,
+html.dark-mode .table-card,
+html.dark-mode .card:not(.painel-estoque):not(.painel-historico) {
+
+    background: #12233D;
+
+    color: #F2F6FC;
+
+    border-color: #29415F;
+}
+
+
+/* =========================
+   HOVER DOS CARDS
+   ========================= */
+
+html.dark-mode .action-card:hover {
+
+    background: #172B49;
+
+    border-color: #3B6089;
+
+    box-shadow:
+        0 14px 30px rgba(0, 0, 0, .28);
+}
+
+
+/* =========================
+   INPUTS
+   ========================= */
+
+html.dark-mode input,
+html.dark-mode select,
+html.dark-mode textarea {
+
+    background: #102039;
+
+    color: #FFFFFF;
+
+    border-color: #29415F;
+}
+
+
+html.dark-mode input:focus,
+html.dark-mode select:focus,
+html.dark-mode textarea:focus {
+
+    background: #132641;
+
+    border-color: #4D79A8;
+}
+
+
+html.dark-mode input::placeholder,
+html.dark-mode textarea::placeholder {
+
+    color: #778AA4;
+}
+
+
+/* =========================
+   TABELAS
+   ========================= */
+
+html.dark-mode .table-card {
+
+    background: #12233D;
+}
+
+
+html.dark-mode .table-card thead th {
+
+    background: #172B49;
+
+    color: #A9B8CC;
+
+    border-color: #29415F;
+}
+
+
+html.dark-mode .table-card tbody td {
+
+    color: #E8EEF7;
+
+    border-color: #29415F;
+}
+
+
+html.dark-mode .table-card tbody tr:hover {
+
+    background: #1C3455;
+}
+
+
+/* =========================
+   HOME
+   ========================= */
+
+html.dark-mode .greeting p {
+
+    color: #A9B8CC;
+}
+
+
+html.dark-mode .date {
+
+    color: #E8EEF7;
+}
+
+
+html.dark-mode .search-wrap input {
+
+    background: #12233D;
+
+    border-color: #29415F;
+
+    color: #FFFFFF;
+}
+
+
+/* =========================
+   MODAIS
+   ========================= */
+
+html.dark-mode .modal-aviso,
+html.dark-mode .modal-estoque,
+html.dark-mode .modal-produto {
+
+    background: #12233D !important;
+
+    color: #F2F6FC !important;
+
+    border: 1px solid #29415F;
+}
+
+
+html.dark-mode .modal-aviso h2,
+html.dark-mode .modal-estoque h2,
+html.dark-mode .modal-produto h2 {
+
+    color: #FFFFFF !important;
+}
+
+
+html.dark-mode .btn-fechar-modal {
+
+    color: #FFFFFF;
+}
+
+
+html.dark-mode .btn-fechar-modal:hover {
+
+    background: #1C3455;
+}
+
+
+/* =========================
+   CLIENTES
+   ========================= */
+
+html.dark-mode .cliente-resultado {
+
+    background: #12233D;
+
+    color: #FFFFFF;
+
+    border-color: #29415F;
+}
+
+
+html.dark-mode .cliente-resultado:hover {
+
+    background: #1C3455;
+}
+
+html.dark-mode .action-card:hover{
+box-shadow: -10px 5px 10px rgba(255, 255, 255, 0.76);
+
+}
+/* =========================
+   BOTÃO DE TEMA
+   ========================= */
+
+html.dark-mode .theme-toggle {
+
+    background: #172B49;
+
+    color: #FFFFFF;
+}
+
+
+html.dark-mode .theme-toggle:hover {
+
+    background: #1F3A60;
+}
+
+/* ============================================================
+   TRANSIÇÃO DE TEMA MAIS VISÍVEL
+   ============================================================ */
+
+html,
+body,
+main,
+.card,
+.action-card,
+.table-card,
+.search-wrap input,
+input,
+select,
+textarea,
+table,
+thead,
+tbody,
+tr,
+td,
+th,
+.modal-aviso,
+.modal-estoque,
+.modal-produto,
+.cliente-resultado,
+.page-title,
+.page-sub,
+.greeting h1,
+.greeting p,
+.date
+.action-card {
+
+    transition:
+        background-color 0.5s ease,
+        color .85s ease,
+        border-color 1s ease,
+        box-shadow 1s ease;
+}
+
+
+html.theme-transition,
+html.theme-transition body {
+
+    transition:
+        background-color 1s ease,
+        color .85s ease;
+}
+
+
+/* botão de tema */
+
+.theme-toggle {
+
+    transition:
+        background-color .7s ease,
+        color .7s ease,
+        transform .9s cubic-bezier(.22,.8,.22,1);
+}
+
+
+.theme-toggle.theme-changing {
+
+    transform:
+        rotate(360deg)
+        scale(.82);
+}
+
+/* durante a troca */
+
+html.theme-transition,
+html.theme-transition body {
+    transition:
+        background-color .100s ease,
+        color .55s ease;
+}
+
+
+/* botão */
+
+.theme-toggle {
+    transition:
+        background-color .35s ease,
+        color .35s ease,
+        transform .95s cubic-bezier(.2, .8, .2, 1);
+}
+
+
+.theme-toggle.theme-changing {
+    transform:
+        rotate(180deg) scale(.85);
+}
+
+/*
+   O botão também gira quando troca o tema
+*/
+
+.theme-toggle {
+    transition:
+        background-color .35s ease,
+        color .35s ease,
+        transform .85s cubic-bezier(.2, .8, .2, 1);
+}
+
+
+.theme-toggle.theme-changing {
+    transform: rotate(180deg) scale(.85);
+}
+
+
+/* ============================================================
+   MENU DO USUÁRIO
+   ============================================================ */
+
+.user-menu-wrapper {
+    position: relative;
+}
+
+
+.avatar {
+    cursor: pointer;
+
+    transition:
+        transform .15s ease,
+        box-shadow .2s ease;
+}
+
+
+.avatar:hover {
+    transform: scale(1.05);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255,255,255,.15);
+}
+
+
+/* ============================================================
+   DROPDOWN
+   ============================================================ */
+
+.user-dropdown {
+    position: absolute;
+
+    top: calc(100% + 12px);
+    right: 0;
+
+    width: 270px;
+
+    padding: 12px;
+
+    background: #12233d;
+
+    border:
+        1px solid
+        #29415f;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 18px 50px
+        rgba(0,0,0,.28);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform:
+        translateY(-6px)
+        scale(.98);
+
+    transform-origin:
+        top right;
+
+    transition:
+        opacity .18s ease,
+        transform .18s ease,
+        visibility .18s ease;
+
+    z-index: 9999;
+}
+
+
+.user-dropdown.show {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+/* ============================================================
+   CABEÇALHO DO DROPDOWN
+   ============================================================ */
+
+.user-dropdown-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding:
+        5px
+        4px
+        12px;
+}
+
+
+.user-dropdown-avatar {
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #312e72;
+
+    color: #fff;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+
+.user-dropdown-info {
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.user-dropdown-info strong {
+    color: #fff;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+.user-dropdown-info span {
+    color: #a9b8cc;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+.user-dropdown-info small {
+    margin-top: 2px;
+
+    color: #e94b8c;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+}
+
+
+/* ============================================================
+   DIVISOR
+   ============================================================ */
+
+.user-dropdown-divider {
+    height: 1px;
+
+    margin:
+        3px
+        0
+        8px;
+
+    background:
+        #29415f;
+}
+
+
+/* ============================================================
+   ITENS
+   ============================================================ */
+
+.user-dropdown-item {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        10px
+        11px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #dce5f1;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        background .18s ease,
+        color .18s ease;
+}
+
+
+.user-dropdown-item:hover {
+    background: #1b3151;
+
+    color: #fff;
+}
+
+
+.user-dropdown-item span {
+    width: 20px;
+
+    text-align: center;
+}
+
+
+.admin-item {
+    color: #f2c65f;
+}
+
+
+.logout-item {
+    margin-top: 3px;
+
+    color: #ff8893;
+}
+
+/* ============================================================
+   BOTÃO TEMA
+   ============================================================ */
+
+.theme-toggle {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #12233d;
+    color: #ffffff;
+
+    font-size: 18px;
+
+    cursor: pointer;
+
+    transition:
+        transform .25s ease,
+        background-color .6s ease,
+        color .6s ease,
+        box-shadow .25s ease;
+}
+
+
+.theme-toggle:hover {
+    transform: scale(1.08);
+
+    box-shadow:
+        0 4px 12px
+        rgba(0, 0, 0, .18);
+}
+
+
+.theme-toggle:active {
+    transform: scale(.94);
+}
+/* ============================================================
+   FOTO DO USUÁRIO NO HEADER
+   ============================================================ */
+
+.avatar {
+    overflow: hidden;
+}
+
+
+.avatar-foto {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+}
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    .user-dropdown {
+        width: 250px;
+
+        right: -4px;
+    }
+
+}
+/* =========================
+   RESPONSIVO
+   ========================= */
+
+@media (max-width: 860px) {
+
+    nav.mainnav {
+
+        position: absolute;
+
+        top: 100%;
+
+        left: 0;
+        right: 0;
+
+        background: var(--amber);
+
+        flex-direction: column;
+
+        gap: 0;
+
+        max-height: 0;
+
+        overflow: hidden;
+
+        transition: max-height .2s ease;
+    }
+
+
+    nav.mainnav.open {
+
+        max-height: 260px;
+
+        padding: 6px 0;
+    }
+
+
+    nav.mainnav a {
+
+        padding: 12px 28px;
+
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+
+    .menu-toggle {
+        display: flex;
+    }
+
+}
+
+
+/* ============================================================
+   EVENTO ATIVO DO USUÁRIO
+   ============================================================ */
+
+.evento-menu-item {
+    width: 100%;
+    text-align: left;
+}
+
+.evento-menu-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.evento-menu-texto strong {
+    font-size: 13px;
+}
+
+.evento-menu-texto small {
+    font-size: 11px;
+    opacity: .7;
+}
+
+.evento-dropdown-area {
+    padding: 6px 10px 10px;
+}
+
+.evento-opcoes {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.evento-opcao {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    border: 1px solid rgba(120, 140, 170, .18);
+    border-radius: 9px;
+
+    padding: 10px;
+
+    background: rgba(120, 140, 170, .08);
+
+    color: inherit;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        border-color .18s ease;
+}
+
+.evento-opcao:hover {
+    transform: translateX(2px);
+
+    background: rgba(232, 62, 132, .12);
+
+    border-color: rgba(232, 62, 132, .35);
+}
+
+.evento-opcao.selecionado {
+    background: rgba(232, 62, 132, .16);
+
+    border-color: rgba(232, 62, 132, .55);
+}
+
+.evento-opcao > span {
+    font-size: 18px;
+}
+
+.evento-opcao > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.evento-opcao strong {
+    font-size: 12px;
+}
+
+.evento-opcao small {
+    font-size: 10px;
+    opacity: .65;
+}
+
+.evento-sem-opcoes {
+    padding: 10px;
+
+    font-size: 11px;
+
+    opacity: .65;
+
+    text-align: center;
+}

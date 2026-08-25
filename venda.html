@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nova Venda - BM36</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./venda.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- ============================================================
+     HEADER
+     ============================================================ -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="logo">
+
+                <img src="./imagem/logo2.jpg" alt="BM36">
+
+            </div>
+
+            <span class="wordmark"></span>
+
+        </div>
+
+
+        <nav
+      class="mainnav"
+      id="mainnav"
+    >
+
+      <a
+        href="./inicio.html"
+        
+        data-page="inicio"
+      >
+        Início
+      </a>
+
+
+      <a
+        href="./venda.html"
+        data-page="venda"
+        class="active"
+      >
+        Venda
+      </a>
+
+
+      <a
+        href="./produtos.html"
+        data-page="produtos"
+      >
+        Produtos
+      </a>
+
+
+ 
+
+
+      <a
+        href="./estoque.html"
+        data-page="estoque"
+      >
+        Estoque
+      </a>
+
+
+      <a
+        href="./CadastroCliente.html"
+        data-page="clientes"
+      >
+        Clientes
+      </a>
+
+
+      <a
+        href="./vendido.html"
+        data-page="pedidos"
+      >
+        Pedidos
+      </a>
+<a href="./eventos.html">
+    Eventos
+</a>
+    </nav>
+
+
+        <div class="topbar-right">
+
+            <div class="avatar" id="avatarInitials">
+                FN
+            </div>
+
+            <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu">
+
+                <span></span>
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- ============================================================
+     CONTEÚDO
+     ============================================================ -->
+
+    <main>
+
+        <div class="page-title">
+            Nova Venda
+        </div>
+
+        <div class="page-sub">
+            Selecione o cliente e adicione os produtos da venda.
+        </div>
+
+
+        <!-- ========================================================
+         CLIENTE
+         ======================================================== -->
+
+        <section class="card cliente-card">
+
+            <h2>
+                Cliente da Venda
+            </h2>
+
+
+            <div class="cliente-search-area">
+
+
+                <div class="search-wrap cliente-search">
+
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#171528" stroke-width="2">
+
+                        <circle cx="11" cy="11" r="7"></circle>
+
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+
+                    </svg>
+
+
+                    <input id="clienteSearch" type="text" placeholder="Buscar cliente por nome, CPF ou CNPJ..."
+                        autocomplete="off">
+
+                </div>
+
+
+                <a href="./CadastroCliente.html" class="btn-novo-cliente">
+                    + NOVO CLIENTE
+                </a>
+
+            </div>
+
+
+            <div id="clientesResultados" class="clientes-resultados">
+            </div>
+
+
+            <div id="clienteSelecionadoBox" class="cliente-selecionado-box">
+
+                <div class="cliente-vazio">
+
+                    <span>
+                        Nenhum cliente selecionado.
+                    </span>
+
+                    <small>
+                        Pesquise acima para selecionar um cliente.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================
+         PRODUTOS + RESUMO
+         ======================================================== -->
+
+        <div class="grid">
+
+
+            <!-- ====================================================
+             PRODUTOS
+             ==================================================== -->
+
+            <section class="card">
+                <h2>
+                    Produtos
+                </h2>
+                
+                
+                <button
+                    type="button"
+                    id="abrirScannerBtn"
+                    class="btn-scanner"
+                >
+                    📷 Ler código de barras
+                </button>
+                <div class="search-wrap">
+
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#171528" stroke-width="2">
+
+                        <circle cx="11" cy="11" r="7"></circle>
+
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+
+                    </svg>
+
+
+                    <input id="productSearch" type="text" placeholder="Código ou nome..." autocomplete="off">
+
+                </div>
+
+
+                <div class="tabela-venda-wrapper">
+
+                    <table class="prod-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Código
+                                </th>
+
+                                <th>
+                                    Produto
+                                </th>
+
+                                <th>
+                                    Embalagem
+                                </th>
+
+                                <th>
+                                    Preço
+                                </th>
+
+                                <th>
+                                    Est.
+                                </th>
+
+                                <th></th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="productsBody">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- PAGINAÇÃO -->
+
+                <div class="rodape-produtos-venda">
+
+                    <span id="contadorProdutosVenda">
+                        Mostrando 0 produtos
+                    </span>
+
+
+                    <div class="paginacao-produtos-venda">
+
+                        <button id="produtoAnterior" type="button">
+                            ◀
+                        </button>
+
+
+                        <div id="paginasProdutosVenda">
+                        </div>
+
+
+                        <button id="produtoProximo" type="button">
+                            ▶
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ====================================================
+             RESUMO
+             ==================================================== -->
+
+            <section class="card">
+
+                <h2>
+                    Resumo da Venda
+                </h2>
+
+
+                <div class="resumo-cliente">
+
+                    <span class="resumo-label">
+                        Cliente
+                    </span>
+
+                    <strong id="resumoCliente">
+                        Nenhum selecionado
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        Itens
+                    </span>
+
+                    <span id="sumItens">
+                        0
+                    </span>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        Quantidade
+                    </span>
+
+                    <span id="sumQtd">
+                        0
+                    </span>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <span id="sumSubtotal">
+                        R$ 0,00
+                    </span>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        Desconto
+                    </span>
+
+                    <span id="sumDesconto">
+                        R$ 0,00
+                    </span>
+
+                </div>
+
+
+                <div class="summary-row total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <span id="sumTotal">
+                        R$ 0,00
+                    </span>
+
+                </div>
+
+
+                <button class="btn btn-primary" id="finalizarBtn" type="button">
+                    Finalizar Venda
+                </button>
+
+
+                <button class="btn btn-ghost" id="cancelarBtn" type="button">
+                    Cancelar Venda
+                </button>
+
+            </section>
+
+        </div>
+
+
+        <!-- ========================================================
+         ITENS DA VENDA
+         ======================================================== -->
+
+        <section class="card items-card">
+
+            <h2>
+                Itens da Venda
+            </h2>
+
+
+            <div class="tabela-venda-wrapper">
+
+                <table class="items-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Produto
+                            </th>
+
+                            <th>
+                                Embalagem
+                            </th>
+
+                            <th>
+                                Preço
+                            </th>
+
+                            <th>
+                                Caixas
+                            </th>
+
+                            <th>
+                                Quantidade
+                            </th>
+
+                            <th>
+                                Subtotal
+                            </th>
+
+                            <th></th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="itemsBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="empty-note" id="emptyNote">
+                Nenhum item adicionado à venda ainda.
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ============================================================
+     MODAL
+     ============================================================ -->
+
+    <div id="modalAviso" class="modal-overlay">
+
+        <div class="modal-aviso">
+
+            <div class="modal-aviso-header">
+
+                <h2 id="modalAvisoTitulo">
+                    Atenção
+                </h2>
+
+
+                <button id="btnFecharModalAviso" type="button" class="btn-fechar-modal">
+                    ×
+                </button>
+
+            </div>
+
+
+            <p id="modalAvisoMensagem">
+                Mensagem
+            </p>
+
+
+            <div class="acoes-modal-aviso">
+
+                <button id="btnCancelarModalAviso" type="button" class="btn-modal-cancelar">
+                    CANCELAR
+                </button>
+
+
+                <button id="btnConfirmarModalAviso" type="button" class="btn-modal-confirmar">
+                    CONTINUAR
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+<div
+    id="scannerOverlay"
+    class="scanner-overlay"
+>
+
+    <div class="scanner-modal">
+
+        <div class="scanner-header">
+
+            <h2>
+                Ler código de barras
+            </h2>
+
+            <button
+                type="button"
+                id="fecharScannerBtn"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        <div id="reader"></div>
+
+        <p id="scannerStatus">
+            Aponte a câmera para o código de barras.
+        </p>
+
+    </div>
+
+</div>
+
+    <script src="./header.js"></script>
+
+   <script src="https://unpkg.com/html5-qrcode"></script>
+
+<script src="./venda.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Eventos - BM36
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="./header.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="./eventos.css"
+    >
+
+</head>
+
+<body>
+
+    <!-- ============================================================
+         HEADER
+         ============================================================ -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="logo">
+
+                <img
+                    src="./imagem/logo2.jpg"
+                    alt="BM36"
+                >
+
+            </div>
+
+            <span class="wordmark"></span>
+
+        </div>
+
+
+        <nav
+            class="mainnav"
+            id="mainnav"
+        >
+
+            <a
+                href="./inicio.html"
+                data-page="inicio"
+            >
+                Início
+            </a>
+
+
+            <a
+                href="./venda.html"
+                data-page="venda"
+            >
+                Venda
+            </a>
+
+
+            <a
+                href="./produtos.html"
+                data-page="produtos"
+            >
+                Produtos
+            </a>
+
+
+            <a
+                href="./estoque.html"
+                data-page="estoque"
+            >
+                Estoque
+            </a>
+
+
+            <a
+                href="./CadastroCliente.html"
+                data-page="clientes"
+            >
+                Clientes
+            </a>
+
+
+            <a
+                href="./vendido.html"
+                data-page="pedidos"
+            >
+                Pedidos
+            </a>
+
+
+            <a
+                href="./eventos.html"
+                data-page="Eventos"
+                class="active"
+            >
+                Eventos
+            </a>
+
+        </nav>
+
+
+        <div class="topbar-right">
+
+            <!-- TEMA -->
+
+            <button
+                class="theme-toggle"
+                id="themeToggle"
+                type="button"
+                aria-label="Usar modo escuro"
+                title="Usar modo escuro"
+            >
+                🌙
+            </button>
+
+
+            <!-- USUÁRIO -->
+
+            <div
+                class="avatar"
+                id="avatarInitials"
+                title="Minha conta"
+            >
+                FN
+            </div>
+
+
+            <!-- MENU MOBILE -->
+
+            <button
+                class="menu-toggle"
+                id="menuToggle"
+                type="button"
+                aria-label="Abrir menu"
+            >
+                <span></span>
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <div id="header-container"></div>
+
+
+    <!-- ============================================================
+         CONTEÚDO
+         ============================================================ -->
+
+    <main class="eventos-page">
+
+        <div class="eventos-topo">
+
+            <div>
+
+                <span class="breadcrumb">
+                    Vendas / Eventos
+                </span>
+
+                <h1>
+                    Eventos
+                </h1>
+
+                <p>
+                    Consulte as vendas realizadas em cada evento.
+                </p>
+
+            </div>
+
+
+            <button
+                class="btn-novo-evento"
+                id="novoEventoBtn"
+                type="button"
+            >
+                + Novo Evento
+            </button>
+
+        </div>
+
+
+        <!-- FILTROS -->
+
+        <div class="eventos-filtros">
+
+            <input
+                type="text"
+                id="buscarEvento"
+                placeholder="Buscar evento..."
+            >
+
+
+            <select id="filtroStatus">
+
+                <option value="">
+                    Todos os status
+                </option>
+
+                <option value="ATIVO">
+                    Ativos
+                </option>
+
+                <option value="FINALIZADO">
+                    Finalizados
+                </option>
+
+                <option value="CANCELADO">
+                    Cancelados
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- CARDS -->
+
+        <div
+            class="eventos-grid"
+            id="eventosGrid"
+        >
+
+            <div class="carregando">
+                Carregando eventos...
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ============================================================
+         MODAL NOVO EVENTO
+         ============================================================ -->
+
+    <div
+        class="overlay"
+        id="eventoOverlay"
+    >
+
+        <div class="modal-evento">
+
+            <div class="modal-head">
+
+                <div>
+
+                    <span>
+                        EVENTO
+                    </span>
+
+                    <h2 id="eventoModalTitulo">
+                        Novo Evento
+                    </h2>
+
+                </div>
+
+
+                <button
+                    id="fecharEventoModal"
+                    type="button"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+
+            <!-- NOME -->
+
+            <div class="form-group">
+
+                <label for="eventoNome">
+                    Nome do evento
+                </label>
+
+                <input
+                    type="text"
+                    id="eventoNome"
+                    placeholder="Ex.: Feira Agosto 2026"
+                >
+
+            </div>
+
+
+            <!-- DESCRIÇÃO -->
+
+            <div class="form-group">
+
+                <label for="eventoDescricao">
+                    Descrição
+                </label>
+
+                <textarea
+                    id="eventoDescricao"
+                    placeholder="Descrição opcional do evento"
+                ></textarea>
+
+            </div>
+
+
+            <!-- DATAS -->
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="eventoDataInicio">
+                        Data inicial
+                    </label>
+
+                    <input
+                        type="date"
+                        id="eventoDataInicio"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="eventoDataFim">
+                        Data final
+                    </label>
+
+                    <input
+                        type="date"
+                        id="eventoDataFim"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- AÇÕES -->
+
+            <div class="modal-actions">
+
+                <button
+                    class="btn-secundario"
+                    id="cancelarEventoBtn"
+                    type="button"
+                >
+                    Cancelar
+                </button>
+
+
+                <button
+                    class="btn-salvar"
+                    id="salvarEventoBtn"
+                    type="button"
+                >
+                    Salvar Evento
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================================================
+         MODAL DETALHES DO EVENTO
+         ============================================================ -->
+
+    <div
+        class="overlay"
+        id="detalhesOverlay"
+    >
+
+        <div class="modal-detalhes">
+
+
+            <!-- CABEÇALHO -->
+
+            <div class="modal-head">
+
+                <div>
+
+                    <span>
+                        EVENTO
+                    </span>
+
+                    <h2 id="detalhesTitulo">
+                        Evento
+                    </h2>
+
+                </div>
+
+
+                <button
+                    id="fecharDetalhes"
+                    type="button"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+
+            <!-- INFORMAÇÕES -->
+
+            <div
+                class="evento-detalhes-info"
+                id="detalhesInfo"
+            >
+            </div>
+
+
+            <!-- ====================================================
+                 RESUMO
+                 ==================================================== -->
+
+            <div class="resumo-evento">
+
+                <div class="resumo-card">
+
+                    <span>
+                        Pedidos
+                    </span>
+
+                    <strong id="resumoPedidos">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="resumo-card">
+
+                    <span>
+                        Total vendido
+                    </span>
+
+                    <strong id="resumoTotal">
+                        R$ 0,00
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- ====================================================
+                 PEDIDOS DO EVENTO
+                 ==================================================== -->
+
+            <section class="detalhes-section">
+
+                <h3>
+                    Pedidos do evento
+                </h3>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    #
+                                </th>
+
+                                <th>
+                                    Cliente
+                                </th>
+
+                                <th>
+                                    Vendedor
+                                </th>
+
+                                <th>
+                                    Data
+                                </th>
+
+                                <th>
+                                    Total
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="eventosPedidosBody">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- ====================================================
+                 PRODUTOS VENDIDOS
+                 ==================================================== -->
+
+            <section class="detalhes-section">
+
+                <h3>
+                    Produtos vendidos
+                </h3>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Código
+                                </th>
+
+                                <th>
+                                    Produto
+                                </th>
+
+                                <th>
+                                    Quantidade
+                                </th>
+
+                                <th>
+                                    Total vendido
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="eventosProdutosBody">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- ====================================================
+                 AÇÕES DO EVENTO
+                 ==================================================== -->
+
+            <div class="modal-actions">
+
+                <button
+                    class="btn-secundario"
+                    id="finalizarEventoBtn"
+                    type="button"
+                >
+                    Finalizar Evento
+                </button>
+
+
+                <button
+                    class="btn-secundario"
+                    id="cancelarEventoStatusBtn"
+                    type="button"
+                >
+                    Cancelar Evento
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================================================
+         SCRIPTS
+         ============================================================ -->
+
+    <script src="./header.js"></script>
+    <script src="./eventos.js"></script>
+
+</body>
+
+</html>

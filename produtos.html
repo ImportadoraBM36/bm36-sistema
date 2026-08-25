@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Produtos - BM36</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="./header.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="./produtos.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="logo">
+
+            <img
+                src="./imagem/logo2.jpg"
+                alt="BM36"
+            >
+
+        </div>
+
+        <span class="wordmark"></span>
+
+    </div>
+
+
+    <nav
+        class="mainnav"
+        id="mainnav"
+    >
+
+        <a
+            href="./inicio.html"
+            data-page="inicio"
+        >
+            Início
+        </a>
+
+
+        <a
+            href="./venda.html"
+            data-page="venda"
+        >
+            Venda
+        </a>
+
+
+        <a
+            href="./produtos.html"
+            data-page="produtos"
+            class="active"
+        >
+            Produtos
+        </a>
+
+
+        <a
+            href="./estoque.html"
+            data-page="estoque"
+        >
+            Estoque
+        </a>
+
+
+        <a
+            href="./CadastroCliente.html"
+            data-page="clientes"
+        >
+            Clientes
+        </a>
+
+
+        <a
+            href="./vendido.html"
+            data-page="pedidos"
+        >
+            Pedidos
+        </a>
+<a href="./eventos.html">
+    Eventos
+</a>
+    </nav>
+
+
+    <div class="topbar-right">
+
+        <!-- BOTÃO TEMA -->
+
+      <button
+    class="theme-toggle"
+    id="themeToggle"
+    type="button"
+    aria-label="Usar modo escuro"
+    title="Usar modo escuro"
+>
+    🌙
+</button>
+
+
+        <!-- USUÁRIO -->
+
+        <div
+            class="avatar"
+            id="avatarInitials"
+            title="Minha conta"
+        >
+            FN
+        </div>
+
+
+        <!-- MENU MOBILE -->
+
+        <button
+            class="menu-toggle"
+            id="menuToggle"
+            type="button"
+            aria-label="Abrir menu"
+        >
+            <span></span>
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- ============================================================
+     CONTEÚDO
+     ============================================================ -->
+
+<main class="produtos-page">
+
+
+    <!-- ========================================================
+         TOPO
+         ======================================================== -->
+
+    <div class="produtos-topo">
+
+        <div>
+
+            <h1>
+
+                Bom dia,
+
+                <span id="nomeFuncionario">
+                    Funcionário
+                </span>
+
+            </h1>
+
+
+            <p>
+                Aqui está a situação atual dos produtos.
+            </p>
+
+        </div>
+
+
+        <button
+            id="btnNovoProduto"
+            class="btn-novo-produto"
+            type="button"
+        >
+            NOVO PRODUTO +
+        </button>
+
+    </div>
+
+
+    <!-- ========================================================
+         PAINEL DE PRODUTOS
+         ======================================================== -->
+
+    <section class="painel-produtos">
+
+
+        <!-- BARRA SUPERIOR -->
+
+        <div class="barra-produtos">
+
+
+            <div class="busca-area">
+
+                <label for="buscaProduto">
+                    Pesquisa de produto:
+                </label>
+
+
+                <input
+                    type="text"
+                    id="buscaProduto"
+                    placeholder="Digite código ou nome"
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <button
+                id="btnAlterar"
+                class="btn-alterar"
+                type="button"
+            >
+                ALTERAR
+            </button>
+
+        </div>
+
+
+        <!-- ====================================================
+             TABELA
+             ==================================================== -->
+
+        <div class="tabela-wrapper">
+
+            <table class="tabela-produtos">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            CÓDIGO
+                        </th>
+
+                        <th>
+                            PRODUTO
+                        </th>
+
+                        <th>
+                            CATEGORIA
+                        </th>
+
+                        <th>
+                            EMBALAGEM
+                        </th>
+
+                        <th>
+                            PREÇO
+                        </th>
+
+                        <th>
+                            ESTOQUE
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="tabelaProdutos">
+
+                    <!--
+                        Os produtos serão inseridos
+                        aqui pelo produto.js
+                    -->
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- ====================================================
+             RODAPÉ DA TABELA
+             ==================================================== -->
+
+        <div class="rodape-tabela">
+
+
+            <span id="contadorProdutos">
+                Mostrando 0 produtos
+            </span>
+
+
+            <div class="paginacao">
+
+
+                <button
+                    id="paginaAnterior"
+                    type="button"
+                    aria-label="Página anterior"
+                >
+                    ◀
+                </button>
+
+
+                <div id="numerosPaginas">
+                </div>
+
+
+                <button
+                    id="proximaPagina"
+                    type="button"
+                    aria-label="Próxima página"
+                >
+                    ▶
+                </button>
+
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+</main>
+
+
+<!-- ============================================================
+     MODAL NOVO PRODUTO
+     ============================================================ -->
+
+<div
+    id="modalNovoProduto"
+    class="modal-overlay"
+>
+
+    <div class="modal-produto">
+
+
+        <!-- HEADER DO MODAL -->
+
+        <div class="modal-header">
+
+            <h2>
+                Novo Produto
+            </h2>
+
+
+            <button
+                id="btnFecharModal"
+                type="button"
+                class="btn-fechar-modal"
+                aria-label="Fechar"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- ====================================================
+             FORMULÁRIO
+             ==================================================== -->
+
+        <form id="formNovoProduto">
+
+
+            <!-- CÓDIGO -->
+
+            <div class="campo">
+
+                <label for="novoCodigo">
+                    Código
+                </label>
+
+
+                <input
+                    type="text"
+                    id="novoCodigo"
+                    required
+                >
+
+            </div>
+
+
+            <!-- NOME -->
+
+            <div class="campo">
+
+                <label for="novoNome">
+                    Nome do produto
+                </label>
+
+
+                <input
+                    type="text"
+                    id="novoNome"
+                    required
+                >
+
+            </div>
+
+
+            <!-- CÓDIGO FABRICANTE -->
+
+            <div class="campo">
+
+                <label for="novoCodigoFabricante">
+                    Código do fabricante
+                </label>
+
+
+                <input
+                    type="text"
+                    id="novoCodigoFabricante"
+                >
+
+            </div>
+
+
+            <!-- ORIGEM -->
+
+            <div class="campo">
+
+                <label for="novaOrigem">
+                    Origem
+                </label>
+
+
+                <select id="novaOrigem">
+
+                    <option value="BM36">
+                        BM36
+                    </option>
+
+                    <option value="WORLD CLASSIC">
+                        WORLD CLASSIC
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- QUANTIDADE POR CAIXA -->
+
+            <div class="campo">
+
+                <label for="novaQuantidadeCaixa">
+                    Quantidade por caixa
+                </label>
+
+
+                <input
+                    type="number"
+                    id="novaQuantidadeCaixa"
+                    min="0"
+                >
+
+            </div>
+
+
+            <!-- PREÇO -->
+
+            <div class="campo">
+
+                <label for="novoPreco">
+                    Preço de venda
+                </label>
+
+
+                <input
+                    type="number"
+                    id="novoPreco"
+                    min="0"
+                    step="0.01"
+                >
+
+            </div>
+
+
+            <!-- ESTOQUE MÍNIMO -->
+
+            <div class="campo">
+
+                <label for="novoEstoqueMinimo">
+                    Estoque mínimo
+                </label>
+
+
+                <input
+                    type="number"
+                    id="novoEstoqueMinimo"
+                    min="0"
+                >
+
+            </div>
+
+
+            <!-- ESTOQUE INICIAL -->
+
+            <div class="campo">
+
+                <label for="novoEstoque">
+                    Estoque inicial
+                </label>
+
+
+                <input
+                    type="number"
+                    id="novoEstoque"
+                    value="0"
+                >
+
+            </div>
+
+
+            <!-- BOTÕES -->
+
+            <div class="acoes-modal">
+
+                <button
+                    id="btnCancelarProduto"
+                    type="button"
+                    class="btn-cancelar"
+                >
+                    CANCELAR
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="btn-salvar"
+                >
+                    SALVAR
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+
+<script src="./header.js"></script>
+<script src="./produto.js"></script>
+
+
+</body>
+
+</html>
