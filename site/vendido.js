@@ -77,6 +77,11 @@ const pdfPedidoBtn =
         'pdfPedidoBtn'
     );
 
+const imprimirPedidoBtn =
+    document.getElementById(
+        'imprimirPedidoBtn'
+    );
+
 const cancelarPedidoBtn =
     document.getElementById(
         'cancelarPedidoBtn'
@@ -248,7 +253,9 @@ function statusLabel(status) {
 // PDF DO PEDIDO
 // ============================================================
 
-async function gerarPdfPedido() {
+async function gerarPdfPedido(
+    imprimir = false
+) {
 
     if (!pedidoAberto) {
         return;
@@ -468,6 +475,50 @@ async function gerarPdfPedido() {
         { type: 'application/pdf' }
     );
 
+
+    if (imprimir) {
+
+        const urlPdf =
+            URL.createObjectURL(
+                arquivo
+            );
+
+        const janelaImpressao =
+            window.open(
+                urlPdf,
+                '_blank'
+            );
+
+        if (!janelaImpressao) {
+
+            URL.revokeObjectURL(urlPdf);
+
+            alert(
+                'O navegador bloqueou a janela de impressão. Permita pop-ups e tente novamente.'
+            );
+
+            return;
+
+        }
+
+        setTimeout(
+            () => {
+                janelaImpressao.print();
+            },
+            900
+        );
+
+        setTimeout(
+            () => {
+                URL.revokeObjectURL(urlPdf);
+            },
+            60000
+        );
+
+        return;
+
+    }
+
     try {
 
         if (
@@ -504,6 +555,11 @@ async function gerarPdfPedido() {
 pdfPedidoBtn.addEventListener(
     'click',
     gerarPdfPedido
+);
+
+imprimirPedidoBtn.addEventListener(
+    'click',
+    () => gerarPdfPedido(true)
 );
 
 

@@ -982,6 +982,23 @@ table {
 }
 
 
+.btn-print {
+
+    background:
+        #3f9b6d;
+
+    color:
+        white;
+}
+
+
+.btn-print:hover {
+
+    background:
+        #2f7954;
+}
+
+
 .btn-danger {
 
     background:
