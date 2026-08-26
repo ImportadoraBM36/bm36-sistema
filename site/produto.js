@@ -982,27 +982,13 @@ btnAlterar.addEventListener(
             produtoSelecionado.estoque_minimo || 0;
 
 
-        const campoEstoque =
-            document.getElementById(
-                'novoEstoque'
-            );
+const campoEstoque =
+    document.getElementById('novoEstoque');
 
+campoEstoque.value =
+    produtoSelecionado.estoque_atual || 0;
 
-        campoEstoque.value =
-            produtoSelecionado.estoque_atual || 0;
-
-
-        /*
-            Estoque não será alterado
-            por esta tela.
-
-            Depois faremos movimentação
-            de estoque separadamente.
-        */
-
-        campoEstoque.disabled =
-            true;
-
+campoEstoque.disabled = false;
 
         /*
             Código também não muda
@@ -1147,14 +1133,9 @@ formNovoProduto.addEventListener(
                         .value || 0
                 ),
 
-            estoque_inicial:
-                Number(
-                    document
-                        .getElementById(
-                            'novoEstoque'
-                        )
-                        .value || 0
-                )
+         estoque_atual: Number(
+    document.getElementById('novoEstoque').value || 0
+)
 
         };
 
