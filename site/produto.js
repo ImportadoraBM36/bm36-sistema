@@ -901,12 +901,10 @@ btnAlterar.addEventListener(
     'click',
     () => {
 
-        if (
-            !produtoSelecionado
-        ) {
+        if (!produtoSelecionado) {
 
             alert(
-                'Selecione um produto na tabela primeiro.'
+                'Selecione um produto na tabela para alterá-lo.'
             );
 
             return;
@@ -921,86 +919,39 @@ btnAlterar.addEventListener(
         tituloModal.textContent =
             'Alterar Produto';
 
-
         btnSalvarProduto.textContent =
             'SALVAR ALTERAÇÕES';
 
 
-        document
-            .getElementById(
-                'novoCodigo'
-            )
-            .value =
+        document.getElementById('novoCodigo').value =
             produtoSelecionado.codigo || '';
 
+        document.getElementById('novoCodigo').disabled =
+            true;
 
-        document
-            .getElementById(
-                'novoNome'
-            )
-            .value =
+        document.getElementById('novoNome').value =
             produtoSelecionado.nome || '';
 
-
-        document
-            .getElementById(
-                'novoCodigoFabricante'
-            )
-            .value =
+        document.getElementById('novoCodigoFabricante').value =
             produtoSelecionado.codigo_fabricante || '';
 
+        document.getElementById('novaOrigem').value =
+            produtoSelecionado.origem || '';
 
-        document
-            .getElementById(
-                'novaOrigem'
-            )
-            .value =
-            produtoSelecionado.origem || 'BM36';
-
-
-        document
-            .getElementById(
-                'novaQuantidadeCaixa'
-            )
-            .value =
+        document.getElementById('novaQuantidadeCaixa').value =
             produtoSelecionado.quantidade_por_caixa || 0;
 
-
-        document
-            .getElementById(
-                'novoPreco'
-            )
-            .value =
+        document.getElementById('novoPreco').value =
             produtoSelecionado.preco_venda || 0;
 
-
-        document
-            .getElementById(
-                'novoEstoqueMinimo'
-            )
-            .value =
+        document.getElementById('novoEstoqueMinimo').value =
             produtoSelecionado.estoque_minimo || 0;
 
+        document.getElementById('novoEstoque').value =
+            produtoSelecionado.estoque_atual || 0;
 
-const campoEstoque =
-    document.getElementById('novoEstoque');
-
-campoEstoque.value =
-    produtoSelecionado.estoque_atual || 0;
-
-campoEstoque.disabled = false;
-
-        /*
-            Código também não muda
-            durante a edição.
-        */
-
-        document
-            .getElementById(
-                'novoCodigo'
-            )
-            .disabled =
-            true;
+        document.getElementById('novoEstoque').disabled =
+            false;
 
 
         abrirModalProduto();

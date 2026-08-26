@@ -482,7 +482,9 @@ app.put(
         try {
 
             const id =
-                req.params.id;
+                Number(
+                    req.params.id
+                );
 
 
             const {
@@ -491,11 +493,16 @@ app.put(
                 origem,
                 quantidade_por_caixa,
                 preco_venda,
-                estoque_minimo
+                estoque_minimo,
+                estoque_atual,
             } = req.body;
 
 
             if (
+                !Number.isInteger(id)
+                ||
+                id <= 0
+                ||
                 !nome ||
                 !origem
             ) {
@@ -504,7 +511,7 @@ app.put(
                     .status(400)
                     .json({
                         mensagem:
-                            'Nome e origem são obrigatórios.'
+                            'ID, nome e origem são obrigatórios.'
                     });
 
             }
@@ -524,6 +531,24 @@ app.put(
                 Number(
                     estoque_minimo || 0
                 );
+
+
+            if (
+                !Number.isFinite(quantidadeCaixa)
+                ||
+                !Number.isFinite(precoVenda)
+                ||
+                !Number.isFinite(estoqueMinimo)
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+                        mensagem:
+                            'Existem valores numéricos inválidos.'
+                    });
+
+            }
 
 
             await client.query(
@@ -597,6 +622,103 @@ app.put(
                         id
                     ]
                 );
+
+
+            if (
+                estoque_atual !== undefined
+                &&
+                estoque_atual !== null
+                &&
+                estoque_atual !== ''
+            ) {
+
+                const novoEstoque =
+                    Number(estoque_atual);
+
+
+                if (!Number.isFinite(novoEstoque)) {
+
+                    throw new Error(
+                        'Valor de estoque inválido.'
+                    );
+
+                }
+
+
+                const estoqueResultado =
+                    await client.query(
+                        `
+                        SELECT COALESCE(
+                            SUM(
+                                CASE
+                                    WHEN tipo IN ('ENTRADA', 'AJUSTE_POSITIVO')
+                                    THEN quantidade
+                                    WHEN tipo IN ('SAIDA', 'VENDA', 'AJUSTE_NEGATIVO')
+                                    THEN -quantidade
+                                    ELSE 0
+                                END
+                            ),
+                            0
+                        ) AS estoque_atual
+                        FROM movimentacoes_estoque
+                        WHERE produto_id = $1
+                        `,
+                        [id]
+                    );
+
+                const diferenca =
+                    novoEstoque
+                    -
+                    Number(
+                        estoqueResultado.rows[0].estoque_atual
+                    );
+
+
+                if (diferenca !== 0) {
+
+                    const usuarioResultado =
+                        await client.query(
+                            `
+                            SELECT id
+                            FROM usuarios
+                            ORDER BY id
+                            LIMIT 1
+                            `
+                        );
+
+                    if (usuarioResultado.rows.length === 0) {
+
+                        throw new Error(
+                            'Nenhum usuário encontrado para registrar o ajuste de estoque.'
+                        );
+
+                    }
+
+                    await client.query(
+                        `
+                        INSERT INTO movimentacoes_estoque (
+                            produto_id,
+                            usuario_id,
+                            tipo,
+                            quantidade,
+                            motivo
+                        )
+                        VALUES ($1, $2, $3, $4, $5)
+                        `,
+                        [
+                            id,
+                            usuarioResultado.rows[0].id,
+                            diferenca > 0
+                                ? 'AJUSTE_POSITIVO'
+                                : 'AJUSTE_NEGATIVO',
+                            Math.abs(diferenca),
+                            'Ajuste realizado na alteração do produto'
+                        ]
+                    );
+
+                }
+
+            }
 
 
             await client.query(
@@ -2411,62 +2533,6 @@ app.patch(
             const {
                 motivo = null
             } = req.body || {};
-
-// =====================================================
-// REATIVAR EVENTO
-// =====================================================
-
-app.patch('/api/eventos/:id/reativar', async (req, res) => {
-
-    try {
-
-        const eventoId = Number(req.params.id);
-
-        if (!Number.isInteger(eventoId) || eventoId <= 0) {
-            return res.status(400).json({
-                sucesso: false,
-                mensagem: 'Evento inválido.'
-            });
-        }
-
-        const resultado = await pool.query(
-            `
-            UPDATE eventos
-            SET
-                status = 'ATIVO',
-                atualizado_em = NOW()
-            WHERE id = $1
-            RETURNING *
-            `,
-            [eventoId]
-        );
-
-        if (resultado.rowCount === 0) {
-            return res.status(404).json({
-                sucesso: false,
-                mensagem: 'Evento não encontrado.'
-            });
-        }
-
-        return res.json({
-            sucesso: true,
-            mensagem: 'Evento reativado com sucesso.',
-            evento: resultado.rows[0]
-        });
-
-    } catch (erro) {
-
-        console.error(
-            'Erro ao reativar evento:',
-            erro
-        );
-
-        return res.status(500).json({
-            sucesso: false,
-            mensagem: 'Erro ao reativar evento.'
-        });
-    }
-});
             // =========================
             // VALIDAR ID
             // =========================
@@ -2808,6 +2874,62 @@ app.patch('/api/eventos/:id/reativar', async (req, res) => {
 
     }
 );
+// =====================================================
+// REATIVAR EVENTO
+// =====================================================
+
+app.patch('/api/eventos/:id/reativar', async (req, res) => {
+
+    try {
+
+        const eventoId = Number(req.params.id);
+
+        if (!Number.isInteger(eventoId) || eventoId <= 0) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'Evento inválido.'
+            });
+        }
+
+        const resultado = await pool.query(
+            `
+            UPDATE eventos
+            SET
+                status = 'ATIVO',
+                atualizado_em = NOW()
+            WHERE id = $1
+            RETURNING *
+            `,
+            [eventoId]
+        );
+
+        if (resultado.rowCount === 0) {
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: 'Evento não encontrado.'
+            });
+        }
+
+        return res.json({
+            sucesso: true,
+            mensagem: 'Evento reativado com sucesso.',
+            evento: resultado.rows[0]
+        });
+
+    } catch (erro) {
+
+        console.error(
+            'Erro ao reativar evento:',
+            erro
+        );
+
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: 'Erro ao reativar evento.'
+        });
+    }
+});
+
 // ============================================================
 // ALTERAR VENDA / PEDIDO
 // ============================================================
