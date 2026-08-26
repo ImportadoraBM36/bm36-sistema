@@ -254,15 +254,24 @@ function statusLabel(status) {
 // ============================================================
 
 async function gerarPdfPedido(
-    imprimir = false
+    imprimir = false,
+    janelaDeImpressao = null
 ) {
 
     if (!pedidoAberto) {
+        if (janelaDeImpressao) {
+            janelaDeImpressao.close();
+        }
+
         return;
     }
 
 
     if (!window.jspdf) {
+
+        if (janelaDeImpressao) {
+            janelaDeImpressao.close();
+        }
 
         alert(
             'Não foi possível carregar o gerador de PDF. Verifique sua conexão e tente novamente.'
@@ -472,20 +481,11 @@ async function gerarPdfPedido(
     const blobPdf =
         pdf.output('blob');
 
-    const arquivo = new File(
-        [blobPdf],
-        nomeArquivo,
-        { type: 'application/pdf' }
-    );
-
-
     if (imprimir) {
 
         const janelaImpressao =
-            window.open(
-                '',
-                '_blank'
-            );
+            janelaDeImpressao
+            || window.open('', '_blank');
 
         if (!janelaImpressao) {
             alert(
@@ -543,18 +543,28 @@ async function gerarPdfPedido(
     try {
 
         if (
-            navigator.canShare
+            typeof File === 'function'
             &&
-            navigator.canShare({ files: [arquivo] })
+            navigator.canShare
         ) {
 
-            await navigator.share({
-                title: `Pedido #${pedidoAberto.id}`,
-                text: `Comprovante do pedido #${pedidoAberto.id}`,
-                files: [arquivo]
-            });
+            const arquivo = new File(
+                [blobPdf],
+                nomeArquivo,
+                { type: 'application/pdf' }
+            );
 
-            return;
+            if (navigator.canShare({ files: [arquivo] })) {
+
+                await navigator.share({
+                    title: `Pedido #${pedidoAberto.id}`,
+                    text: `Comprovante do pedido #${pedidoAberto.id}`,
+                    files: [arquivo]
+                });
+
+                return;
+
+            }
 
         }
 
@@ -580,7 +590,24 @@ pdfPedidoBtn.addEventListener(
 
 imprimirPedidoBtn.addEventListener(
     'click',
-    () => gerarPdfPedido(true)
+    () => {
+
+        // Abre a janela durante o toque do usuário. Alguns celulares
+        // bloqueiam pop-ups iniciados depois que o PDF já foi montado.
+        const janelaImpressao =
+            window.open('', '_blank');
+
+        if (!janelaImpressao) {
+            alert(
+                'O navegador bloqueou a janela de impressão. Permita pop-ups e tente novamente.'
+            );
+
+            return;
+
+        }
+
+        gerarPdfPedido(true, janelaImpressao);
+    }
 );
 
 
