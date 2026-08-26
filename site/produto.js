@@ -1,5 +1,6 @@
 const API_URL =
     'https://bm36-sistema-production.up.railway.app/api';
+
 let produtos = [];
 let produtosFiltrados = [];
 
@@ -877,9 +878,7 @@ btnNovoProduto.addEventListener(
             );
 
 
-        campoEstoque.disabled =
-            false;
-
+     
 
         campoEstoque.value =
             0;
