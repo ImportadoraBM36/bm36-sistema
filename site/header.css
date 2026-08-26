@@ -1213,9 +1213,18 @@ html.theme-transition body {
 
     nav.mainnav.open {
 
-        max-height: 260px;
+        /*
+            A navegação possui mais links do que cabem em
+            260px. Limitamos pela tela e deixamos rolar para
+            que o último link (Eventos) também seja acessível.
+        */
+        max-height: calc(100dvh - 72px);
 
         padding: 6px 0;
+
+        overflow-y: auto;
+
+        -webkit-overflow-scrolling: touch;
     }
 
 

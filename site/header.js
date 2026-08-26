@@ -1416,8 +1416,15 @@ carregarEventoAtual();
                 'click',
                 () => {
 
-                    menu.classList.toggle(
+                    const menuAberto =
+                        menu.classList.toggle(
                         'open'
+                    );
+
+
+                    menuToggle.setAttribute(
+                        'aria-expanded',
+                        String(menuAberto)
                     );
 
 
@@ -1429,6 +1436,27 @@ carregarEventoAtual();
                     header.classList.remove(
                         'header-escondido'
                     );
+                }
+            );
+
+
+            menu.querySelectorAll('a').forEach(
+                link => {
+
+                    link.addEventListener(
+                        'click',
+                        () => {
+
+                            menu.classList.remove('open');
+
+                            menuToggle.setAttribute(
+                                'aria-expanded',
+                                'false'
+                            );
+
+                        }
+                    );
+
                 }
             );
         }
