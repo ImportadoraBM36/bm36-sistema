@@ -1,9 +1,8 @@
 const API_URL =
-    'http://localhost:3000/api';
-
+    'https://bm36-sistema-production.up.railway.app/api';
 
 const BASE_URL =
-    'http://localhost:3000';
+    'https://bm36-sistema-production.up.railway.app';
 
 
 // ============================================================

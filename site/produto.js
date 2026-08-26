@@ -1,5 +1,5 @@
-const API_URL = 'http://localhost:3000/api';
-
+const API_URL =
+    'https://bm36-sistema-production.up.railway.app/api';
 let produtos = [];
 let produtosFiltrados = [];
 

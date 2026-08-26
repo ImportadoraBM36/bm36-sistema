@@ -1,7 +1,5 @@
 const API_URL =
     'https://bm36-sistema-production.up.railway.app/api';
-
-
 const loginForm =
     document.getElementById(
         'loginForm'
