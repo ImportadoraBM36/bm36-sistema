@@ -878,7 +878,9 @@ btnNovoProduto.addEventListener(
             );
 
 
-     
+        campoEstoque.disabled =
+            false;
+
 
         campoEstoque.value =
             0;
@@ -988,17 +990,8 @@ btnAlterar.addEventListener(
         campoEstoque.value =
             produtoSelecionado.estoque_atual || 0;
 
-
-        /*
-            Estoque não será alterado
-            por esta tela.
-
-            Depois faremos movimentação
-            de estoque separadamente.
-        */
-
         campoEstoque.disabled =
-            true;
+            false;
 
 
         /*
