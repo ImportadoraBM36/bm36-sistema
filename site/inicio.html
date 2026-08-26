@@ -548,23 +548,67 @@
     </div>
 
 
-    <!-- ============================================================
-         PEDIDOS RECENTES
-         ============================================================ -->
+   <!-- ============================================================
+     PEDIDOS RECENTES
+     ============================================================ -->
 
-    <section class="section-head">
+<section class="section-head">
 
-      <h2>
-        Pedidos recentes
-      </h2>
+  <h2>
+    Pedidos recentes
+  </h2>
+
+  <a href="./vendido.html">
+    Ver todos →
+  </a>
+
+</section>
 
 
+<div class="table-card">
+
+  <table>
+
+    <thead>
+
+      <tr>
+
+        <th>
+          Pedido
+        </th>
+
+        <th>
+          Cliente
+        </th>
+
+        <th>
+          Data
+        </th>
+
+        <th>
+          Status
+        </th>
+
+      </tr>
+
+    </thead>
 
 
-    </section>
+    <tbody id="ordersBody">
 
+      <tr class="empty-row">
 
-    <div class="table-card">
+        <td colspan="4">
+          Carregando pedidos...
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
 
 
 <!-- ============================================================
@@ -635,10 +679,9 @@
 </div>
 
 
+<script src="./header.js"></script>
 
-  <script src="./header.js"></script>
-
-  <script src="./inicio.js"></script>
+<script src="./inicio.js"></script>
 
 </body>
 
