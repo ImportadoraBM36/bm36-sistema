@@ -981,17 +981,18 @@ btnAlterar.addEventListener(
             produtoSelecionado.estoque_minimo || 0;
 
 
-        const campoEstoque =
+          const campoEstoque =
             document.getElementById(
                 'novoEstoque'
             );
 
 
-        campoEstoque.value =
-            produtoSelecionado.estoque_atual || 0;
-
         campoEstoque.disabled =
             false;
+
+
+        campoEstoque.value =
+            0;
 
 
         /*
