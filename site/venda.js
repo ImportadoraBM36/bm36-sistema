@@ -18,8 +18,21 @@ let paginaProdutosVenda =
     1;
 
 
-const itensPorPaginaVenda =
-    6;
+function itensPorPaginaVenda() {
+
+    return window.matchMedia(
+        '(max-width: 700px)'
+    ).matches
+        ? 4
+        : 6;
+
+}
+
+
+let listaProdutosCompacta =
+    window.matchMedia(
+        '(max-width: 700px)'
+    ).matches;
 
 
 let cart =
@@ -986,7 +999,7 @@ function renderProducts() {
             Math.ceil(
                 produtosFiltradosVenda.length
                 /
-                itensPorPaginaVenda
+                itensPorPaginaVenda()
             )
         );
 
@@ -1012,12 +1025,12 @@ function renderProducts() {
             1
         )
         *
-        itensPorPaginaVenda;
+        itensPorPaginaVenda();
 
 
     const fim =
         inicio +
-        itensPorPaginaVenda;
+        itensPorPaginaVenda();
 
 
     const pagina =
@@ -1163,6 +1176,36 @@ productSearch.addEventListener(
 );
 
 
+window.addEventListener(
+    'resize',
+    () => {
+
+        const modoCompactoAtual =
+            window.matchMedia(
+                '(max-width: 700px)'
+            ).matches;
+
+        if (
+            modoCompactoAtual ===
+            listaProdutosCompacta
+        ) {
+            return;
+        }
+
+        listaProdutosCompacta =
+            modoCompactoAtual;
+
+        paginaProdutosVenda =
+            1;
+
+        if (catalog.length) {
+            renderProducts();
+        }
+
+    }
+);
+
+
 // ============================================================
 // PAGINAÇÃO
 // ============================================================
@@ -1202,7 +1245,7 @@ function atualizarPaginacaoProdutosVenda() {
     const totalPaginas =
         Math.ceil(
             total /
-            itensPorPaginaVenda
+            itensPorPaginaVenda()
         );
 
 
@@ -1212,7 +1255,7 @@ function atualizarPaginacaoProdutosVenda() {
             1
         )
         *
-        itensPorPaginaVenda
+        itensPorPaginaVenda()
         +
         1;
 
@@ -1221,7 +1264,7 @@ function atualizarPaginacaoProdutosVenda() {
         Math.min(
             paginaProdutosVenda
             *
-            itensPorPaginaVenda,
+            itensPorPaginaVenda(),
             total
         );
 
@@ -1382,7 +1425,7 @@ produtoProximo.addEventListener(
             Math.ceil(
                 produtosFiltradosVenda.length
                 /
-                itensPorPaginaVenda
+                itensPorPaginaVenda()
             );
 
 

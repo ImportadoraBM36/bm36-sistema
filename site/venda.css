@@ -1094,6 +1094,33 @@ table {
 
 }
 
+
+/* Celular: lista de produtos mais curta e resumo após os itens da venda. */
+@media (max-width: 700px) {
+
+    main {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .grid {
+        display: contents;
+    }
+
+    .grid > .card:first-child {
+        order: 1;
+    }
+
+    .items-card {
+        order: 2;
+    }
+
+    .grid > .card:last-child {
+        order: 3;
+    }
+
+}
+
 /* ============================================================
    EMBALAGEM + CONTROLE DE CAIXAS
    ============================================================ */
