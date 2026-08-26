@@ -578,7 +578,7 @@ async function gerarPdfPedido(
 
 pdfPedidoBtn.addEventListener(
     'click',
-    gerarPdfPedido
+    () => gerarPdfPedido()
 );
 
 imprimirPedidoBtn.addEventListener(
