@@ -454,7 +454,8 @@ async function gerarPdfPedido(
     adicionarTotal('Desconto', desconto);
 
     pdf.setDrawColor(19, 37, 67);
-    pdf.line(142, y - 2, 195, y - 2);
+    // Mantém a linha separadora acima do texto do total.
+    pdf.line(142, y - 6, 195, y - 6);
     adicionarTotal('TOTAL', total, true);
 
     pdf.setTextColor(95, 99, 117);
