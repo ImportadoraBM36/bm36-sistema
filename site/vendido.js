@@ -290,22 +290,20 @@ async function gerarPdfPedido(
 
     const adicionarCabecalho = () => {
 
-        pdf.setFillColor(19, 37, 67);
-        pdf.rect(0, 0, 210, 31, 'F');
-
-        pdf.setTextColor(255, 255, 255);
+        // Layout monocromático: mais econômico para impressão.
+        pdf.setTextColor(20, 20, 20);
         pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(19);
-        pdf.text('BM36', margem, 14);
+        pdf.setFontSize(16);
+        pdf.text('BM36', margem, 13);
+
+        pdf.setFontSize(9);
+        pdf.text('COMPROVANTE DE PEDIDO', margem, 19);
 
         pdf.setFontSize(10);
-        pdf.text('COMPROVANTE DE PEDIDO', margem, 21);
-
-        pdf.setFontSize(11);
         pdf.text(
             `PEDIDO #${pedidoAberto.id}`,
             210 - margem,
-            15,
+            13,
             { align: 'right' }
         );
 
@@ -314,18 +312,18 @@ async function gerarPdfPedido(
         pdf.text(
             `Emitido em ${formatarData(new Date())}`,
             210 - margem,
-            21,
+            19,
             { align: 'right' }
         );
 
+        pdf.setDrawColor(90, 90, 90);
+        pdf.setLineWidth(0.25);
+        pdf.line(margem, 24, 210 - margem, 24);
         pdf.setTextColor(28, 27, 46);
 
     };
 
     const adicionarCabecalhoTabela = y => {
-
-        pdf.setFillColor(235, 238, 245);
-        pdf.rect(margem, y, largura, 8, 'F');
 
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(8);
@@ -333,6 +331,10 @@ async function gerarPdfPedido(
         pdf.text('QTD.', 126, y + 5.2, { align: 'right' });
         pdf.text('UNIT.', 152, y + 5.2, { align: 'right' });
         pdf.text('SUBTOTAL', 195, y + 5.2, { align: 'right' });
+
+        pdf.setDrawColor(90, 90, 90);
+        pdf.setLineWidth(0.25);
+        pdf.line(margem, y + 7, margem + largura, y + 7);
 
         return y + 8;
 
@@ -453,9 +455,6 @@ async function gerarPdfPedido(
     adicionarTotal('Subtotal', subtotal);
     adicionarTotal('Desconto', desconto);
 
-    pdf.setDrawColor(19, 37, 67);
-    // Mantém a linha separadora acima do texto do total.
-    pdf.line(142, y - 6, 195, y - 6);
     adicionarTotal('TOTAL', total, true);
 
     pdf.setTextColor(95, 99, 117);
