@@ -1,8 +1,12 @@
 const fs = require('fs');
 const path = require('path');
-const { Pool } = require('pg');
+const { Pool } = require(
+    path.join(__dirname, '..', 'backend', 'node_modules', 'pg')
+);
 
-require('dotenv').config({
+require(
+    path.join(__dirname, '..', 'backend', 'node_modules', 'dotenv')
+).config({
     path: path.join(__dirname, '..', 'backend', '.env')
 });
 
@@ -14,7 +18,6 @@ async function aplicarMigracao() {
             rejectUnauthorized: false
         }
     });
-SSSSS
     try {
 
         const sql = fs.readFileSync(

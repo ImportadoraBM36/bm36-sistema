@@ -285,13 +285,14 @@ async function gerarPdfPedido(
     const { jsPDF } = window.jspdf;
 
     const pdf = new jsPDF({
-        orientation: 'portrait',
+        orientation: 'landscape',
         unit: 'mm',
         format: 'a4'
     });
 
-    const margem = 15;
-    const largura = 210 - (margem * 2);
+    const larguraPagina = 297;
+    const margem = 10;
+    const largura = larguraPagina - (margem * 2);
 
     const textoSeguro = valor =>
         String(valor || '-')
@@ -311,7 +312,7 @@ async function gerarPdfPedido(
         pdf.setFontSize(10);
         pdf.text(
             `PEDIDO #${pedidoAberto.id}`,
-            210 - margem,
+            larguraPagina - margem,
             13,
             { align: 'right' }
         );
@@ -320,14 +321,14 @@ async function gerarPdfPedido(
         pdf.setFontSize(8);
         pdf.text(
             `Emitido em ${formatarData(new Date())}`,
-            210 - margem,
+            larguraPagina - margem,
             19,
             { align: 'right' }
         );
 
         pdf.setDrawColor(90, 90, 90);
         pdf.setLineWidth(0.25);
-        pdf.line(margem, 24, 210 - margem, 24);
+        pdf.line(margem, 24, larguraPagina - margem, 24);
         pdf.setTextColor(28, 27, 46);
 
     };
@@ -335,11 +336,16 @@ async function gerarPdfPedido(
     const adicionarCabecalhoTabela = y => {
 
         pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(8);
+        pdf.setFontSize(7);
         pdf.text('PRODUTO', margem + 3, y + 5.2);
-        pdf.text('QTD.', 126, y + 5.2, { align: 'right' });
-        pdf.text('UNIT.', 152, y + 5.2, { align: 'right' });
-        pdf.text('SUBTOTAL', 195, y + 5.2, { align: 'right' });
+        pdf.text('CÓDIGO', 100, y + 5.2, { align: 'right' });
+        pdf.text('CORR.', 121, y + 5.2, { align: 'right' });
+        pdf.text('PRAT.', 140, y + 5.2, { align: 'right' });
+        pdf.text('POS.', 158, y + 5.2, { align: 'right' });
+        pdf.text('CÓD. FAB.', 181, y + 5.2, { align: 'right' });
+        pdf.text('QTD.', 208, y + 5.2, { align: 'right' });
+        pdf.text('UNIT.', 238, y + 5.2, { align: 'right' });
+        pdf.text('SUBTOTAL', 285, y + 5.2, { align: 'right' });
 
         pdf.setDrawColor(90, 90, 90);
         pdf.setLineWidth(0.25);
@@ -361,14 +367,14 @@ async function gerarPdfPedido(
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(9);
     pdf.text('CLIENTE', margem, y);
-    pdf.text('DATA DO PEDIDO', 120, y);
+    pdf.text('DATA DO PEDIDO', 165, y);
 
     y += 5;
 
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(10);
     pdf.text(textoSeguro(cliente), margem, y);
-    pdf.text(formatarData(pedidoAberto.criado_em), 120, y);
+    pdf.text(formatarData(pedidoAberto.criado_em), 165, y);
 
     y += 5;
 
@@ -377,7 +383,7 @@ async function gerarPdfPedido(
     pdf.text(documento || 'Documento não informado', margem, y);
     pdf.text(
         `Status: ${statusLabel(pedidoAberto.status)}`,
-        120,
+        165,
         y
     );
 
@@ -408,14 +414,11 @@ async function gerarPdfPedido(
             item.produto_codigo || item.codigo || ''
         );
 
-        const linhasNome = pdf.splitTextToSize(
-            codigo ? `${nome}\nCód.: ${codigo}` : nome,
-            91
-        );
+        const linhasNome = pdf.splitTextToSize(nome, 84);
 
         const alturaLinha = Math.max(10, linhasNome.length * 4.3 + 3);
 
-        if (y + alturaLinha > 255) {
+        if (y + alturaLinha > 180) {
 
             pdf.addPage();
             adicionarCabecalho();
@@ -427,11 +430,16 @@ async function gerarPdfPedido(
         pdf.line(margem, y + alturaLinha, margem + largura, y + alturaLinha);
 
         pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(8.5);
+        pdf.setFontSize(7.5);
         pdf.text(linhasNome, margem + 3, y + 5);
-        pdf.text(String(Number(item.quantidade || 0)), 126, y + 5, { align: 'right' });
-        pdf.text(fmt(item.preco_unitario), 152, y + 5, { align: 'right' });
-        pdf.text(fmt(item.subtotal), 195, y + 5, { align: 'right' });
+        pdf.text(codigo || '-', 100, y + 5, { align: 'right' });
+        pdf.text(textoSeguro(item.produto_corredor), 121, y + 5, { align: 'right' });
+        pdf.text(textoSeguro(item.produto_prateleira), 140, y + 5, { align: 'right' });
+        pdf.text(textoSeguro(item.produto_posicao), 158, y + 5, { align: 'right' });
+        pdf.text(textoSeguro(item.produto_codigo_fabricante), 181, y + 5, { align: 'right' });
+        pdf.text(String(Number(item.quantidade || 0)), 208, y + 5, { align: 'right' });
+        pdf.text(fmt(item.preco_unitario), 238, y + 5, { align: 'right' });
+        pdf.text(fmt(item.subtotal), 285, y + 5, { align: 'right' });
 
         y += alturaLinha;
 
@@ -441,7 +449,7 @@ async function gerarPdfPedido(
     const desconto = Number(pedidoAberto.desconto || 0);
     const total = Number(pedidoAberto.total || subtotal - desconto);
 
-    if (y + 38 > 270) {
+    if (y + 38 > 192) {
 
         pdf.addPage();
         adicionarCabecalho();
@@ -455,8 +463,8 @@ async function gerarPdfPedido(
 
         pdf.setFont('helvetica', destaque ? 'bold' : 'normal');
         pdf.setFontSize(destaque ? 12 : 9);
-        pdf.text(titulo, 142, y, { align: 'right' });
-        pdf.text(fmt(valor), 195, y, { align: 'right' });
+        pdf.text(titulo, 232, y, { align: 'right' });
+        pdf.text(fmt(valor), 285, y, { align: 'right' });
         y += destaque ? 8 : 6;
 
     };
@@ -472,7 +480,7 @@ async function gerarPdfPedido(
     pdf.text(
         'Documento gerado pelo sistema BM36.',
         margem,
-        285
+        202
     );
 
     const nomeArquivo =

@@ -2501,6 +2501,10 @@ app.get(
                         p.codigo AS produto_codigo,
                         p.nome AS produto_nome,
                         p.origem AS produto_origem,
+                        p.codigo_fabricante AS produto_codigo_fabricante,
+                        p.corredor AS produto_corredor,
+                        p.prateleira AS produto_prateleira,
+                        p.posicao AS produto_posicao,
 
                         iv.quantidade,
                         iv.preco_unitario,
@@ -6605,13 +6609,41 @@ const PORT =
     process.env.PORT || 3000;
 
 
-app.listen(
-    PORT,
-    () => {
+async function iniciarServidor() {
 
-        console.log(
-            `API BM36 rodando em http://localhost:${PORT}`
+    try {
+
+        // Garante que o banco publicado tenha as colunas usadas pela API.
+        await pool.query(`
+            ALTER TABLE produtos
+                ADD COLUMN IF NOT EXISTS corredor TEXT,
+                ADD COLUMN IF NOT EXISTS prateleira TEXT,
+                ADD COLUMN IF NOT EXISTS posicao TEXT
+        `);
+
+        app.listen(
+            PORT,
+            () => {
+
+                console.log(
+                    `API BM36 rodando em http://localhost:${PORT}`
+                );
+
+            }
         );
 
+    } catch (erro) {
+
+        console.error(
+            'Erro ao preparar banco de dados:',
+            erro
+        );
+
+        process.exit(1);
+
     }
-);
+
+}
+
+
+iniciarServidor();
