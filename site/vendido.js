@@ -469,8 +469,11 @@ async function gerarPdfPedido(
     const nomeArquivo =
         `pedido-${pedidoAberto.id}.pdf`;
 
+    const blobPdf =
+        pdf.output('blob');
+
     const arquivo = new File(
-        [pdf.output('blob')],
+        [blobPdf],
         nomeArquivo,
         { type: 'application/pdf' }
     );
@@ -478,21 +481,13 @@ async function gerarPdfPedido(
 
     if (imprimir) {
 
-        const urlPdf =
-            URL.createObjectURL(
-                arquivo
-            );
-
         const janelaImpressao =
             window.open(
-                urlPdf,
+                '',
                 '_blank'
             );
 
         if (!janelaImpressao) {
-
-            URL.revokeObjectURL(urlPdf);
-
             alert(
                 'O navegador bloqueou a janela de impressão. Permita pop-ups e tente novamente.'
             );
@@ -501,18 +496,44 @@ async function gerarPdfPedido(
 
         }
 
-        setTimeout(
-            () => {
-                janelaImpressao.print();
-            },
-            900
-        );
+        const urlPdf =
+            URL.createObjectURL(
+                blobPdf
+            );
 
-        setTimeout(
+        janelaImpressao.document.write(`
+            <!doctype html>
+            <html lang="pt-BR">
+                <head>
+                    <title>Imprimir ${nomeArquivo}</title>
+                    <style>
+                        html, body, iframe { width: 100%; height: 100%; margin: 0; border: 0; }
+                    </style>
+                </head>
+                <body>
+                    <iframe id="pedidoPdf" src="${urlPdf}" title="Pedido para impressão"></iframe>
+                    <script>
+                        const pdf = document.getElementById('pedidoPdf');
+                        pdf.addEventListener('load', () => {
+                            setTimeout(() => {
+                                pdf.contentWindow.focus();
+                                pdf.contentWindow.print();
+                            }, 250);
+                        }, { once: true });
+                    <\/script>
+                </body>
+            </html>
+        `);
+
+        janelaImpressao.document.close();
+
+        janelaImpressao.addEventListener(
+            'afterprint',
             () => {
                 URL.revokeObjectURL(urlPdf);
+                janelaImpressao.close();
             },
-            60000
+            { once: true }
         );
 
         return;
