@@ -202,9 +202,7 @@ loginForm.addEventListener(
             // ====================================================
             // IR PARA HOME
             // ====================================================
-
-            window.location.href =
-                './inicio.html';
+window.location.href = './site/inicio.html';
 
 
         } catch (erro) {
@@ -248,7 +246,6 @@ if (
     tokenExistente
 ) {
 
-    window.location.href =
-        './inicio.html';
+ window.location.href = './site/inicio.html';
 
 }
