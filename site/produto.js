@@ -1,6 +1,7 @@
 const API_URL =
     'https://bm36-sistema-production.up.railway.app/api';
 
+
 let produtos = [];
 let produtosFiltrados = [];
 
@@ -981,18 +982,26 @@ btnAlterar.addEventListener(
             produtoSelecionado.estoque_minimo || 0;
 
 
-          const campoEstoque =
+        const campoEstoque =
             document.getElementById(
                 'novoEstoque'
             );
 
 
-        campoEstoque.disabled =
-            false;
-
-
         campoEstoque.value =
-            0;
+            produtoSelecionado.estoque_atual || 0;
+
+
+        /*
+            Estoque não será alterado
+            por esta tela.
+
+            Depois faremos movimentação
+            de estoque separadamente.
+        */
+
+        campoEstoque.disabled =
+            true;
 
 
         /*
