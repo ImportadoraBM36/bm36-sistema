@@ -51,8 +51,7 @@ document.addEventListener(
             !usuarioSalvo
         ) {
 
-            window.location.href =
-                './index.html';
+         window.location.href = '../index.html';
 
             return;
         }
@@ -83,8 +82,7 @@ document.addEventListener(
             );
 
 
-            window.location.href =
-                './index.html';
+           window.location.href = '../index.html';
 
             return;
         }
@@ -1286,8 +1284,7 @@ carregarEventoAtual();
                             */
 
 
-                            window.location.href =
-                                './index.html';
+                          window.location.href = '../index.html';
                         }
                     );
                 }
