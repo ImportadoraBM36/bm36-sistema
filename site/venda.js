@@ -1405,6 +1405,191 @@ produtoProximo.addEventListener(
 // ADICIONAR PRODUTO
 // ============================================================
 
+const modalQuantidade =
+    document.getElementById(
+        'modalQuantidade'
+    );
+
+const modalQuantidadeNome =
+    document.getElementById('modalQuantidadeNome');
+
+const modalQuantidadeCodigo =
+    document.getElementById('modalQuantidadeCodigo');
+
+const modalQuantidadeEmbalagem =
+    document.getElementById('modalQuantidadeEmbalagem');
+
+const modalQuantidadePreco =
+    document.getElementById('modalQuantidadePreco');
+
+const modalQuantidadeEstoque =
+    document.getElementById('modalQuantidadeEstoque');
+
+const inputQuantidadeProduto =
+    document.getElementById('inputQuantidadeProduto');
+
+const btnFecharModalQuantidade =
+    document.getElementById('btnFecharModalQuantidade');
+
+const btnCancelarModalQuantidade =
+    document.getElementById('btnCancelarModalQuantidade');
+
+const btnAdicionarModalQuantidade =
+    document.getElementById('btnAdicionarModalQuantidade');
+
+let produtoParaAdicionar =
+    null;
+
+
+function fecharModalQuantidade() {
+
+    modalQuantidade.classList.remove('aberto');
+    modalQuantidade.setAttribute('aria-hidden', 'true');
+
+    document.body.style.overflow = '';
+
+    produtoParaAdicionar = null;
+
+}
+
+
+function abrirModalQuantidade(produto) {
+
+    produtoParaAdicionar = produto;
+
+    modalQuantidadeNome.textContent =
+        produto.name || 'Produto';
+
+    modalQuantidadeCodigo.textContent =
+        `Código: ${produto.code || produto.manufacturerCode || '-'}`;
+
+    modalQuantidadeEmbalagem.textContent =
+        textoEmbalagem(produto.packageSize);
+
+    modalQuantidadePreco.textContent =
+        fmt(produto.price);
+
+    modalQuantidadeEstoque.textContent =
+        `Estoque atual: ${Number(produto.stock || 0)}`;
+
+    modalQuantidadeEstoque.classList.toggle(
+        'sem-estoque',
+        Number(produto.stock || 0) <= 0
+    );
+
+    inputQuantidadeProduto.value = 1;
+
+    modalQuantidade.classList.add('aberto');
+    modalQuantidade.setAttribute('aria-hidden', 'false');
+
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(
+        () => {
+            inputQuantidadeProduto.focus();
+            inputQuantidadeProduto.select();
+        },
+        50
+    );
+
+}
+
+
+function confirmarAdicionarProduto() {
+
+    const quantidade =
+        Math.floor(
+            Number(inputQuantidadeProduto.value)
+        );
+
+    if (
+        !Number.isInteger(quantidade)
+        ||
+        quantidade < 1
+    ) {
+
+        inputQuantidadeProduto.focus();
+
+        return;
+
+    }
+
+    const produto = produtoParaAdicionar;
+
+    fecharModalQuantidade();
+
+    if (produto) {
+
+        adicionarProdutoAoCarrinho(
+            produto,
+            quantidade
+        );
+
+    }
+
+}
+
+
+btnFecharModalQuantidade.addEventListener(
+    'click',
+    fecharModalQuantidade
+);
+
+btnCancelarModalQuantidade.addEventListener(
+    'click',
+    fecharModalQuantidade
+);
+
+btnAdicionarModalQuantidade.addEventListener(
+    'click',
+    confirmarAdicionarProduto
+);
+
+inputQuantidadeProduto.addEventListener(
+    'keydown',
+    evento => {
+
+        if (evento.key === 'Enter') {
+
+            evento.preventDefault();
+            confirmarAdicionarProduto();
+
+        }
+
+    }
+);
+
+modalQuantidade.addEventListener(
+    'click',
+    evento => {
+
+        if (evento.target === modalQuantidade) {
+
+            fecharModalQuantidade();
+
+        }
+
+    }
+);
+
+document.addEventListener(
+    'keydown',
+    evento => {
+
+        if (
+            evento.key === 'Escape'
+            &&
+            modalQuantidade.classList.contains('aberto')
+        ) {
+
+            fecharModalQuantidade();
+
+        }
+
+    }
+);
+
+
 productsBody.addEventListener(
     'click',
     evento => {
@@ -1450,44 +1635,7 @@ productsBody.addEventListener(
         }
 
 
-        if (
-            produto.stock <=
-            0
-        ) {
-
-            abrirModalAviso({
-
-                titulo:
-                    'Produto sem estoque',
-
-                mensagem:
-                    `O produto "${produto.name}" está sem estoque.\n\n` +
-                    `Estoque atual: ${produto.stock}\n\n` +
-                    `Deseja adicionar mesmo assim?`,
-
-                textoConfirmar:
-                    'ADICIONAR',
-
-                mostrarCancelar:
-                    true,
-
-                aoConfirmar:
-                    () =>
-                        adicionarProdutoAoCarrinho(
-                            produto
-                        )
-
-            });
-
-
-            return;
-
-        }
-
-
-        adicionarProdutoAoCarrinho(
-            produto
-        );
+        abrirModalQuantidade(produto);
 
     }
 );
@@ -1498,7 +1646,8 @@ productsBody.addEventListener(
 // ============================================================
 
 function adicionarProdutoAoCarrinho(
-    produto
+    produto,
+    quantidade = 1
 ) {
 
     const existente =
@@ -1518,7 +1667,7 @@ function adicionarProdutoAoCarrinho(
         existente
     ) {
 
-        existente.qty++;
+        existente.qty += quantidade;
 
 
     } else {
@@ -1528,7 +1677,7 @@ function adicionarProdutoAoCarrinho(
             ...produto,
 
             qty:
-                1
+                quantidade
 
         });
 
@@ -3060,61 +3209,11 @@ async function buscarProdutoPorCodigo(
     );
 
 
-    /*
-        Mantemos a mesma regra que já existe
-        quando o usuário usa o botão "+".
-    */
-
-    if (
-        produto.stock <=
-        0
-    ) {
-
-        abrirModalAviso({
-
-            titulo:
-                'Produto sem estoque',
-
-            mensagem:
-                `O produto "${produto.name}" foi encontrado.\n\n` +
-                `Estoque atual: ${produto.stock}\n\n` +
-                `Deseja adicionar mesmo assim?`,
-
-            textoConfirmar:
-                'ADICIONAR',
-
-            mostrarCancelar:
-                true,
-
-            aoConfirmar:
-                () => {
-
-                    adicionarProdutoAoCarrinho(
-                        produto
-                    );
-
-                }
-
-        });
-
-
-        return;
-
-    }
-
-
-    /*
-        Produto encontrado e com estoque:
-        adiciona diretamente ao carrinho.
-    */
-
-    adicionarProdutoAoCarrinho(
-        produto
-    );
+    abrirModalQuantidade(produto);
 
 
     console.log(
-        'Produto adicionado ao carrinho:',
+        'Produto pronto para ser confirmado no carrinho:',
         produto.name
     );
 

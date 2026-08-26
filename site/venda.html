@@ -527,6 +527,63 @@
         </div>
 
     </div>
+
+
+    <div id="modalQuantidade" class="modal-overlay modal-quantidade-overlay" aria-hidden="true">
+
+        <section class="modal-quantidade" role="dialog" aria-modal="true" aria-labelledby="modalQuantidadeTitulo">
+
+            <div class="modal-aviso-header">
+
+                <h2 id="modalQuantidadeTitulo">Adicionar produto</h2>
+
+                <button id="btnFecharModalQuantidade" type="button" class="btn-fechar-modal" aria-label="Fechar">
+                    ×
+                </button>
+
+            </div>
+
+            <div class="produto-confirmacao">
+
+                <strong id="modalQuantidadeNome"></strong>
+
+                <span id="modalQuantidadeCodigo"></span>
+
+                <div class="produto-confirmacao-detalhes">
+
+                    <span id="modalQuantidadeEmbalagem"></span>
+
+                    <strong id="modalQuantidadePreco"></strong>
+
+                </div>
+
+                <span id="modalQuantidadeEstoque" class="produto-confirmacao-estoque"></span>
+
+            </div>
+
+            <label class="campo-quantidade" for="inputQuantidadeProduto">
+
+                Quantidade a adicionar
+
+                <input id="inputQuantidadeProduto" type="number" min="1" step="1" value="1" inputmode="numeric" required>
+
+            </label>
+
+            <div class="acoes-modal-aviso">
+
+                <button id="btnCancelarModalQuantidade" type="button" class="btn-modal-cancelar">
+                    CANCELAR
+                </button>
+
+                <button id="btnAdicionarModalQuantidade" type="button" class="btn-modal-confirmar">
+                    ADICIONAR AO CARRINHO
+                </button>
+
+            </div>
+
+        </section>
+
+    </div>
 <div
     id="scannerOverlay"
     class="scanner-overlay"

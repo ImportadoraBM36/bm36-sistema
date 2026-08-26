@@ -1511,6 +1511,116 @@ table {
     opacity: 0.55;
     cursor: not-allowed;
 }
+
+
+/* ============================================================
+   MODAL DE QUANTIDADE DO PRODUTO
+   ============================================================ */
+
+.modal-quantidade-overlay {
+    z-index: 5100;
+}
+
+
+.modal-quantidade {
+    width: 100%;
+    max-width: 470px;
+
+    padding: 22px;
+
+    border-radius: 16px;
+
+    background: #ffffff;
+    color: var(--ink);
+
+    box-shadow:
+        0 20px 60px
+        rgba(0, 0, 0, 0.30);
+}
+
+
+.produto-confirmacao {
+    display: grid;
+    gap: 7px;
+
+    padding: 16px;
+
+    border-radius: 12px;
+
+    background: #f4f3f9;
+}
+
+
+.produto-confirmacao > strong {
+    color: var(--ink);
+    font-size: 16px;
+}
+
+
+.produto-confirmacao > span {
+    color: #66647d;
+    font-size: 13px;
+}
+
+
+.produto-confirmacao-detalhes {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+
+    color: #66647d;
+    font-size: 13px;
+}
+
+
+.produto-confirmacao-detalhes strong {
+    color: var(--ink);
+}
+
+
+.produto-confirmacao-estoque.sem-estoque {
+    color: #b4235d;
+    font-weight: 800;
+}
+
+
+.campo-quantidade {
+    display: grid;
+    gap: 8px;
+
+    margin-top: 18px;
+
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+
+.campo-quantidade input {
+    width: 100%;
+
+    padding: 12px;
+
+    border: 1px solid #d7d5e3;
+    border-radius: 8px;
+
+    color: var(--ink);
+    font: inherit;
+    font-size: 16px;
+}
+
+
+.campo-quantidade input:focus {
+    outline: 2px solid rgba(236, 61, 137, 0.28);
+    border-color: var(--pink);
+}
+
+
+@media (max-width: 600px) {
+    .modal-quantidade {
+        padding: 18px;
+    }
+}
 .dark-mode body {
     background: #171626;
     color: #f5f5f5;
