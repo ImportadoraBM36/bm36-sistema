@@ -50,6 +50,14 @@
 }
 
 
+.acoes-estoque {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+
 /* =========================
    BOTÃO MOVIMENTAR
    ========================= */
@@ -835,6 +843,12 @@ td {
 
 
     .btn-movimentar {
+
+        width: 100%;
+    }
+
+
+    .acoes-estoque {
 
         width: 100%;
     }

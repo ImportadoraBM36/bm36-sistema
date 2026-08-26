@@ -935,6 +935,15 @@ btnAlterar.addEventListener(
         document.getElementById('novoCodigoFabricante').value =
             produtoSelecionado.codigo_fabricante || '';
 
+        document.getElementById('novoCorredor').value =
+            produtoSelecionado.corredor || '';
+
+        document.getElementById('novaPrateleira').value =
+            produtoSelecionado.prateleira || '';
+
+        document.getElementById('novaPosicao').value =
+            produtoSelecionado.posicao || '';
+
         document.getElementById('novaOrigem').value =
             produtoSelecionado.origem || '';
 
@@ -1047,6 +1056,24 @@ formNovoProduto.addEventListener(
                     .getElementById(
                         'novoCodigoFabricante'
                     )
+                    .value
+                    .trim(),
+
+            corredor:
+                document
+                    .getElementById('novoCorredor')
+                    .value
+                    .trim(),
+
+            prateleira:
+                document
+                    .getElementById('novaPrateleira')
+                    .value
+                    .trim(),
+
+            posicao:
+                document
+                    .getElementById('novaPosicao')
                     .value
                     .trim(),
 

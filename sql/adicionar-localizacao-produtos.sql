@@ -1,0 +1,8 @@
+BEGIN;
+
+ALTER TABLE produtos
+    ADD COLUMN IF NOT EXISTS corredor TEXT,
+    ADD COLUMN IF NOT EXISTS prateleira TEXT,
+    ADD COLUMN IF NOT EXISTS posicao TEXT;
+
+COMMIT;

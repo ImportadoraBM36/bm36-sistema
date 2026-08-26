@@ -101,6 +101,9 @@ app.get(
                         p.nome,
                         p.descricao,
                         p.codigo_fabricante,
+                        p.corredor,
+                        p.prateleira,
+                        p.posicao,
                         p.tipo_planilha,
                         p.quantidade_por_caixa,
                         p.preco_venda,
@@ -143,6 +146,9 @@ app.get(
                         p.nome,
                         p.descricao,
                         p.codigo_fabricante,
+                        p.corredor,
+                        p.prateleira,
+                        p.posicao,
                         p.tipo_planilha,
                         p.quantidade_por_caixa,
                         p.preco_venda,
@@ -191,6 +197,9 @@ app.post(
                 codigo,
                 nome,
                 codigo_fabricante,
+                corredor,
+                prateleira,
+                posicao,
                 origem,
                 quantidade_por_caixa,
                 preco_venda,
@@ -302,6 +311,9 @@ app.post(
                         codigo,
                         nome,
                         codigo_fabricante,
+                        corredor,
+                        prateleira,
+                        posicao,
                         origem,
                         quantidade_por_caixa,
                         preco_venda,
@@ -317,6 +329,9 @@ app.post(
                         $5,
                         $6,
                         $7,
+                        $8,
+                        $9,
+                        $10,
                         TRUE
                     )
 
@@ -329,6 +344,18 @@ app.post(
 
                         codigo_fabricante
                             ? codigo_fabricante.trim()
+                            : null,
+
+                        corredor
+                            ? corredor.trim()
+                            : null,
+
+                        prateleira
+                            ? prateleira.trim()
+                            : null,
+
+                        posicao
+                            ? posicao.trim()
                             : null,
 
                         origem,
@@ -490,6 +517,9 @@ app.put(
             const {
                 nome,
                 codigo_fabricante,
+                corredor,
+                prateleira,
+                posicao,
                 origem,
                 quantidade_por_caixa,
                 preco_venda,
@@ -595,12 +625,15 @@ app.put(
                     SET
                         nome = $1,
                         codigo_fabricante = $2,
-                        origem = $3,
-                        quantidade_por_caixa = $4,
-                        preco_venda = $5,
-                        estoque_minimo = $6
+                        corredor = $3,
+                        prateleira = $4,
+                        posicao = $5,
+                        origem = $6,
+                        quantidade_por_caixa = $7,
+                        preco_venda = $8,
+                        estoque_minimo = $9
 
-                    WHERE id = $7
+                    WHERE id = $10
 
                     RETURNING *
                     `,
@@ -609,6 +642,18 @@ app.put(
 
                         codigo_fabricante
                             ? codigo_fabricante.trim()
+                            : null,
+
+                        corredor
+                            ? corredor.trim()
+                            : null,
+
+                        prateleira
+                            ? prateleira.trim()
+                            : null,
+
+                        posicao
+                            ? posicao.trim()
                             : null,
 
                         origem,

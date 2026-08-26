@@ -164,6 +164,147 @@ const btnMovimentarEstoque =
     );
 
 
+const btnGerarMostruario =
+    document.getElementById(
+        'btnGerarMostruario'
+    );
+
+
+function textoMostruario(valor) {
+
+    const texto = String(valor ?? '').trim();
+
+    return texto || '-';
+
+}
+
+
+function gerarMostruarioPdf() {
+
+    if (
+        !window.jspdf
+        ||
+        typeof window.jspdf.jsPDF !== 'function'
+        ||
+        !window.jspdf.jsPDF.API.autoTable
+    ) {
+
+        alert(
+            'Não foi possível carregar o gerador do PDF. Verifique a conexão e tente novamente.'
+        );
+
+        return;
+
+    }
+
+
+    const { jsPDF } = window.jspdf;
+
+    const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+    });
+
+    const produtosDoPdf =
+        [...produtosFiltrados]
+            .sort(
+                (a, b) => String(
+                    a.nome || a.descricao || ''
+                ).localeCompare(
+                    String(b.nome || b.descricao || ''),
+                    'pt-BR'
+                )
+            );
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(15);
+    pdf.text('BM36 - MOSTRUÁRIO DE ESTOQUE', 14, 14);
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(8);
+    pdf.text(
+        `Gerado em ${new Date().toLocaleString('pt-BR')} - ${produtosDoPdf.length} produtos`,
+        14,
+        19
+    );
+
+    pdf.autoTable({
+        startY: 23,
+        head: [[
+            'IT',
+            'CÓDIGO DO PRODUTO',
+            'DESCRIÇÃO',
+            'CORREDOR',
+            'PRATELEIRA',
+            'POSIÇÃO',
+            'CÓDIGO DO FABRICANTE',
+            'QUANTIDADE'
+        ]],
+        body: produtosDoPdf.map(
+            (produto, indice) => [
+                indice + 1,
+                textoMostruario(produto.codigo),
+                textoMostruario(produto.descricao || produto.nome),
+                textoMostruario(produto.corredor),
+                textoMostruario(produto.prateleira),
+                textoMostruario(produto.posicao),
+                textoMostruario(produto.codigo_fabricante),
+                String(Number(produto.estoque_atual || 0))
+            ]
+        ),
+        theme: 'grid',
+        styles: {
+            font: 'helvetica',
+            fontSize: 6.5,
+            cellPadding: 1.2,
+            valign: 'middle',
+            overflow: 'linebreak'
+        },
+        headStyles: {
+            fillColor: [48, 45, 109],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold'
+        },
+        columnStyles: {
+            0: { cellWidth: 8, halign: 'center' },
+            1: { cellWidth: 24 },
+            2: { cellWidth: 91 },
+            3: { cellWidth: 18, halign: 'center' },
+            4: { cellWidth: 20, halign: 'center' },
+            5: { cellWidth: 18, halign: 'center' },
+            6: { cellWidth: 31 },
+            7: { cellWidth: 18, halign: 'right' }
+        },
+        margin: {
+            top: 23,
+            right: 8,
+            bottom: 12,
+            left: 8
+        },
+        didDrawPage: dados => {
+            pdf.setFontSize(7);
+            pdf.setTextColor(90, 90, 90);
+            pdf.text(
+                `Página ${dados.pageNumber}`,
+                289,
+                204,
+                { align: 'right' }
+            );
+        }
+    });
+
+    pdf.save('mostruario-estoque-bm36.pdf');
+
+}
+
+
+btnGerarMostruario.addEventListener(
+    'click',
+    gerarMostruarioPdf
+);
+
+
 const modalMovimentarEstoque =
     document.getElementById(
         'modalMovimentarEstoque'
