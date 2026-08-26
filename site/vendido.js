@@ -72,6 +72,11 @@ const editarBtn =
         'editarBtn'
     );
 
+const pdfPedidoBtn =
+    document.getElementById(
+        'pdfPedidoBtn'
+    );
+
 const cancelarPedidoBtn =
     document.getElementById(
         'cancelarPedidoBtn'
@@ -237,6 +242,269 @@ function statusLabel(status) {
     return 'FINALIZADO';
 
 }
+
+
+// ============================================================
+// PDF DO PEDIDO
+// ============================================================
+
+async function gerarPdfPedido() {
+
+    if (!pedidoAberto) {
+        return;
+    }
+
+
+    if (!window.jspdf) {
+
+        alert(
+            'Não foi possível carregar o gerador de PDF. Verifique sua conexão e tente novamente.'
+        );
+
+        return;
+
+    }
+
+
+    const { jsPDF } = window.jspdf;
+
+    const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+    });
+
+    const margem = 15;
+    const largura = 210 - (margem * 2);
+
+    const textoSeguro = valor =>
+        String(valor || '-')
+            .replace(/[\r\n]+/g, ' ');
+
+    const adicionarCabecalho = () => {
+
+        pdf.setFillColor(19, 37, 67);
+        pdf.rect(0, 0, 210, 31, 'F');
+
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(19);
+        pdf.text('BM36', margem, 14);
+
+        pdf.setFontSize(10);
+        pdf.text('COMPROVANTE DE PEDIDO', margem, 21);
+
+        pdf.setFontSize(11);
+        pdf.text(
+            `PEDIDO #${pedidoAberto.id}`,
+            210 - margem,
+            15,
+            { align: 'right' }
+        );
+
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        pdf.text(
+            `Emitido em ${formatarData(new Date())}`,
+            210 - margem,
+            21,
+            { align: 'right' }
+        );
+
+        pdf.setTextColor(28, 27, 46);
+
+    };
+
+    const adicionarCabecalhoTabela = y => {
+
+        pdf.setFillColor(235, 238, 245);
+        pdf.rect(margem, y, largura, 8, 'F');
+
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(8);
+        pdf.text('PRODUTO', margem + 3, y + 5.2);
+        pdf.text('QTD.', 126, y + 5.2, { align: 'right' });
+        pdf.text('UNIT.', 152, y + 5.2, { align: 'right' });
+        pdf.text('SUBTOTAL', 195, y + 5.2, { align: 'right' });
+
+        return y + 8;
+
+    };
+
+    adicionarCabecalho();
+
+    let y = 42;
+
+    const cliente = pedidoAberto.cliente_nome || 'Não informado';
+    const documento = pedidoAberto.cliente_documento
+        ? formatarDocumento(pedidoAberto.cliente_documento)
+        : '';
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(9);
+    pdf.text('CLIENTE', margem, y);
+    pdf.text('DATA DO PEDIDO', 120, y);
+
+    y += 5;
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(10);
+    pdf.text(textoSeguro(cliente), margem, y);
+    pdf.text(formatarData(pedidoAberto.criado_em), 120, y);
+
+    y += 5;
+
+    pdf.setFontSize(8.5);
+    pdf.setTextColor(95, 99, 117);
+    pdf.text(documento || 'Documento não informado', margem, y);
+    pdf.text(
+        `Status: ${statusLabel(pedidoAberto.status)}`,
+        120,
+        y
+    );
+
+    y += 8;
+
+    pdf.setTextColor(28, 27, 46);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(
+        `Vendedor: ${textoSeguro(pedidoAberto.usuario_nome || 'Não informado')}`,
+        margem,
+        y
+    );
+
+    y += 10;
+    y = adicionarCabecalhoTabela(y);
+
+    const itens = Array.isArray(pedidoAberto.itens)
+        ? pedidoAberto.itens
+        : [];
+
+    itens.forEach(item => {
+
+        const nome = textoSeguro(
+            item.produto_nome || item.nome || 'Produto'
+        );
+
+        const codigo = textoSeguro(
+            item.produto_codigo || item.codigo || ''
+        );
+
+        const linhasNome = pdf.splitTextToSize(
+            codigo ? `${nome}\nCód.: ${codigo}` : nome,
+            91
+        );
+
+        const alturaLinha = Math.max(10, linhasNome.length * 4.3 + 3);
+
+        if (y + alturaLinha > 255) {
+
+            pdf.addPage();
+            adicionarCabecalho();
+            y = adicionarCabecalhoTabela(40);
+
+        }
+
+        pdf.setDrawColor(222, 225, 232);
+        pdf.line(margem, y + alturaLinha, margem + largura, y + alturaLinha);
+
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8.5);
+        pdf.text(linhasNome, margem + 3, y + 5);
+        pdf.text(String(Number(item.quantidade || 0)), 126, y + 5, { align: 'right' });
+        pdf.text(fmt(item.preco_unitario), 152, y + 5, { align: 'right' });
+        pdf.text(fmt(item.subtotal), 195, y + 5, { align: 'right' });
+
+        y += alturaLinha;
+
+    });
+
+    const subtotal = Number(pedidoAberto.subtotal || 0);
+    const desconto = Number(pedidoAberto.desconto || 0);
+    const total = Number(pedidoAberto.total || subtotal - desconto);
+
+    if (y + 38 > 270) {
+
+        pdf.addPage();
+        adicionarCabecalho();
+        y = 45;
+
+    }
+
+    y += 8;
+
+    const adicionarTotal = (titulo, valor, destaque = false) => {
+
+        pdf.setFont('helvetica', destaque ? 'bold' : 'normal');
+        pdf.setFontSize(destaque ? 12 : 9);
+        pdf.text(titulo, 142, y, { align: 'right' });
+        pdf.text(fmt(valor), 195, y, { align: 'right' });
+        y += destaque ? 8 : 6;
+
+    };
+
+    adicionarTotal('Subtotal', subtotal);
+    adicionarTotal('Desconto', desconto);
+
+    pdf.setDrawColor(19, 37, 67);
+    pdf.line(142, y - 2, 195, y - 2);
+    adicionarTotal('TOTAL', total, true);
+
+    pdf.setTextColor(95, 99, 117);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(8);
+    pdf.text(
+        'Documento gerado pelo sistema BM36.',
+        margem,
+        285
+    );
+
+    const nomeArquivo =
+        `pedido-${pedidoAberto.id}.pdf`;
+
+    const arquivo = new File(
+        [pdf.output('blob')],
+        nomeArquivo,
+        { type: 'application/pdf' }
+    );
+
+    try {
+
+        if (
+            navigator.canShare
+            &&
+            navigator.canShare({ files: [arquivo] })
+        ) {
+
+            await navigator.share({
+                title: `Pedido #${pedidoAberto.id}`,
+                text: `Comprovante do pedido #${pedidoAberto.id}`,
+                files: [arquivo]
+            });
+
+            return;
+
+        }
+
+    } catch (erro) {
+
+        if (erro.name === 'AbortError') {
+            return;
+        }
+
+        console.error('Erro ao compartilhar PDF:', erro);
+
+    }
+
+    pdf.save(nomeArquivo);
+
+}
+
+
+pdfPedidoBtn.addEventListener(
+    'click',
+    gerarPdfPedido
+);
 
 
 // ============================================================

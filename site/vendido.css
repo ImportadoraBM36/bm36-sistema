@@ -965,6 +965,23 @@ table {
 }
 
 
+.btn-pdf {
+
+    background:
+        #2f74c0;
+
+    color:
+        white;
+}
+
+
+.btn-pdf:hover {
+
+    background:
+        #245c9a;
+}
+
+
 .btn-danger {
 
     background:
