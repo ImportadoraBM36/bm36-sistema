@@ -478,6 +478,24 @@ async function gerarPdfPedido(
     const nomeArquivo =
         `pedido-${pedidoAberto.id}.pdf`;
 
+    const dispositivoMovel =
+        /Android|iPhone|iPad|iPod/i.test(
+            navigator.userAgent
+        );
+
+    // Em computadores, solicita a impressão ao visualizador nativo do PDF.
+    // Em celulares o PDF deve abrir normalmente, para o usuário escolher
+    // Compartilhar ou Imprimir no menu do próprio aparelho.
+    if (
+        imprimir
+        &&
+        !dispositivoMovel
+        &&
+        typeof pdf.autoPrint === 'function'
+    ) {
+        pdf.autoPrint();
+    }
+
     const blobPdf =
         pdf.output('blob');
 
@@ -501,40 +519,15 @@ async function gerarPdfPedido(
                 blobPdf
             );
 
-        janelaImpressao.document.write(`
-            <!doctype html>
-            <html lang="pt-BR">
-                <head>
-                    <title>Imprimir ${nomeArquivo}</title>
-                    <style>
-                        html, body, iframe { width: 100%; height: 100%; margin: 0; border: 0; }
-                    </style>
-                </head>
-                <body>
-                    <iframe id="pedidoPdf" src="${urlPdf}" title="Pedido para impressão"></iframe>
-                    <script>
-                        const pdf = document.getElementById('pedidoPdf');
-                        pdf.addEventListener('load', () => {
-                            setTimeout(() => {
-                                pdf.contentWindow.focus();
-                                pdf.contentWindow.print();
-                            }, 250);
-                        }, { once: true });
-                    <\/script>
-                </body>
-            </html>
-        `);
+        // Não usar iframe: o Chrome no Android pode bloquear PDFs blob
+        // incorporados. Abrir o Blob como documento principal é compatível
+        // com o menu nativo de imprimir/compartilhar do Android e do iPhone.
+        janelaImpressao.location.href =
+            urlPdf;
 
-        janelaImpressao.document.close();
-
-        janelaImpressao.addEventListener(
-            'afterprint',
-            () => {
-                URL.revokeObjectURL(urlPdf);
-                janelaImpressao.close();
-            },
-            { once: true }
-        );
+        if (!dispositivoMovel) {
+            janelaImpressao.focus();
+        }
 
         return;
 
