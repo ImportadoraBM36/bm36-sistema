@@ -345,7 +345,7 @@ const adicionarCabecalhoTabela = y => {
     pdf.text('CÓD. FAB.', 181, y + 5.2, { align: 'right' });
     pdf.text('QTD.', 208, y + 5.2, { align: 'right' });
 
-   
+    // UNIT removido
     pdf.text('SUBTOTAL', 238, y + 5.2, { align: 'right' });
 
 };
@@ -441,8 +441,8 @@ const adicionarCabecalhoTabela = y => {
         pdf.text(textoSeguro(item.produto_posicao), 158, y + 5, { align: 'right' });
         pdf.text(textoSeguro(item.produto_codigo_fabricante), 181, y + 5, { align: 'right' });
         pdf.text(String(Number(item.quantidade || 0)), 208, y + 5, { align: 'right' });
-        pdf.text(fmt(item.preco_unitario), 238, y + 5, { align: 'right' });
-        pdf.text(fmt(item.subtotal), 285, y + 5, { align: 'right' });
+    // UNIT removido
+pdf.text(subtotal, 238, y, { align: 'right' });
 
         y += alturaLinha;
 
