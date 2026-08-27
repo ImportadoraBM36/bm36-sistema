@@ -64,15 +64,95 @@
 
     <main class="mandar-arquivos-page">
         <div class="page-heading">
-            <div class="breadcrumb">Administração <span>/</span> Enviar arquivos</div>
-            <h1>Enviar arquivos</h1>
-            <p>Área reservada para administradores. Em breve, você poderá enviar e organizar os arquivos do sistema aqui.</p>
+            <div class="breadcrumb">Administração <span>/</span> Importação de arquivos</div>
+            <h1>Importar dados do sistema antigo</h1>
+            <p>Envie as planilhas recebidas, confira as informações encontradas e só então aplique as atualizações no sistema.</p>
         </div>
 
-        <section class="coming-soon-card" aria-label="Página em preparação">
-            <div class="coming-soon-icon" aria-hidden="true">📤</div>
-            <h2>Área de envio em preparação</h2>
-            <p>A estrutura da página já está pronta. A funcionalidade de envio será adicionada na próxima etapa.</p>
+        <ol class="import-steps" aria-label="Etapas da importação">
+            <li class="import-step is-active" id="stepUpload"><span>1</span> Enviar arquivos</li>
+            <li class="import-step" id="stepReview"><span>2</span> Conferir dados</li>
+            <li class="import-step" id="stepFinish"><span>3</span> Atualizar sistema</li>
+        </ol>
+
+        <section class="import-panel" id="uploadPanel">
+            <div class="panel-heading">
+                <div>
+                    <span class="eyebrow">ETAPA 1 DE 3</span>
+                    <h2>Selecione as planilhas</h2>
+                    <p>Você poderá enviar arquivos de estoque físico e localização. Nenhuma informação será alterada nesta etapa.</p>
+                </div>
+                <span class="safe-badge">🔒 Conferência antes de salvar</span>
+            </div>
+
+            <label class="upload-dropzone" id="uploadDropzone" for="fileInput">
+                <input id="fileInput" type="file" accept=".xls,.xlsx,.csv" multiple>
+                <span class="upload-icon" aria-hidden="true">📄</span>
+                <strong>Arraste os arquivos aqui</strong>
+                <span>ou clique para escolher no computador</span>
+                <small>Formatos aceitos: .xls, .xlsx e .csv</small>
+            </label>
+
+            <div class="selected-files" id="selectedFiles" hidden>
+                <div class="selected-files-heading">
+                    <strong>Arquivos selecionados</strong>
+                    <button class="text-button" id="clearFilesButton" type="button">Limpar</button>
+                </div>
+                <ul id="fileList"></ul>
+            </div>
+
+            <div class="upload-actions">
+                <p>Na próxima etapa, você poderá conferir as colunas antes de atualizar o banco.</p>
+                <button class="primary-button" id="reviewButton" type="button" disabled>
+                    Conferir dados <span aria-hidden="true">→</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="review-panel" id="reviewPanel" hidden>
+            <div class="panel-heading">
+                <div>
+                    <span class="eyebrow">ETAPA 2 DE 3</span>
+                    <h2>Prévia da importação</h2>
+                    <p>Este é o formato da conferência que faremos após a leitura da planilha.</p>
+                </div>
+                <button class="secondary-button" id="backButton" type="button">← Voltar</button>
+            </div>
+
+            <div class="review-notice">
+                <span aria-hidden="true">ℹ️</span>
+                <p><strong>Modo de demonstração:</strong> o layout abaixo mostra como os dados serão revisados. A leitura real do Excel e a atualização do banco serão conectadas na próxima etapa.</p>
+            </div>
+
+            <div class="import-summary">
+                <article><strong id="summaryFiles">0</strong><span>arquivos enviados</span></article>
+                <article><strong>—</strong><span>produtos encontrados</span></article>
+                <article><strong>0</strong><span>alterações aplicadas</span></article>
+            </div>
+
+            <div class="mapping-card">
+                <div class="mapping-card-heading">
+                    <div>
+                        <h3>Mapeamento de colunas</h3>
+                        <p>Você confirma o significado de cada coluna antes da importação.</p>
+                    </div>
+                    <span class="status-pill">Aguardando leitura</span>
+                </div>
+
+                <div class="mapping-grid">
+                    <div class="mapping-row mapping-labels"><span>Coluna do arquivo</span><span>Será usada como</span><span>Exemplo</span></div>
+                    <div class="mapping-row"><strong>Código</strong><span>Identificação do produto</span><em>Ex.: 000123</em></div>
+                    <div class="mapping-row"><strong>Quantidade</strong><span>Estoque físico</span><em>Ex.: 48</em></div>
+                    <div class="mapping-row"><strong>Corredor</strong><span>Localização</span><em>Ex.: A-03</em></div>
+                </div>
+            </div>
+
+            <div class="review-actions">
+                <p>A atualização continuará bloqueada até a conferência real dos dados.</p>
+                <button class="primary-button" type="button" disabled title="Disponível após a leitura real do arquivo">
+                    Atualizar sistema <span aria-hidden="true">→</span>
+                </button>
+            </div>
         </section>
     </main>
 
