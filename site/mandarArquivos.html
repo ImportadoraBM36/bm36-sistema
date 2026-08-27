@@ -85,24 +85,53 @@
                 <span class="safe-badge">🔒 Conferência antes de salvar</span>
             </div>
 
-            <label class="upload-dropzone" id="uploadDropzone" for="fileInput">
-                <input id="fileInput" type="file" accept=".xls,.xlsx,.csv" multiple>
-                <span class="upload-icon" aria-hidden="true">📄</span>
-                <strong>Arraste os arquivos aqui</strong>
-                <span>ou clique para escolher no computador</span>
-                <small>Formatos aceitos: .xls, .xlsx e .csv</small>
-            </label>
+            <div class="source-mode" role="tablist" aria-label="Forma de informar os dados">
+                <button class="source-mode-button is-active" id="fileModeButton" type="button" role="tab" aria-selected="true">📄 Enviar planilhas</button>
+                <button class="source-mode-button" id="manualModeButton" type="button" role="tab" aria-selected="false">⌨️ Digitar ou colar dados</button>
+            </div>
 
-            <div class="selected-files" id="selectedFiles" hidden>
-                <div class="selected-files-heading">
-                    <strong>Arquivos selecionados</strong>
-                    <button class="text-button" id="clearFilesButton" type="button">Limpar</button>
+            <div id="fileMode">
+                <label class="upload-dropzone" id="uploadDropzone" for="fileInput">
+                    <input id="fileInput" type="file" accept=".xls,.xlsx,.csv" multiple>
+                    <span class="upload-icon" aria-hidden="true">📄</span>
+                    <strong>Arraste os arquivos aqui</strong>
+                    <span>ou clique para escolher no computador</span>
+                    <small>Formatos aceitos: .xls, .xlsx e .csv</small>
+                </label>
+
+                <div class="selected-files" id="selectedFiles" hidden>
+                    <div class="selected-files-heading">
+                        <strong>Arquivos selecionados</strong>
+                        <button class="text-button" id="clearFilesButton" type="button">Limpar</button>
+                    </div>
+                    <ul id="fileList"></ul>
                 </div>
-                <ul id="fileList"></ul>
+            </div>
+
+            <div class="manual-entry" id="manualMode" hidden>
+                <div class="manual-entry-heading">
+                    <div>
+                        <h3>Monte uma importação rápida</h3>
+                        <p>Preencha uma linha por produto ou cole uma seleção do Excel diretamente na primeira célula desejada.</p>
+                    </div>
+                    <label class="manual-origin">Origem <select id="manualOrigin"><option value="BM36">BM36</option><option value="WORLD CLASSIC">WORLD CLASSIC</option></select></label>
+                </div>
+
+                <div class="manual-table-wrap">
+                    <table class="manual-table">
+                        <thead><tr><th>Código *</th><th>Estoque físico</th><th>Corredor</th><th>Prateleira</th><th>Preço de venda</th></tr></thead>
+                        <tbody id="manualRows"></tbody>
+                    </table>
+                </div>
+
+                <div class="manual-entry-actions">
+                    <p>Ao colar várias linhas e colunas do Excel, a grade será preenchida automaticamente.</p>
+                    <div><button class="text-button" id="clearManualButton" type="button">Limpar dados</button><button class="secondary-button" id="addManualRowButton" type="button">+ Adicionar linha</button></div>
+                </div>
             </div>
 
             <div class="upload-actions">
-                <p>Na próxima etapa, você poderá conferir as colunas antes de atualizar o banco.</p>
+                <p id="sourceHelp">Na próxima etapa, você poderá conferir as colunas antes de atualizar o banco.</p>
                 <button class="primary-button" id="reviewButton" type="button" disabled>
                     Conferir dados <span aria-hidden="true">→</span>
                 </button>

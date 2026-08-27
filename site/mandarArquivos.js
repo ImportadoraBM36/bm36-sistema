@@ -21,6 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedFiles = elemento('selectedFiles');
     const fileList = elemento('fileList');
     const clearFilesButton = elemento('clearFilesButton');
+    const fileModeButton = elemento('fileModeButton');
+    const manualModeButton = elemento('manualModeButton');
+    const fileMode = elemento('fileMode');
+    const manualMode = elemento('manualMode');
+    const manualOrigin = elemento('manualOrigin');
+    const manualRows = elemento('manualRows');
+    const addManualRowButton = elemento('addManualRowButton');
+    const clearManualButton = elemento('clearManualButton');
+    const sourceHelp = elemento('sourceHelp');
     const reviewButton = elemento('reviewButton');
     const backButton = elemento('backButton');
     const uploadPanel = elemento('uploadPanel');
@@ -46,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let arquivosSelecionados = [];
     let analiseAtual = null;
     let importacaoConcluida = false;
+    let modoImportacao = 'arquivo';
 
     function tamanhoFormatado(bytes) {
         return bytes < 1024 * 1024
@@ -79,9 +89,147 @@ document.addEventListener('DOMContentLoaded', () => {
         summaryFiles.textContent = arquivosSelecionados.length;
     }
 
+    function criarLinhaManual(valores = []) {
+        const linha = document.createElement('tr');
+
+        ['codigo', 'estoque', 'corredor', 'prateleira', 'preco'].forEach((campo, indice) => {
+            const celula = document.createElement('td');
+            const input = document.createElement('input');
+
+            input.type = 'text';
+            input.autocomplete = 'off';
+            input.dataset.coluna = campo;
+            input.value = valores[indice] || '';
+            input.placeholder = indice === 0 ? 'Ex.: 0000000000031' : '—';
+            input.addEventListener('input', atualizarEstadoManual);
+            input.addEventListener('paste', colarDadosManuais);
+
+            celula.appendChild(input);
+            linha.appendChild(celula);
+        });
+
+        manualRows.appendChild(linha);
+    }
+
+    function garantirLinhasManuais(quantidade) {
+        while (manualRows.children.length < quantidade) {
+            criarLinhaManual();
+        }
+    }
+
+    function atualizarEstadoManual() {
+        const possuiCodigo = [...manualRows.querySelectorAll('input[data-coluna="codigo"]')]
+            .some(input => input.value.trim());
+
+        if (modoImportacao === 'manual') {
+            reviewButton.disabled = !possuiCodigo;
+            summaryFiles.textContent = possuiCodigo ? '1' : '0';
+        }
+    }
+
+    function colarDadosManuais(event) {
+        const texto = event.clipboardData?.getData('text/plain') || '';
+
+        if (!texto.includes('\n') && !texto.includes('\t')) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const linhasColadas = texto
+            .replace(/\r/g, '')
+            .split('\n')
+            .filter(linha => linha.length > 0)
+            .map(linha => linha.split('\t'));
+
+        const linhaInicial = [...manualRows.children]
+            .indexOf(event.target.closest('tr'));
+
+        const colunaInicial = ['codigo', 'estoque', 'corredor', 'prateleira', 'preco']
+            .indexOf(event.target.dataset.coluna);
+
+        garantirLinhasManuais(linhaInicial + linhasColadas.length);
+
+        linhasColadas.forEach((linhaColada, deslocamentoLinha) => {
+            linhaColada.forEach((valor, deslocamentoColuna) => {
+                const coluna = colunaInicial + deslocamentoColuna;
+
+                if (coluna < 5) {
+                    const input = manualRows.children[linhaInicial + deslocamentoLinha]
+                        .querySelectorAll('input')[coluna];
+                    input.value = valor.trim();
+                }
+            });
+        });
+
+        atualizarEstadoManual();
+    }
+
+    function escaparCsv(valor) {
+        return `"${String(valor || '').replaceAll('"', '""')}"`;
+    }
+
+    function criarArquivoManual() {
+        const registros = [...manualRows.children]
+            .map(linha => [...linha.querySelectorAll('input')].map(input => input.value.trim()))
+            .filter(linha => linha[0]);
+
+        const colunas = [
+            ['Código', 0],
+            ['Est. Físico', 1],
+            ['Cor.', 2],
+            ['Prat', 3],
+            ['Preço de Venda', 4]
+        ].filter(([, indice]) => indice === 0 || registros.some(linha => linha[indice]));
+
+        const titulo = manualOrigin.value === 'WORLD CLASSIC'
+            ? 'WORLD CLASSIC - Importação manual'
+            : 'BM36 CIE - Importação manual';
+
+        const csv = [
+            escaparCsv(titulo),
+            colunas.map(([nome]) => escaparCsv(nome)).join(','),
+            ...registros.map(linha => colunas.map(([, indice]) => escaparCsv(linha[indice])).join(','))
+        ].join('\r\n');
+
+        return new File(
+            [`\uFEFF${csv}`],
+            'importacao-manual.csv',
+            { type: 'text/csv' }
+        );
+    }
+
+    function trocarModo(novoModo) {
+        modoImportacao = novoModo;
+        const modoArquivo = novoModo === 'arquivo';
+
+        fileMode.hidden = !modoArquivo;
+        manualMode.hidden = modoArquivo;
+        fileModeButton.classList.toggle('is-active', modoArquivo);
+        manualModeButton.classList.toggle('is-active', !modoArquivo);
+        fileModeButton.setAttribute('aria-selected', String(modoArquivo));
+        manualModeButton.setAttribute('aria-selected', String(!modoArquivo));
+        sourceHelp.textContent = modoArquivo
+            ? 'Na próxima etapa, você poderá conferir as colunas antes de atualizar o banco.'
+            : 'Cole dados do Excel ou preencha as células. Nada será alterado antes da sua confirmação.';
+
+        if (modoArquivo) {
+            reviewButton.disabled = arquivosSelecionados.length === 0;
+            summaryFiles.textContent = arquivosSelecionados.length;
+        } else {
+            atualizarEstadoManual();
+        }
+    }
+
     function criarFormData() {
         const formData = new FormData();
-        arquivosSelecionados.forEach(arquivo => formData.append('arquivos', arquivo));
+
+        if (modoImportacao === 'manual') {
+            formData.append('arquivos', criarArquivoManual());
+        } else {
+            arquivosSelecionados.forEach(arquivo => formData.append('arquivos', arquivo));
+        }
+
         return formData;
     }
 
@@ -207,6 +355,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         atualizarBotaoAplicar();
     }
+
+    garantirLinhasManuais(6);
+
+    fileModeButton.addEventListener('click', () => trocarModo('arquivo'));
+    manualModeButton.addEventListener('click', () => trocarModo('manual'));
+    addManualRowButton.addEventListener('click', () => criarLinhaManual());
+    clearManualButton.addEventListener('click', () => {
+        manualRows.innerHTML = '';
+        garantirLinhasManuais(6);
+        atualizarEstadoManual();
+    });
 
     fileInput.addEventListener('change', event => atualizarArquivos(event.target.files));
 
