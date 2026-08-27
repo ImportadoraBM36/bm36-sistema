@@ -584,7 +584,7 @@ function atualizarIconeTema() {
 
     </a>
 
-       ${
+        ${
         ehAdmin
             ? `
 
@@ -604,7 +604,8 @@ function atualizarIconeTema() {
             : ''
     }
 
-      ${
+
+    ${
         ehAdmin
             ? `
 
@@ -624,7 +625,8 @@ function atualizarIconeTema() {
             : ''
     }
 
-       ${
+
+    ${
         ehAdmin
             ? `
 
@@ -632,6 +634,7 @@ function atualizarIconeTema() {
                     href="./funcionarios.html"
                     class="user-dropdown-item admin-item"
                 >
+
                     <span>
                         👥
                     </span>

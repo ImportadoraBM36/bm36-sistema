@@ -84,6 +84,11 @@ const categoriaCliente =
         'categoriaCliente'
     );
 
+const ieCliente =
+    document.getElementById(
+        'ieCliente'
+    );
+
 const cepCliente =
     document.getElementById(
         'cepCliente'
@@ -1520,6 +1525,10 @@ async function abrirEdicaoCliente(
             'Varejo';
 
 
+        ieCliente.value =
+            cliente.ie || '';
+
+
         cepCliente.value =
             mascaraCEP(
                 cliente.cep || ''
@@ -1660,6 +1669,9 @@ function obterDadosCliente() {
             categoriaCliente.value
             ||
             null,
+
+        ie:
+            ieCliente.value.trim(),
 
         cep:
             somenteNumeros(
