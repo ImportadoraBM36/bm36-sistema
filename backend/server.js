@@ -5,6 +5,7 @@ require('dotenv').config();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const XLSX = require('xlsx');
 
 const bcrypt =
     require('bcrypt');
@@ -4005,6 +4006,865 @@ function somenteAdmin(
     next();
 
 }
+
+
+// ============================================================
+// IMPORTAÇÃO DE PLANILHAS (SISTEMA ANTIGO)
+// ============================================================
+
+const uploadPlanilhasImportacao =
+    multer({
+        storage: multer.memoryStorage(),
+
+        limits: {
+            fileSize: 15 * 1024 * 1024,
+            files: 6
+        },
+
+        fileFilter: (
+            req,
+            file,
+            cb
+        ) => {
+
+            if (
+                /\.(xls|xlsx|csv)$/i.test(
+                    file.originalname
+                )
+            ) {
+
+                return cb(null, true);
+            }
+
+
+            cb(
+                new Error(
+                    'Envie somente arquivos .xls, .xlsx ou .csv.'
+                )
+            );
+        }
+    });
+
+
+function normalizarTextoImportacao(valor) {
+
+    return String(valor || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .toLowerCase();
+
+}
+
+
+function normalizarCodigoImportacao(valor) {
+
+    return String(valor || '')
+        .trim();
+
+}
+
+
+function converterNumeroImportacao(valor) {
+
+    if (
+        typeof valor === 'number'
+        &&
+        Number.isFinite(valor)
+    ) {
+
+        return valor;
+    }
+
+
+    let texto = String(valor || '')
+        .trim()
+        .replace(/\s/g, '');
+
+
+    if (!texto) {
+        return null;
+    }
+
+
+    const ultimaVirgula =
+        texto.lastIndexOf(',');
+
+    const ultimoPonto =
+        texto.lastIndexOf('.');
+
+
+    if (
+        ultimaVirgula > ultimoPonto
+    ) {
+
+        texto = texto
+            .replace(/\./g, '')
+            .replace(',', '.');
+    }
+
+    else if (
+        ultimoPonto > ultimaVirgula
+    ) {
+
+        texto = texto
+            .replace(/,/g, '');
+    }
+
+    else {
+
+        texto = texto.replace(',', '.');
+    }
+
+
+    const numero = Number(texto);
+
+    return Number.isFinite(numero)
+        ? numero
+        : null;
+
+}
+
+
+function encontrarIndiceColunaImportacao(
+    cabecalho,
+    opcoes
+) {
+
+    return cabecalho.findIndex(coluna => {
+
+        const nome =
+            normalizarTextoImportacao(coluna);
+
+        return opcoes.some(opcao =>
+            nome === opcao
+            ||
+            nome.includes(opcao)
+        );
+    });
+
+}
+
+
+function detectarOrigemImportacao(linhas) {
+
+    const titulo = linhas
+        .slice(0, 3)
+        .flat()
+        .map(normalizarTextoImportacao)
+        .join(' ');
+
+
+    if (titulo.includes('world classic')) {
+        return 'WORLD CLASSIC';
+    }
+
+
+    if (titulo.includes('bm36')) {
+        return 'BM36';
+    }
+
+
+    return null;
+
+}
+
+
+function lerPlanilhaImportacao(arquivo) {
+
+    const workbook = XLSX.read(
+        arquivo.buffer,
+        {
+            type: 'buffer',
+            raw: false
+        }
+    );
+
+
+    const primeiraAba = workbook.SheetNames[0];
+
+
+    if (!primeiraAba) {
+        throw new Error('A planilha não possui nenhuma aba.');
+    }
+
+
+    const linhas = XLSX.utils.sheet_to_json(
+        workbook.Sheets[primeiraAba],
+        {
+            header: 1,
+            defval: '',
+            raw: false,
+            blankrows: false
+        }
+    );
+
+
+    const indiceCabecalho = linhas.findIndex(linha =>
+        linha.some(celula =>
+            normalizarTextoImportacao(celula) === 'codigo'
+        )
+    );
+
+
+    if (indiceCabecalho < 0) {
+        throw new Error(
+            'Não encontramos a coluna "Código" nesta planilha.'
+        );
+    }
+
+
+    const cabecalho = linhas[indiceCabecalho];
+
+    const indiceCodigo =
+        encontrarIndiceColunaImportacao(
+            cabecalho,
+            ['codigo']
+        );
+
+    const indiceEstoque =
+        encontrarIndiceColunaImportacao(
+            cabecalho,
+            ['est. fisico', 'estoque fisico']
+        );
+
+    const indiceCorredor =
+        encontrarIndiceColunaImportacao(
+            cabecalho,
+            ['cor.', 'corredor']
+        );
+
+    const indicePrateleira =
+        encontrarIndiceColunaImportacao(
+            cabecalho,
+            ['prat', 'prateleira']
+        );
+
+    const indicePreco =
+        encontrarIndiceColunaImportacao(
+            cabecalho,
+            [
+                'preco venda',
+                'preco',
+                'valor venda',
+                'vl venda'
+            ]
+        );
+
+    const origem = detectarOrigemImportacao(linhas);
+
+
+    if (!origem) {
+        throw new Error(
+            'Não foi possível identificar a origem BM36 ou WORLD CLASSIC.'
+        );
+    }
+
+
+    if (
+        indiceEstoque < 0
+        &&
+        indiceCorredor < 0
+        &&
+        indicePrateleira < 0
+        &&
+        indicePreco < 0
+    ) {
+
+        throw new Error(
+            'Não encontramos colunas de estoque, localização ou preço.'
+        );
+    }
+
+
+    const registros = [];
+    const erros = [];
+
+
+    linhas
+        .slice(indiceCabecalho + 1)
+        .forEach((linha, indice) => {
+
+            const codigo = normalizarCodigoImportacao(
+                linha[indiceCodigo]
+            );
+
+
+            if (!codigo) {
+                return;
+            }
+
+
+            const registro = {
+                codigo,
+                origem,
+                linha: indiceCabecalho + indice + 2
+            };
+
+
+            if (indiceEstoque >= 0) {
+
+                registro.estoque =
+                    converterNumeroImportacao(
+                        linha[indiceEstoque]
+                    );
+
+
+                if (registro.estoque === null) {
+
+                    erros.push(
+                        `Linha ${registro.linha}: estoque físico inválido para o código ${codigo}.`
+                    );
+
+                    return;
+                }
+            }
+
+
+            if (indicePreco >= 0) {
+
+                registro.preco =
+                    converterNumeroImportacao(
+                        linha[indicePreco]
+                    );
+
+
+                if (registro.preco === null) {
+
+                    erros.push(
+                        `Linha ${registro.linha}: preço inválido para o código ${codigo}.`
+                    );
+
+                    return;
+                }
+            }
+
+
+            if (indiceCorredor >= 0) {
+                registro.corredor = String(
+                    linha[indiceCorredor] || ''
+                ).trim();
+            }
+
+
+            if (indicePrateleira >= 0) {
+                registro.prateleira = String(
+                    linha[indicePrateleira] || ''
+                ).trim();
+            }
+
+
+            registros.push(registro);
+        });
+
+
+    return {
+        nome: arquivo.originalname,
+        aba: primeiraAba,
+        origem,
+        cabecalho: cabecalho
+            .filter(Boolean)
+            .map(valor => String(valor).trim()),
+        tipo: indiceEstoque >= 0
+            ? 'estoque_fisico'
+            : indicePreco >= 0
+                ? 'precos'
+                : 'localizacao',
+        registros,
+        erros
+    };
+
+}
+
+
+function consolidarRegistrosImportacao(planilhas) {
+
+    const registros = new Map();
+
+
+    planilhas.forEach(planilha => {
+
+        planilha.registros.forEach(registro => {
+
+            const chave =
+                `${registro.origem}::${registro.codigo}`;
+
+            const atual = registros.get(chave) || {
+                codigo: registro.codigo,
+                origem: registro.origem
+            };
+
+
+            [
+                'estoque',
+                'preco',
+                'corredor',
+                'prateleira'
+            ].forEach(campo => {
+
+                if (
+                    registro[campo] !== undefined
+                    &&
+                    registro[campo] !== ''
+                ) {
+                    atual[campo] = registro[campo];
+                }
+            });
+
+
+            registros.set(chave, atual);
+        });
+    });
+
+
+    return [...registros.values()];
+
+}
+
+
+async function analisarImportacaoPlanilhas(arquivos) {
+
+    const planilhas = [];
+    const erros = [];
+
+
+    arquivos.forEach(arquivo => {
+
+        try {
+            planilhas.push(
+                lerPlanilhaImportacao(arquivo)
+            );
+        } catch (erro) {
+            erros.push(
+                `${arquivo.originalname}: ${erro.message}`
+            );
+        }
+    });
+
+
+    const registros =
+        consolidarRegistrosImportacao(planilhas);
+
+
+    const resultadoProdutos = await pool.query(`
+        SELECT
+            p.id,
+            p.codigo,
+            p.origem,
+            p.corredor,
+            p.prateleira,
+            p.preco_venda,
+
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN m.tipo IN ('ENTRADA', 'AJUSTE_POSITIVO')
+                            THEN m.quantidade
+                        WHEN m.tipo IN ('SAIDA', 'AJUSTE_NEGATIVO')
+                            THEN -m.quantidade
+                        ELSE 0
+                    END
+                ),
+                0
+            ) AS estoque_atual
+
+        FROM produtos p
+
+        LEFT JOIN movimentacoes_estoque m
+            ON m.produto_id = p.id
+
+        GROUP BY p.id
+    `);
+
+
+    const produtosPorChave = new Map(
+        resultadoProdutos.rows.map(produto => [
+            `${produto.origem}::${produto.codigo}`,
+            produto
+        ])
+    );
+
+    let encontrados = 0;
+    let naoEncontrados = 0;
+    let atualizacoesEstoque = 0;
+    let atualizacoesLocalizacao = 0;
+    let atualizacoesPreco = 0;
+
+
+    const amostra = registros
+        .slice(0, 12)
+        .map(registro => {
+
+            const produto = produtosPorChave.get(
+                `${registro.origem}::${registro.codigo}`
+            );
+
+
+            if (produto) {
+                encontrados += 1;
+
+
+                if (registro.estoque !== undefined) {
+                    atualizacoesEstoque += 1;
+                }
+
+                if (
+                    registro.corredor !== undefined
+                    ||
+                    registro.prateleira !== undefined
+                ) {
+                    atualizacoesLocalizacao += 1;
+                }
+
+                if (registro.preco !== undefined) {
+                    atualizacoesPreco += 1;
+                }
+            }
+
+            else {
+                naoEncontrados += 1;
+            }
+
+
+            return {
+                codigo: registro.codigo,
+                origem: registro.origem,
+                encontrado: Boolean(produto),
+                estoque: registro.estoque,
+                corredor: registro.corredor,
+                prateleira: registro.prateleira,
+                preco: registro.preco
+            };
+        });
+
+
+    // Conta os registros restantes que não entraram na amostra.
+    registros.slice(12).forEach(registro => {
+
+        const produto = produtosPorChave.get(
+            `${registro.origem}::${registro.codigo}`
+        );
+
+
+        if (produto) {
+            encontrados += 1;
+
+            if (registro.estoque !== undefined) {
+                atualizacoesEstoque += 1;
+            }
+
+            if (
+                registro.corredor !== undefined
+                ||
+                registro.prateleira !== undefined
+            ) {
+                atualizacoesLocalizacao += 1;
+            }
+
+            if (registro.preco !== undefined) {
+                atualizacoesPreco += 1;
+            }
+        }
+
+        else {
+            naoEncontrados += 1;
+        }
+    });
+
+
+    planilhas.forEach(planilha => {
+        erros.push(...planilha.erros);
+    });
+
+
+    return {
+        planilhas: planilhas.map(planilha => ({
+            nome: planilha.nome,
+            aba: planilha.aba,
+            origem: planilha.origem,
+            tipo: planilha.tipo,
+            cabecalho: planilha.cabecalho,
+            registros: planilha.registros.length
+        })),
+        registros,
+        produtosPorChave,
+        resumo: {
+            arquivos: planilhas.length,
+            registros: registros.length,
+            encontrados,
+            naoEncontrados,
+            atualizacoesEstoque,
+            atualizacoesLocalizacao,
+            atualizacoesPreco,
+            erros: erros.length
+        },
+        amostra,
+        erros: erros.slice(0, 30)
+    };
+
+}
+
+
+app.post(
+    '/api/importacoes/preview',
+    autenticar,
+    somenteAdmin,
+    uploadPlanilhasImportacao.array('arquivos', 6),
+    async (req, res) => {
+
+        try {
+
+            if (!req.files || req.files.length === 0) {
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem: 'Selecione ao menos uma planilha.'
+                });
+            }
+
+
+            const analise = await analisarImportacaoPlanilhas(
+                req.files
+            );
+
+
+            res.json({
+                sucesso: true,
+                ...analise,
+                registros: undefined,
+                produtosPorChave: undefined
+            });
+
+        } catch (erro) {
+
+            console.error('Erro ao gerar prévia da importação:', erro);
+
+            res.status(500).json({
+                sucesso: false,
+                mensagem: 'Não foi possível ler as planilhas enviadas.'
+            });
+        }
+    }
+);
+
+
+app.post(
+    '/api/importacoes/aplicar',
+    autenticar,
+    somenteAdmin,
+    uploadPlanilhasImportacao.array('arquivos', 6),
+    async (req, res) => {
+
+        const client = await pool.connect();
+
+
+        try {
+
+            if (!req.files || req.files.length === 0) {
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem: 'Selecione novamente as planilhas para confirmar a atualização.'
+                });
+            }
+
+
+            const atualizarEstoque =
+                req.body.atualizarEstoque === 'true';
+
+            const atualizarLocalizacao =
+                req.body.atualizarLocalizacao === 'true';
+
+            const atualizarPreco =
+                req.body.atualizarPreco === 'true';
+
+
+            if (
+                !atualizarEstoque
+                &&
+                !atualizarLocalizacao
+                &&
+                !atualizarPreco
+            ) {
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem: 'Selecione pelo menos um tipo de atualização.'
+                });
+            }
+
+
+            const analise = await analisarImportacaoPlanilhas(
+                req.files
+            );
+
+
+            if (analise.resumo.erros > 0) {
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem: 'Corrija os erros da planilha antes de aplicar a importação.',
+                    erros: analise.erros
+                });
+            }
+
+
+            await client.query('BEGIN');
+
+
+            let estoqueAtualizado = 0;
+            let localizacaoAtualizada = 0;
+            let precoAtualizado = 0;
+            let naoEncontrados = 0;
+
+
+            for (const registro of analise.registros) {
+
+                const produto = analise.produtosPorChave.get(
+                    `${registro.origem}::${registro.codigo}`
+                );
+
+
+                if (!produto) {
+                    naoEncontrados += 1;
+                    continue;
+                }
+
+
+                const deveAtualizarLocalizacao =
+                    atualizarLocalizacao
+                    &&
+                    (
+                        registro.corredor !== undefined
+                        ||
+                        registro.prateleira !== undefined
+                    );
+
+                const deveAtualizarPreco =
+                    atualizarPreco
+                    &&
+                    registro.preco !== undefined;
+
+
+                if (
+                    deveAtualizarLocalizacao
+                    ||
+                    deveAtualizarPreco
+                ) {
+
+                    await client.query(
+                        `
+                        UPDATE produtos
+
+                        SET
+                            corredor = CASE
+                                WHEN $1 THEN $2
+                                ELSE corredor
+                            END,
+
+                            prateleira = CASE
+                                WHEN $1 THEN $3
+                                ELSE prateleira
+                            END,
+
+                            preco_venda = CASE
+                                WHEN $4 THEN $5
+                                ELSE preco_venda
+                            END
+
+                        WHERE id = $6
+                        `,
+                        [
+                            deveAtualizarLocalizacao,
+                            registro.corredor || null,
+                            registro.prateleira || null,
+                            deveAtualizarPreco,
+                            registro.preco,
+                            produto.id
+                        ]
+                    );
+
+
+                    if (deveAtualizarLocalizacao) {
+                        localizacaoAtualizada += 1;
+                    }
+
+
+                    if (deveAtualizarPreco) {
+                        precoAtualizado += 1;
+                    }
+                }
+
+
+                if (
+                    atualizarEstoque
+                    &&
+                    registro.estoque !== undefined
+                ) {
+
+                    const diferenca =
+                        Number(registro.estoque)
+                        -
+                        Number(produto.estoque_atual);
+
+
+                    if (diferenca !== 0) {
+
+                        await client.query(
+                            `
+                            INSERT INTO movimentacoes_estoque (
+                                produto_id,
+                                usuario_id,
+                                tipo,
+                                quantidade,
+                                motivo
+                            )
+
+                            VALUES ($1, $2, $3, $4, $5)
+                            `,
+                            [
+                                produto.id,
+                                req.usuario.id,
+                                diferenca > 0
+                                    ? 'AJUSTE_POSITIVO'
+                                    : 'AJUSTE_NEGATIVO',
+                                Math.abs(diferenca),
+                                'Importação de estoque físico do sistema antigo'
+                            ]
+                        );
+
+
+                        estoqueAtualizado += 1;
+                    }
+                }
+            }
+
+
+            await client.query('COMMIT');
+
+
+            res.json({
+                sucesso: true,
+                mensagem: 'Importação concluída com sucesso.',
+                resumo: {
+                    estoqueAtualizado,
+                    localizacaoAtualizada,
+                    precoAtualizado,
+                    naoEncontrados
+                }
+            });
+
+        } catch (erro) {
+
+            await client.query('ROLLBACK');
+
+            console.error('Erro ao aplicar importação:', erro);
+
+            res.status(500).json({
+                sucesso: false,
+                mensagem: 'Não foi possível aplicar a importação.'
+            });
+        } finally {
+            client.release();
+        }
+    }
+);
 
 
 // ============================================================

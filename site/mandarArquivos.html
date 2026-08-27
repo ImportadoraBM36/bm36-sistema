@@ -119,15 +119,15 @@
                 <button class="secondary-button" id="backButton" type="button">← Voltar</button>
             </div>
 
-            <div class="review-notice">
+            <div class="review-notice" id="reviewNotice">
                 <span aria-hidden="true">ℹ️</span>
-                <p><strong>Modo de demonstração:</strong> o layout abaixo mostra como os dados serão revisados. A leitura real do Excel e a atualização do banco serão conectadas na próxima etapa.</p>
+                <p id="reviewNoticeText"><strong>Confira antes de aplicar:</strong> arquivos com erros não serão importados. Produtos sem correspondência no sistema serão listados, mas não serão criados automaticamente.</p>
             </div>
 
             <div class="import-summary">
                 <article><strong id="summaryFiles">0</strong><span>arquivos enviados</span></article>
-                <article><strong>—</strong><span>produtos encontrados</span></article>
-                <article><strong>0</strong><span>alterações aplicadas</span></article>
+                <article><strong id="summaryProducts">—</strong><span>produtos encontrados</span></article>
+                <article><strong id="summaryUpdates">—</strong><span>atualizações possíveis</span></article>
             </div>
 
             <div class="mapping-card">
@@ -136,20 +136,43 @@
                         <h3>Mapeamento de colunas</h3>
                         <p>Você confirma o significado de cada coluna antes da importação.</p>
                     </div>
-                    <span class="status-pill">Aguardando leitura</span>
+                    <span class="status-pill" id="readStatus">Lendo arquivos</span>
                 </div>
 
-                <div class="mapping-grid">
-                    <div class="mapping-row mapping-labels"><span>Coluna do arquivo</span><span>Será usada como</span><span>Exemplo</span></div>
-                    <div class="mapping-row"><strong>Código</strong><span>Identificação do produto</span><em>Ex.: 000123</em></div>
-                    <div class="mapping-row"><strong>Quantidade</strong><span>Estoque físico</span><em>Ex.: 48</em></div>
-                    <div class="mapping-row"><strong>Corredor</strong><span>Localização</span><em>Ex.: A-03</em></div>
+                <div class="mapping-grid" id="mappingGrid">
+                    <div class="mapping-row mapping-labels"><span>Coluna do arquivo</span><span>Será usada como</span><span>Origem</span></div>
                 </div>
             </div>
 
+            <section class="update-options" aria-labelledby="updateOptionsTitle">
+                <div>
+                    <h3 id="updateOptionsTitle">O que deseja atualizar?</h3>
+                    <p>Escolha apenas as informações presentes nas planilhas que você conferiu.</p>
+                </div>
+
+                <label><input id="updateStock" type="checkbox"> <span><strong>Estoque físico</strong><small>Cria um ajuste de estoque com registro no histórico.</small></span></label>
+                <label><input id="updateLocation" type="checkbox"> <span><strong>Localização</strong><small>Atualiza corredor e prateleira dos produtos encontrados.</small></span></label>
+                <label><input id="updatePrice" type="checkbox"> <span><strong>Preço de venda</strong><small>Será habilitado ao enviar uma planilha com uma coluna de preço de venda.</small></span></label>
+            </section>
+
+            <section class="import-errors" id="importErrors" hidden>
+                <h3>Itens que precisam de atenção</h3>
+                <ul id="errorList"></ul>
+            </section>
+
+            <section class="sample-card" id="sampleCard" hidden>
+                <h3>Exemplos encontrados</h3>
+                <div class="sample-table-wrap">
+                    <table>
+                        <thead><tr><th>Código</th><th>Origem</th><th>Dados encontrados</th><th>Status</th></tr></thead>
+                        <tbody id="sampleRows"></tbody>
+                    </table>
+                </div>
+            </section>
+
             <div class="review-actions">
-                <p>A atualização continuará bloqueada até a conferência real dos dados.</p>
-                <button class="primary-button" type="button" disabled title="Disponível após a leitura real do arquivo">
+                <p id="applyHint">A atualização só será liberada depois que a leitura for concluída e não houver erros.</p>
+                <button class="primary-button" id="applyButton" type="button" disabled>
                     Atualizar sistema <span aria-hidden="true">→</span>
                 </button>
             </div>
