@@ -258,7 +258,7 @@ async function carregarEstoque() {
 
         tabelaEstoque.innerHTML = `
             <tr>
-                <td colspan="7">
+                <td colspan="10">
                     Não foi possível carregar o estoque.
                 </td>
             </tr>
@@ -318,6 +318,25 @@ function aplicarFiltros() {
                     Number(
                         produto.estoque_atual || 0
                     );
+                const corredor =
+    String(
+        produto.corredor || ''
+    )
+        .toLowerCase();
+
+
+const prateleira =
+    String(
+        produto.prateleira || ''
+    )
+        .toLowerCase();
+
+
+const posicao =
+    String(
+        produto.posicao || ''
+    )
+        .toLowerCase();
 
 
                 const minimo =
@@ -326,14 +345,20 @@ function aplicarFiltros() {
                     );
 
 
-                const correspondeBusca =
-                    codigo.includes(termo)
-                    ||
-                    nome.includes(termo)
-                    ||
-                    origem.includes(termo)
-                    ||
-                    embalagem.includes(termo);
+             const correspondeBusca =
+    codigo.includes(termo)
+    ||
+    nome.includes(termo)
+    ||
+    origem.includes(termo)
+    ||
+    corredor.includes(termo)
+    ||
+    prateleira.includes(termo)
+    ||
+    posicao.includes(termo)
+    ||
+    embalagem.includes(termo);
 
 
                 let correspondeFiltro =
@@ -466,13 +491,16 @@ function renderizarEstoque() {
         );
 
 
+
+
+        
     if (
         pagina.length === 0
     ) {
 
         tabelaEstoque.innerHTML = `
             <tr>
-                <td colspan="7">
+                <td colspan="10">
                     Nenhum produto encontrado.
                 </td>
             </tr>
@@ -571,17 +599,29 @@ function renderizarEstoque() {
                     ${produto.nome || '-'}
                 </td>
 
-                <td>
-                    ${produto.origem || '-'}
-                </td>
+              <td>
+    ${produto.origem || '-'}
+</td>
 
-                <td class="embalagem-estoque">
-                    ${embalagem}
-                </td>
+<td>
+    ${produto.corredor || '-'}
+</td>
 
-                <td>
-                    ${estoque}
-                </td>
+<td>
+    ${produto.prateleira || '-'}
+</td>
+
+<td>
+    ${produto.posicao || '-'}
+</td>
+
+<td class="embalagem-estoque">
+    ${embalagem}
+</td>
+
+<td>
+    ${estoque}
+</td>
 
                 <td>
                     ${minimo}
