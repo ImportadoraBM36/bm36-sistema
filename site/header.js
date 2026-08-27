@@ -584,7 +584,7 @@ function atualizarIconeTema() {
 
     </a>
 
-    ${
+       ${
         ehAdmin
             ? `
 
@@ -604,8 +604,7 @@ function atualizarIconeTema() {
             : ''
     }
 
-
-    ${
+      ${
         ehAdmin
             ? `
 
@@ -625,8 +624,7 @@ function atualizarIconeTema() {
             : ''
     }
 
-
-    ${
+       ${
         ehAdmin
             ? `
 
