@@ -182,7 +182,6 @@ body {
 .mapping-row strong { color: #20334f; }
 .mapping-row em { color: #8290a2; font-style: normal; }
 .mapping-labels { background: #f5f8fc; color: #718096; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-}
 
 html.dark-mode body {
     background: #0b1628;
