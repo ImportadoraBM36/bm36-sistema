@@ -1,354 +1,350 @@
-const API_URL =
-    'https://bm36-sistema-production.up.railway.app/api';
-let pedidos =
-    [];
+    const API_URL =
+        'https://bm36-sistema-production.up.railway.app/api';
+    let pedidos =
+        [];
 
-let pedidosFiltrados =
-    [];
+    let pedidosFiltrados =
+        [];
 
-let paginaAtual =
-    1;
+    let paginaAtual =
+        1;
 
-const itensPorPagina =
-    20;
+    const itensPorPagina =
+        20;
 
-let filtroAtual =
-    'todas';
+    let filtroAtual =
+        'todas';
 
-let pedidoAberto =
-    null;
+    let pedidoAberto =
+        null;
 
-let modoEdicao =
-    false;
-let eventos =
-    [];
+    let modoEdicao =
+        false;
+    let eventos =
+        [];
 
-// ============================================================
-// ELEMENTOS
-// ============================================================
+    // ============================================================
+    // ELEMENTOS
+    // ============================================================
 
-const salesBody =
-    document.getElementById(
-        'salesBody'
-    );
+    const salesBody =
+        document.getElementById(
+            'salesBody'
+        );
 
-const searchInput =
-    document.getElementById(
-        'searchInput'
-    );
+    const searchInput =
+        document.getElementById(
+            'searchInput'
+        );
 
-const filters =
-    document.getElementById(
-        'filters'
-    );
+    const filters =
+        document.getElementById(
+            'filters'
+        );
 
-const pageInfo =
-    document.getElementById(
-        'pageInfo'
-    );
+    const pageInfo =
+        document.getElementById(
+            'pageInfo'
+        );
 
-const pageNums =
-    document.getElementById(
-        'pageNums'
-    );
+    const pageNums =
+        document.getElementById(
+            'pageNums'
+        );
 
-const overlay =
-    document.getElementById(
-        'overlay'
-    );
+    const overlay =
+        document.getElementById(
+            'overlay'
+        );
 
-const closeX =
-    document.getElementById(
-        'closeX'
-    );
+    const closeX =
+        document.getElementById(
+            'closeX'
+        );
 
-const closeBtn =
-    document.getElementById(
-        'closeBtn'
-    );
+    const closeBtn =
+        document.getElementById(
+            'closeBtn'
+        );
 
-const editarBtn =
-    document.getElementById(
-        'editarBtn'
-    );
+    const editarBtn =
+        document.getElementById(
+            'editarBtn'
+        );
 
-const pdfPedidoBtn =
-    document.getElementById(
-        'pdfPedidoBtn'
-    );
+    const pdfPedidoBtn =
+        document.getElementById(
+            'pdfPedidoBtn'
+        );
 
-const imprimirPedidoBtn =
-    document.getElementById(
-        'imprimirPedidoBtn'
-    );
+    const imprimirPedidoBtn =
+        document.getElementById(
+            'imprimirPedidoBtn'
+        );
 
-const cancelarPedidoBtn =
-    document.getElementById(
-        'cancelarPedidoBtn'
-    );
+    const cancelarPedidoBtn =
+        document.getElementById(
+            'cancelarPedidoBtn'
+        );
 
-const cancelOverlay =
-    document.getElementById(
-        'cancelOverlay'
-    );
+    const cancelOverlay =
+        document.getElementById(
+            'cancelOverlay'
+        );
 
-const cancelCloseX =
-    document.getElementById(
-        'cancelCloseX'
-    );
+    const cancelCloseX =
+        document.getElementById(
+            'cancelCloseX'
+        );
 
-const voltarCancelamentoBtn =
-    document.getElementById(
-        'voltarCancelamentoBtn'
-    );
+    const voltarCancelamentoBtn =
+        document.getElementById(
+            'voltarCancelamentoBtn'
+        );
 
-const confirmarCancelamentoBtn =
-    document.getElementById(
-        'confirmarCancelamentoBtn'
-    );
+    const confirmarCancelamentoBtn =
+        document.getElementById(
+            'confirmarCancelamentoBtn'
+        );
 
-const motivoCancelamento =
-    document.getElementById(
-        'motivoCancelamento'
-    );
+    const motivoCancelamento =
+        document.getElementById(
+            'motivoCancelamento'
+        );
 
-const campoEventoEdicao =
-    document.getElementById(
-        'campoEventoEdicao'
-    );
+    const campoEventoEdicao =
+        document.getElementById(
+            'campoEventoEdicao'
+        );
 
-const eventoPedido =
-    document.getElementById(
-        'eventoPedido'
-    );
-// ============================================================
-// FORMATADORES
-// ============================================================
+    const eventoPedido =
+        document.getElementById(
+            'eventoPedido'
+        );
+    // ============================================================
+    // FORMATADORES
+    // ============================================================
 
-function fmt(valor) {
+    function fmt(valor) {
 
-    return Number(
-        valor || 0
-    )
-        .toLocaleString(
+        return Number(
+            valor || 0
+        )
+            .toLocaleString(
+                'pt-BR',
+                {
+                    style:
+                        'currency',
+
+                    currency:
+                        'BRL'
+                }
+            );
+
+    }
+
+
+    function formatarData(data) {
+
+        if (!data) {
+            return '-';
+        }
+
+
+        const objeto =
+            new Date(data);
+
+
+        return objeto.toLocaleString(
             'pt-BR',
             {
-                style:
-                    'currency',
+                day:
+                    '2-digit',
 
-                currency:
-                    'BRL'
+                month:
+                    '2-digit',
+
+                year:
+                    'numeric',
+
+                hour:
+                    '2-digit',
+
+                minute:
+                    '2-digit'
             }
         );
 
-}
-
-
-function formatarData(data) {
-
-    if (!data) {
-        return '-';
     }
 
 
-    const objeto =
-        new Date(data);
+    function formatarDocumento(documento) {
+
+        const numeros =
+            String(
+                documento || ''
+            )
+                .replace(
+                    /\D/g,
+                    ''
+                );
 
 
-    return objeto.toLocaleString(
-        'pt-BR',
-        {
-            day:
-                '2-digit',
+        if (numeros.length === 11) {
 
-            month:
-                '2-digit',
+            return numeros.replace(
+                /(\d{3})(\d{3})(\d{3})(\d{2})/,
+                '$1.$2.$3-$4'
+            );
 
-            year:
-                'numeric',
-
-            hour:
-                '2-digit',
-
-            minute:
-                '2-digit'
         }
-    );
-
-}
 
 
-function formatarDocumento(documento) {
+        if (numeros.length === 14) {
 
-    const numeros =
-        String(
-            documento || ''
+            return numeros.replace(
+                /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
+                '$1.$2.$3/$4-$5'
+            );
+
+        }
+
+
+        return documento || '';
+
+    }
+
+
+    function normalizarStatus(status) {
+
+        return String(
+            status || ''
         )
-            .replace(
-                /\D/g,
-                ''
+            .trim()
+            .toLowerCase();
+
+    }
+
+
+    function statusLabel(status) {
+
+        const s =
+            normalizarStatus(
+                status
             );
 
 
-    if (numeros.length === 11) {
-
-        return numeros.replace(
-            /(\d{3})(\d{3})(\d{3})(\d{2})/,
-            '$1.$2.$3-$4'
-        );
-
-    }
-
-
-    if (numeros.length === 14) {
-
-        return numeros.replace(
-            /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
-            '$1.$2.$3/$4-$5'
-        );
-
-    }
-
-
-    return documento || '';
-
-}
-
-
-function normalizarStatus(status) {
-
-    return String(
-        status || ''
-    )
-        .trim()
-        .toLowerCase();
-
-}
-
-
-function statusLabel(status) {
-
-    const s =
-        normalizarStatus(
-            status
-        );
-
-
-    if (s === 'cancelada') {
-        return 'CANCELADO';
-    }
-
-
-    if (s === 'pendente') {
-        return 'PENDENTE';
-    }
-
-
-    return 'FINALIZADO';
-
-}
-
-
-// ============================================================
-// PDF DO PEDIDO
-// ============================================================
-
-async function gerarPdfPedido(
-    imprimir = false,
-    janelaDeImpressao = null
-) {
-
-    if (!pedidoAberto) {
-        if (janelaDeImpressao) {
-            janelaDeImpressao.close();
+        if (s === 'cancelada') {
+            return 'CANCELADO';
         }
 
-        return;
-    }
 
-
-    if (!window.jspdf) {
-
-        if (janelaDeImpressao) {
-            janelaDeImpressao.close();
+        if (s === 'pendente') {
+            return 'PENDENTE';
         }
 
-        alert(
-            'Não foi possível carregar o gerador de PDF. Verifique sua conexão e tente novamente.'
-        );
 
-        return;
+        return 'FINALIZADO';
 
     }
 
 
-    const { jsPDF } = window.jspdf;
+    // ============================================================
+    // PDF DO PEDIDO
+    // ============================================================
 
-    const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: 'a4'
-    });
+    async function gerarPdfPedido(
+        imprimir = false,
+        janelaDeImpressao = null
+    ) {
 
-    const larguraPagina = 297;
-    const margem = 10;
-    const largura = larguraPagina - (margem * 2);
+        if (!pedidoAberto) {
+            if (janelaDeImpressao) {
+                janelaDeImpressao.close();
+            }
 
-    const textoSeguro = valor =>
-        String(valor || '-')
-            .replace(/[\r\n]+/g, ' ');
+            return;
+        }
 
-    const adicionarCabecalho = () => {
 
-        // Layout monocromático: mais econômico para impressão.
-        pdf.setTextColor(20, 20, 20);
+        if (!window.jspdf) {
+
+            if (janelaDeImpressao) {
+                janelaDeImpressao.close();
+            }
+
+            alert(
+                'Não foi possível carregar o gerador de PDF. Verifique sua conexão e tente novamente.'
+            );
+
+            return;
+
+        }
+
+
+        const { jsPDF } = window.jspdf;
+
+        const pdf = new jsPDF({
+            orientation: 'landscape',
+            unit: 'mm',
+            format: 'a4'
+        });
+
+        const larguraPagina = 297;
+        const margem = 10;
+        const largura = larguraPagina - (margem * 2);
+
+        const textoSeguro = valor =>
+            String(valor || '-')
+                .replace(/[\r\n]+/g, ' ');
+
+        const adicionarCabecalho = () => {
+
+            // Layout monocromático: mais econômico para impressão.
+            pdf.setTextColor(20, 20, 20);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(16);
+            pdf.text('BM36', margem, 13);
+
+            pdf.setFontSize(9);
+            pdf.text('COMPROVANTE DE PEDIDO', margem, 19);
+
+            pdf.setFontSize(10);
+            pdf.text(
+                `PEDIDO #${pedidoAberto.id}`,
+                larguraPagina - margem,
+                13,
+                { align: 'right' }
+            );
+
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(8);
+            pdf.text(
+                `Emitido em ${formatarData(new Date())}`,
+                larguraPagina - margem,
+                19,
+                { align: 'right' }
+            );
+
+            pdf.setDrawColor(90, 90, 90);
+            pdf.setLineWidth(0.25);
+            pdf.line(margem, 24, larguraPagina - margem, 24);
+            pdf.setTextColor(28, 27, 46);
+
+        };
+    const adicionarCabecalhoTabela = y => {
+
         pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(16);
-        pdf.text('BM36', margem, 13);
+        pdf.setFontSize(7);
 
-        pdf.setFontSize(9);
-        pdf.text('COMPROVANTE DE PEDIDO', margem, 19);
-
-        pdf.setFontSize(10);
-        pdf.text(
-            `PEDIDO #${pedidoAberto.id}`,
-            larguraPagina - margem,
-            13,
-            { align: 'right' }
-        );
-
-        pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(8);
-        pdf.text(
-            `Emitido em ${formatarData(new Date())}`,
-            larguraPagina - margem,
-            19,
-            { align: 'right' }
-        );
-
-        pdf.setDrawColor(90, 90, 90);
-        pdf.setLineWidth(0.25);
-        pdf.line(margem, 24, larguraPagina - margem, 24);
-        pdf.setTextColor(28, 27, 46);
-
-    };
-const adicionarCabecalhoTabela = y => {
-
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(7);
-
-    pdf.text('PRODUTO', margem + 3, y + 5.2);
-    pdf.text('CÓDIGO', 100, y + 5.2, { align: 'right' });
-    pdf.text('CORR.', 121, y + 5.2, { align: 'right' });
-    pdf.text('PRAT.', 140, y + 5.2, { align: 'right' });
-    pdf.text('POS.', 158, y + 5.2, { align: 'right' });
-    pdf.text('CÓD. FAB.', 181, y + 5.2, { align: 'right' });
-    pdf.text('QTD.', 208, y + 5.2, { align: 'right' });
-
-    // UNIT removido
-    pdf.text('SUBTOTAL', 238, y + 5.2, { align: 'right' });
-
-};
+        pdf.text('PRODUTO', margem + 3, y + 5.2);
+        pdf.text('CÓDIGO', 100, y + 5.2, { align: 'right' });
+        pdf.text('CORR.', 121, y + 5.2, { align: 'right' });
+        pdf.text('PRAT.', 140, y + 5.2, { align: 'right' });
+        pdf.text('POS.', 158, y + 5.2, { align: 'right' });
+        pdf.text('CÓD. FAB.', 181, y + 5.2, { align: 'right' });
+        pdf.text('QTD.', 208, y + 5.2, { align: 'right' });
+        pdf.text('SUBTOTAL', 238, y + 5.2, { align: 'right' });
 
         pdf.setDrawColor(90, 90, 90);
         pdf.setLineWidth(0.25);
@@ -358,397 +354,553 @@ const adicionarCabecalhoTabela = y => {
 
     };
 
-    adicionarCabecalho();
+    
 
-    let y = 42;
+        adicionarCabecalho();
 
-    const cliente = pedidoAberto.cliente_nome || 'Não informado';
-    const documento = pedidoAberto.cliente_documento
-        ? formatarDocumento(pedidoAberto.cliente_documento)
-        : '';
+        let y = 42;
 
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(9);
-    pdf.text('CLIENTE', margem, y);
-    pdf.text('DATA DO PEDIDO', 165, y);
+        const cliente = pedidoAberto.cliente_nome || 'Não informado';
+        const documento = pedidoAberto.cliente_documento
+            ? formatarDocumento(pedidoAberto.cliente_documento)
+            : '';
 
-    y += 5;
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(9);
+        pdf.text('CLIENTE', margem, y);
+        pdf.text('DATA DO PEDIDO', 165, y);
 
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(10);
-    pdf.text(textoSeguro(cliente), margem, y);
-    pdf.text(formatarData(pedidoAberto.criado_em), 165, y);
-
-    y += 5;
-
-    pdf.setFontSize(8.5);
-    pdf.setTextColor(95, 99, 117);
-    pdf.text(documento || 'Documento não informado', margem, y);
-    pdf.text(
-        `Status: ${statusLabel(pedidoAberto.status)}`,
-        165,
-        y
-    );
-
-    y += 8;
-
-    pdf.setTextColor(28, 27, 46);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(
-        `Vendedor: ${textoSeguro(pedidoAberto.usuario_nome || 'Não informado')}`,
-        margem,
-        y
-    );
-
-    y += 10;
-    y = adicionarCabecalhoTabela(y);
-
-    const itens = Array.isArray(pedidoAberto.itens)
-        ? pedidoAberto.itens
-        : [];
-
-    itens.forEach(item => {
-
-        const nome = textoSeguro(
-            item.produto_nome || item.nome || 'Produto'
-        );
-
-        const codigo = textoSeguro(
-            item.produto_codigo || item.codigo || ''
-        );
-
-        const linhasNome = pdf.splitTextToSize(nome, 84);
-
-        const alturaLinha = Math.max(10, linhasNome.length * 4.3 + 3);
-
-        if (y + alturaLinha > 180) {
-
-            pdf.addPage();
-            adicionarCabecalho();
-            y = adicionarCabecalhoTabela(40);
-
-        }
-
-        pdf.setDrawColor(222, 225, 232);
-        pdf.line(margem, y + alturaLinha, margem + largura, y + alturaLinha);
+        y += 5;
 
         pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(7.5);
-        pdf.text(linhasNome, margem + 3, y + 5);
-        pdf.text(codigo || '-', 100, y + 5, { align: 'right' });
-        pdf.text(textoSeguro(item.produto_corredor), 121, y + 5, { align: 'right' });
-        pdf.text(textoSeguro(item.produto_prateleira), 140, y + 5, { align: 'right' });
-        pdf.text(textoSeguro(item.produto_posicao), 158, y + 5, { align: 'right' });
-        pdf.text(textoSeguro(item.produto_codigo_fabricante), 181, y + 5, { align: 'right' });
-        pdf.text(String(Number(item.quantidade || 0)), 208, y + 5, { align: 'right' });
-       // UNIT removido
-pdf.text(subtotal, 238, y, { align: 'right' });
+        pdf.setFontSize(10);
+        pdf.text(textoSeguro(cliente), margem, y);
+        pdf.text(formatarData(pedidoAberto.criado_em), 165, y);
+
+        y += 5;
+
+        pdf.setFontSize(8.5);
+        pdf.setTextColor(95, 99, 117);
+        pdf.text(documento || 'Documento não informado', margem, y);
+        pdf.text(
+            `Status: ${statusLabel(pedidoAberto.status)}`,
+            165,
+            y
+        );
+
+        y += 8;
+
+        pdf.setTextColor(28, 27, 46);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(
+            `Vendedor: ${textoSeguro(pedidoAberto.usuario_nome || 'Não informado')}`,
+            margem,
+            y
+        );
+
+        y += 10;
+        y = adicionarCabecalhoTabela(y);
+
+        const itens = Array.isArray(pedidoAberto.itens)
+            ? pedidoAberto.itens
+            : [];
+
+        itens.forEach(item => {
+
+            const nome = textoSeguro(
+                item.produto_nome || item.nome || 'Produto'
+            );
+
+            const codigo = textoSeguro(
+                item.produto_codigo || item.codigo || ''
+            );
+
+            const linhasNome = pdf.splitTextToSize(nome, 84);
+
+            const alturaLinha = Math.max(10, linhasNome.length * 4.3 + 3);
+
+            if (y + alturaLinha > 180) {
+
+                pdf.addPage();
+                adicionarCabecalho();
+                y = adicionarCabecalhoTabela(40);
+
+            }
+
+            pdf.setDrawColor(222, 225, 232);
+            pdf.line(margem, y + alturaLinha, margem + largura, y + alturaLinha);
+
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(7.5);
+            pdf.text(linhasNome, margem + 3, y + 5);
+            pdf.text(codigo || '-', 100, y + 5, { align: 'right' });
+            pdf.text(textoSeguro(item.produto_corredor), 121, y + 5, { align: 'right' });
+            pdf.text(textoSeguro(item.produto_prateleira), 140, y + 5, { align: 'right' });
+            pdf.text(textoSeguro(item.produto_posicao), 158, y + 5, { align: 'right' });
+            pdf.text(textoSeguro(item.produto_codigo_fabricante), 181, y + 5, { align: 'right' });
+            pdf.text(String(Number(item.quantidade || 0)), 208, y + 5, { align: 'right' });
+        // UNIT removido
+    const subtotalItem =
+        Number(item.quantidade || 0) *
+        Number(item.preco_unitario || 0);
+
+            pdf.text(
+            fmt(subtotalItem),
+            238,
+            y + 5,
+            { align: 'right' }
+        );
 
         y += alturaLinha;
 
     });
 
-    const subtotal = Number(pedidoAberto.subtotal || 0);
-    const desconto = Number(pedidoAberto.desconto || 0);
-    const total = Number(pedidoAberto.total || subtotal - desconto);
+        const subtotal = Number(pedidoAberto.subtotal || 0);
+        const desconto = Number(pedidoAberto.desconto || 0);
+        const total = Number(pedidoAberto.total || subtotal - desconto);
 
-    if (y + 38 > 192) {
+        if (y + 38 > 192) {
 
-        pdf.addPage();
-        adicionarCabecalho();
-        y = 45;
+            pdf.addPage();
+            adicionarCabecalho();
+            y = 45; 
 
-    }
+        }
 
-    y += 8;
+        y += 8;
 
-    const adicionarTotal = (titulo, valor, destaque = false) => {
+        const adicionarTotal = (titulo, valor, destaque = false) => {
 
-        pdf.setFont('helvetica', destaque ? 'bold' : 'normal');
-        pdf.setFontSize(destaque ? 12 : 9);
-        pdf.text(titulo, 232, y, { align: 'right' });
-        pdf.text(fmt(valor), 285, y, { align: 'right' });
-        y += destaque ? 8 : 6;
+            pdf.setFont('helvetica', destaque ? 'bold' : 'normal');
+            pdf.setFontSize(destaque ? 12 : 9);
+            pdf.text(titulo, 232, y, { align: 'right' });
+            pdf.text(fmt(valor), 285, y, { align: 'right' });
+            y += destaque ? 8 : 6;
 
-    };
+        };
 
-    adicionarTotal('Subtotal', subtotal);
-    adicionarTotal('Desconto', desconto);
+        adicionarTotal('Subtotal', subtotal);
+        adicionarTotal('Desconto', desconto);
 
-    adicionarTotal('TOTAL', total, true);
+        adicionarTotal('TOTAL', total, true);
 
-    pdf.setTextColor(95, 99, 117);
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(8);
-    pdf.text(
-        'Documento gerado pelo sistema BM36.',
-        margem,
-        202
-    );
-
-    const nomeArquivo =
-        `pedido-${pedidoAberto.id}.pdf`;
-
-    const dispositivoMovel =
-        /Android|iPhone|iPad|iPod/i.test(
-            navigator.userAgent
+        pdf.setTextColor(95, 99, 117);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        pdf.text(
+            'Documento gerado pelo sistema BM36.',
+            margem,
+            202
         );
 
-    // Em computadores, solicita a impressão ao visualizador nativo do PDF.
-    // Em celulares o PDF deve abrir normalmente, para o usuário escolher
-    // Compartilhar ou Imprimir no menu do próprio aparelho.
-    if (
-        imprimir
-        &&
-        !dispositivoMovel
-        &&
-        typeof pdf.autoPrint === 'function'
-    ) {
-        pdf.autoPrint();
-    }
+        const nomeArquivo =
+            `pedido-${pedidoAberto.id}.pdf`;
 
-    const blobPdf =
-        pdf.output('blob');
-
-    if (imprimir) {
-
-        const janelaImpressao =
-            janelaDeImpressao
-            || window.open('', '_blank');
-
-        if (!janelaImpressao) {
-            alert(
-                'O navegador bloqueou a janela de impressão. Permita pop-ups e tente novamente.'
+        const dispositivoMovel =
+            /Android|iPhone|iPad|iPod/i.test(
+                navigator.userAgent
             );
 
-            return;
-
-        }
-
-        const urlPdf =
-            URL.createObjectURL(
-                blobPdf
-            );
-
-        // Não usar iframe: o Chrome no Android pode bloquear PDFs blob
-        // incorporados. Abrir o Blob como documento principal é compatível
-        // com o menu nativo de imprimir/compartilhar do Android e do iPhone.
-        janelaImpressao.location.href =
-            urlPdf;
-
-        if (!dispositivoMovel) {
-            janelaImpressao.focus();
-        }
-
-        return;
-
-    }
-
-    try {
-
+        // Em computadores, solicita a impressão ao visualizador nativo do PDF.
+        // Em celulares o PDF deve abrir normalmente, para o usuário escolher
+        // Compartilhar ou Imprimir no menu do próprio aparelho.
         if (
-            typeof File === 'function'
+            imprimir
             &&
-            navigator.canShare
+            !dispositivoMovel
+            &&
+            typeof pdf.autoPrint === 'function'
         ) {
+            pdf.autoPrint();
+        }
 
-            const arquivo = new File(
-                [blobPdf],
-                nomeArquivo,
-                { type: 'application/pdf' }
-            );
+        const blobPdf =
+            pdf.output('blob');
 
-            if (navigator.canShare({ files: [arquivo] })) {
+        if (imprimir) {
 
-                await navigator.share({
-                    title: `Pedido #${pedidoAberto.id}`,
-                    text: `Comprovante do pedido #${pedidoAberto.id}`,
-                    files: [arquivo]
-                });
+            const janelaImpressao =
+                janelaDeImpressao
+                || window.open('', '_blank');
+
+            if (!janelaImpressao) {
+                alert(
+                    'O navegador bloqueou a janela de impressão. Permita pop-ups e tente novamente.'
+                );
 
                 return;
 
             }
 
-        }
+            const urlPdf =
+                URL.createObjectURL(
+                    blobPdf
+                );
 
-    } catch (erro) {
+            // Não usar iframe: o Chrome no Android pode bloquear PDFs blob
+            // incorporados. Abrir o Blob como documento principal é compatível
+            // com o menu nativo de imprimir/compartilhar do Android e do iPhone.
+            janelaImpressao.location.href =
+                urlPdf;
 
-        if (erro.name === 'AbortError') {
-            return;
-        }
-
-        console.error('Erro ao compartilhar PDF:', erro);
-
-    }
-
-    pdf.save(nomeArquivo);
-
-
-
-
-pdfPedidoBtn.addEventListener(
-    'click',
-    () => gerarPdfPedido()
-);
-
-imprimirPedidoBtn.addEventListener(
-    'click',
-    () => {
-
-        // Abre a janela durante o toque do usuário. Alguns celulares
-        // bloqueiam pop-ups iniciados depois que o PDF já foi montado.
-        const janelaImpressao =
-            window.open('', '_blank');
-
-        if (!janelaImpressao) {
-            alert(
-                'O navegador bloqueou a janela de impressão. Permita pop-ups e tente novamente.'
-            );
+            if (!dispositivoMovel) {
+                janelaImpressao.focus();
+            }
 
             return;
 
         }
 
-        gerarPdfPedido(true, janelaImpressao);
-    }
-);
+        try {
 
+            if (
+                typeof File === 'function'
+                &&
+                navigator.canShare
+            ) {
 
-// ============================================================
-// CARREGAR PEDIDOS
-// ============================================================
+                const arquivo = new File(
+                    [blobPdf],
+                    nomeArquivo,
+                    { type: 'application/pdf' }
+                );
 
-async function carregarPedidos() {
+                if (navigator.canShare({ files: [arquivo] })) {
 
-    try {
+                    await navigator.share({
+                        title: `Pedido #${pedidoAberto.id}`,
+                        text: `Comprovante do pedido #${pedidoAberto.id}`,
+                        files: [arquivo]
+                    });
 
-        salesBody.innerHTML = `
-            <tr>
-                <td colspan="5">
-                    Carregando pedidos...
-                </td>
-            </tr>
-        `;
+                    return;
 
+                }
 
-        const resposta =
-            await fetch(
-                `${API_URL}/vendas`
-            );
+            }
 
+        } catch (erro) {
 
-        if (!resposta.ok) {
+            if (erro.name === 'AbortError') {
+                return;
+            }
 
-            throw new Error(
-                'Erro ao carregar pedidos.'
-            );
+            console.error('Erro ao compartilhar PDF:', erro);
 
         }
 
-
-        pedidos =
-            await resposta.json();
+        pdf.save(nomeArquivo);
 
 
-        aplicarFiltros();
+
+    }
+    pdfPedidoBtn.addEventListener(
+        'click',
+        () => gerarPdfPedido()
+    );
+
+    imprimirPedidoBtn.addEventListener(
+        'click',
+        () => {
+
+            // Abre a janela durante o toque do usuário. Alguns celulares
+            // bloqueiam pop-ups iniciados depois que o PDF já foi montado.
+            const janelaImpressao =
+                window.open('', '_blank');
+
+            if (!janelaImpressao) {
+                alert(
+                    'O navegador bloqueou a janela de impressão. Permita pop-ups e tente novamente.'
+                );
+
+                return;
+
+            }
+
+            gerarPdfPedido(true, janelaImpressao);
+        }
+    );
 
 
-    } catch (erro) {
+    // ============================================================
+    // CARREGAR PEDIDOS
+    // ============================================================
 
-        console.error(
-            erro
-        );
+    async function carregarPedidos() {
+
+        try {
+
+            salesBody.innerHTML = `
+                <tr>
+                    <td colspan="5">
+                        Carregando pedidos...
+                    </td>
+                </tr>
+            `;
 
 
-        salesBody.innerHTML = `
-            <tr>
-                <td colspan="5">
-                    Não foi possível carregar os pedidos.
-                </td>
-            </tr>
-        `;
+            const resposta =
+                await fetch(
+                    `${API_URL}/vendas`
+                );
+
+
+            if (!resposta.ok) {
+
+                throw new Error(
+                    'Erro ao carregar pedidos.'
+                );
+
+            }
+
+
+            pedidos =
+                await resposta.json();
+
+
+            aplicarFiltros();
+
+
+        } catch (erro) {
+
+            console.error(
+                erro
+            );
+
+
+            salesBody.innerHTML = `
+                <tr>
+                    <td colspan="5">
+                        Não foi possível carregar os pedidos.
+                    </td>
+                </tr>
+            `;
+
+        }
 
     }
 
-}
+
+    // ============================================================
+    // FILTROS
+    // ============================================================
+
+    function aplicarFiltros() {
+
+        const termo =
+            searchInput.value
+                .trim()
+                .toLowerCase();
 
 
-// ============================================================
-// FILTROS
-// ============================================================
-
-function aplicarFiltros() {
-
-    const termo =
-        searchInput.value
-            .trim()
-            .toLowerCase();
+        const hoje =
+            new Date();
 
 
-    const hoje =
-        new Date();
+        pedidosFiltrados =
+            pedidos.filter(
+                pedido => {
+
+                    const id =
+                        String(
+                            pedido.id || ''
+                        );
 
 
-    pedidosFiltrados =
-        pedidos.filter(
-            pedido => {
-
-                const id =
-                    String(
-                        pedido.id || ''
-                    );
+                    const cliente =
+                        String(
+                            pedido.cliente_nome || ''
+                        )
+                            .toLowerCase();
 
 
-                const cliente =
-                    String(
-                        pedido.cliente_nome || ''
-                    )
-                        .toLowerCase();
+                    const documento =
+                        String(
+                            pedido.cliente_documento || ''
+                        )
+                            .replace(
+                                /\D/g,
+                                ''
+                            );
 
 
-                const documento =
-                    String(
-                        pedido.cliente_documento || ''
-                    )
-                        .replace(
+                    const termoDocumento =
+                        termo.replace(
                             /\D/g,
                             ''
                         );
 
 
-                const termoDocumento =
-                    termo.replace(
-                        /\D/g,
-                        ''
-                    );
-
-
-                const buscaOK =
-                    !termo
-                    ||
-                    id.includes(
-                        termo
-                    )
-                    ||
-                    cliente.includes(
-                        termo
-                    )
-                    ||
-                    (
-                        termoDocumento
-                        &&
-                        documento.includes(
-                            termoDocumento
+                    const buscaOK =
+                        !termo
+                        ||
+                        id.includes(
+                            termo
                         )
-                    );
+                        ||
+                        cliente.includes(
+                            termo
+                        )
+                        ||
+                        (
+                            termoDocumento
+                            &&
+                            documento.includes(
+                                termoDocumento
+                            )
+                        );
 
 
-                if (!buscaOK) {
+                    if (!buscaOK) {
 
-                    return false;
+                        return false;
+
+                    }
+
+
+                    const status =
+                        normalizarStatus(
+                            pedido.status
+                        );
+
+
+                    if (
+                        filtroAtual ===
+                        'canceladas'
+                    ) {
+
+                        return status ===
+                            'cancelada';
+
+                    }
+
+
+                    if (
+                        filtroAtual ===
+                        'finalizadas'
+                    ) {
+
+                        return status ===
+                            'finalizada';
+
+                    }
+
+
+                    const data =
+                        new Date(
+                            pedido.criado_em
+                        );
+
+
+                    if (
+                        filtroAtual ===
+                        'hoje'
+                    ) {
+
+                        return (
+                            data.getDate() ===
+                                hoje.getDate()
+                            &&
+                            data.getMonth() ===
+                                hoje.getMonth()
+                            &&
+                            data.getFullYear() ===
+                                hoje.getFullYear()
+                        );
+
+                    }
+
+
+                    if (
+                        filtroAtual ===
+                        'mes'
+                    ) {
+
+                        return (
+                            data.getMonth() ===
+                                hoje.getMonth()
+                            &&
+                            data.getFullYear() ===
+                                hoje.getFullYear()
+                        );
+
+                    }
+
+
+                    return true;
 
                 }
+            );
+
+
+        paginaAtual =
+            1;
+
+
+        renderPedidos();
+
+    }
+
+
+    // ============================================================
+    // RENDER PEDIDOS
+    // ============================================================
+
+    function renderPedidos() {
+
+        salesBody.innerHTML =
+            '';
+
+
+        const inicio =
+            (
+                paginaAtual -
+                1
+            )
+            *
+            itensPorPagina;
+
+
+        const pagina =
+            pedidosFiltrados.slice(
+                inicio,
+                inicio +
+                itensPorPagina
+            );
+
+
+        if (
+            pagina.length ===
+            0
+        ) {
+
+            salesBody.innerHTML = `
+                <tr>
+                    <td colspan="5">
+                        Nenhum pedido encontrado.
+                    </td>
+                </tr>
+            `;
+
+
+            atualizarPaginacao();
+
+            return;
+
+        }
+
+
+        pagina.forEach(
+            pedido => {
+
+                const tr =
+                    document.createElement(
+                        'tr'
+                    );
+
+
+                tr.dataset.id =
+                    pedido.id;
 
 
                 const status =
@@ -757,818 +909,45 @@ function aplicarFiltros() {
                     );
 
 
-                if (
-                    filtroAtual ===
-                    'canceladas'
-                ) {
-
-                    return status ===
-                        'cancelada';
-
-                }
-
-
-                if (
-                    filtroAtual ===
-                    'finalizadas'
-                ) {
-
-                    return status ===
-                        'finalizada';
-
-                }
-
-
-                const data =
-                    new Date(
-                        pedido.criado_em
-                    );
-
-
-                if (
-                    filtroAtual ===
-                    'hoje'
-                ) {
-
-                    return (
-                        data.getDate() ===
-                            hoje.getDate()
-                        &&
-                        data.getMonth() ===
-                            hoje.getMonth()
-                        &&
-                        data.getFullYear() ===
-                            hoje.getFullYear()
-                    );
-
-                }
-
-
-                if (
-                    filtroAtual ===
-                    'mes'
-                ) {
-
-                    return (
-                        data.getMonth() ===
-                            hoje.getMonth()
-                        &&
-                        data.getFullYear() ===
-                            hoje.getFullYear()
-                    );
-
-                }
-
-
-                return true;
-
-            }
-        );
-
-
-    paginaAtual =
-        1;
-
-
-    renderPedidos();
-
-}
-
-
-// ============================================================
-// RENDER PEDIDOS
-// ============================================================
-
-function renderPedidos() {
-
-    salesBody.innerHTML =
-        '';
-
-
-    const inicio =
-        (
-            paginaAtual -
-            1
-        )
-        *
-        itensPorPagina;
-
-
-    const pagina =
-        pedidosFiltrados.slice(
-            inicio,
-            inicio +
-            itensPorPagina
-        );
-
-
-    if (
-        pagina.length ===
-        0
-    ) {
-
-        salesBody.innerHTML = `
-            <tr>
-                <td colspan="5">
-                    Nenhum pedido encontrado.
-                </td>
-            </tr>
-        `;
-
-
-        atualizarPaginacao();
-
-        return;
-
-    }
-
-
-    pagina.forEach(
-        pedido => {
-
-            const tr =
-                document.createElement(
-                    'tr'
-                );
-
-
-            tr.dataset.id =
-                pedido.id;
-
-
-            const status =
-                normalizarStatus(
-                    pedido.status
-                );
-
-
-            tr.innerHTML = `
-
-                <td>
-                    #${pedido.id}
-                </td>
-
-                <td class="name">
-                    ${pedido.cliente_nome || '-'}
-                </td>
-
-                <td>
-                    ${formatarData(
-                        pedido.criado_em
-                    )}
-                </td>
-
-                <td class="val">
-                    ${fmt(
-                        pedido.total
-                    )}
-                </td>
-
-                <td>
-
-                    <span
-                        class="badge ${status}"
-                    >
-
-                        ${statusLabel(
-                            status
-                        )}
-
-                    </span>
-
-                </td>
-            `;
-
-
-            salesBody.appendChild(
-                tr
-            );
-
-        }
-    );
-
-
-    atualizarPaginacao();
-
-}
-
-
-// ============================================================
-// PAGINAÇÃO
-// ============================================================
-
-function atualizarPaginacao() {
-
-    const total =
-        pedidosFiltrados.length;
-
-
-    pageNums.innerHTML =
-        '';
-
-
-    if (total === 0) {
-
-        pageInfo.textContent =
-            'Nenhum pedido';
-
-        return;
-
-    }
-
-
-    const totalPaginas =
-        Math.ceil(
-            total /
-            itensPorPagina
-        );
-
-
-    const inicio =
-        (
-            paginaAtual -
-            1
-        )
-        *
-        itensPorPagina
-        +
-        1;
-
-
-    const fim =
-        Math.min(
-            paginaAtual *
-            itensPorPagina,
-            total
-        );
-
-
-    pageInfo.textContent =
-        `Mostrando ${inicio}-${fim} de ${total} pedidos`;
-
-
-    const anterior =
-        document.createElement(
-            'button'
-        );
-
-
-    anterior.textContent =
-        '◀';
-
-
-    anterior.disabled =
-        paginaAtual === 1;
-
-
-    anterior.addEventListener(
-        'click',
-        () => {
-
-            if (
-                paginaAtual >
-                1
-            ) {
-
-                paginaAtual--;
-
-                renderPedidos();
-
-            }
-
-        }
-    );
-
-
-    pageNums.appendChild(
-        anterior
-    );
-
-
-    for (
-        let pagina = 1;
-        pagina <= totalPaginas;
-        pagina++
-    ) {
-
-        const botao =
-            document.createElement(
-                'button'
-            );
-
-
-        botao.textContent =
-            pagina;
-
-
-        if (
-            pagina ===
-            paginaAtual
-        ) {
-
-            botao.classList.add(
-                'active'
-            );
-
-        }
-
-
-        botao.addEventListener(
-            'click',
-            () => {
-
-                paginaAtual =
-                    pagina;
-
-                renderPedidos();
-
-            }
-        );
-
-
-        pageNums.appendChild(
-            botao
-        );
-
-    }
-
-
-    const proximo =
-        document.createElement(
-            'button'
-        );
-
-
-    proximo.textContent =
-        '▶';
-
-
-    proximo.disabled =
-        paginaAtual ===
-        totalPaginas;
-
-
-    proximo.addEventListener(
-        'click',
-        () => {
-
-            if (
-                paginaAtual <
-                totalPaginas
-            ) {
-
-                paginaAtual++;
-
-                renderPedidos();
-
-            }
-
-        }
-    );
-
-
-    pageNums.appendChild(
-        proximo
-    );
-
-}
-
-// ============================================================
-// CARREGAR EVENTOS
-// ============================================================
-
-async function carregarEventos() {
-
-    try {
-
-        const token =
-            localStorage.getItem(
-                'bm36_token'
-            );
-
-
-        const resposta =
-            await fetch(
-                `${API_URL}/eventos`,
-                {
-                    headers: {
-                        Authorization:
-                            `Bearer ${token}`
-                    }
-                }
-            );
-
-
-        if (!resposta.ok) {
-
-            throw new Error(
-                'Erro ao carregar eventos.'
-            );
-
-        }
-
-
-        eventos =
-            await resposta.json();
-
-
-        preencherSelectEventos();
-
-
-    } catch (erro) {
-
-        console.error(
-            'Erro ao carregar eventos:',
-            erro
-        );
-
-    }
-
-}
-
-
-// ============================================================
-// PREENCHER SELECT DE EVENTOS
-// ============================================================
-
-function preencherSelectEventos() {
-
-    if (!eventoPedido) {
-        return;
-    }
-
-
-    eventoPedido.innerHTML = `
-        <option value="">
-            Sem evento
-        </option>
-    `;
-
-
-    eventos.forEach(
-        evento => {
-
-            const option =
-                document.createElement(
-                    'option'
-                );
-
-
-            option.value =
-                evento.id;
-
-
-            option.textContent =
-                evento.nome;
-
-
-            eventoPedido.appendChild(
-                option
-            );
-
-        }
-    );
-
-}
-// ============================================================
-// ABRIR PEDIDO
-// ============================================================
-
-async function abrirPedido(id) {
-
-    try {
-
-        const resposta =
-            await fetch(
-                `${API_URL}/vendas/${id}`
-            );
-
-
-        const resultado =
-            await resposta.json();
-
-
-        if (!resposta.ok) {
-
-            throw new Error(
-                resultado.mensagem
-                ||
-                'Erro ao buscar pedido.'
-            );
-
-        }
-
-
-        pedidoAberto =
-            resultado.venda;
-
-
-        modoEdicao =
-            false;
-
-
-        renderModalPedido();
-
-
-        overlay.classList.add(
-            'show'
-        );
-
-
-        document.body.style.overflow =
-            'hidden';
-
-
-    } catch (erro) {
-
-        console.error(
-            erro
-        );
-
-    }
-
-}
-
-
-// ============================================================
-// RENDER MODAL
-// ============================================================
-
-function renderModalPedido() {
-
-    if (!pedidoAberto) {
-        return;
-    }
-
-
-    document
-        .getElementById(
-            'modalTitle'
-        )
-        .textContent =
-        `Pedido #${pedidoAberto.id}`;
-
-
-    let cliente =
-        pedidoAberto.cliente_nome
-        ||
-        '-';
-
-
-    if (
-        pedidoAberto
-            .cliente_documento
-    ) {
-
-        cliente +=
-            ` - ${formatarDocumento(
-                pedidoAberto
-                    .cliente_documento
-            )}`;
-
-    }
-
-
-  document
-    .getElementById(
-        'modalCliente'
-    )
-    .textContent =
-    cliente;
-
-
-// =========================
-// VENDEDOR
-// =========================
-
-const modalVendedor =
-    document.getElementById(
-        'modalVendedor'
-    );
-
-
-if (modalVendedor) {
-
-    modalVendedor.textContent =
-        pedidoAberto.usuario_nome
-        ||
-        'Não informado';
-
-}
-
-
-    
-    document
-        .getElementById(
-            'modalData'
-        )
-        .textContent =
-        formatarData(
-            pedidoAberto.criado_em
-        );
-
-
-    document
-        .getElementById(
-            'modalStatus'
-        )
-        .textContent =
-        statusLabel(
-            pedidoAberto.status
-        );
-
-
-    const cancelamentoInfo =
-        document.getElementById(
-            'cancelamentoInfo'
-        );
-
-
-    const cancelado =
-        normalizarStatus(
-            pedidoAberto.status
-        )
-        ===
-        'cancelada';
-
-
-    if (cancelado) {
-
-        cancelamentoInfo
-            .classList
-            .add(
-                'visivel'
-            );
-
-
-        cancelamentoInfo.innerHTML = `
-
-            <strong>
-                Pedido cancelado
-            </strong>
-
-            <br>
-
-            ${
-                pedidoAberto.cancelado_em
-                    ?
-                    `Em ${formatarData(
-                        pedidoAberto.cancelado_em
-                    )}<br>`
-                    :
-                    ''
-            }
-
-            Motivo:
-            ${
-                pedidoAberto.motivo_cancelamento
-                ||
-                'Não informado'
-            }
-        `;
-
-    } else {
-
-        cancelamentoInfo
-            .classList
-            .remove(
-                'visivel'
-            );
-
-
-        cancelamentoInfo.innerHTML =
-            '';
-
-    }
-
-
-    editarBtn.disabled =
-        cancelado;
-
-
-    cancelarPedidoBtn.disabled =
-        cancelado;
-
-
-    editarBtn.textContent =
-        modoEdicao
-            ? 'Salvar Alterações'
-            : 'Editar Pedido';
-// ============================================================
-// EVENTO DO PEDIDO
-// ============================================================
-
-if (
-    campoEventoEdicao &&
-    eventoPedido
-) {
-
-    campoEventoEdicao.style.display =
-        modoEdicao
-            ? 'flex'
-            : 'none';
-
-
-    if (modoEdicao) {
-
-        eventoPedido.value =
-            pedidoAberto.evento_id
-                ? String(
-                    pedidoAberto.evento_id
-                )
-                : '';
-
-    }
-
-}
-
-    renderItensModal();
-
-}
-
-
-// ============================================================
-// ITENS
-// ============================================================
-
-function renderItensModal() {
-
-    const body =
-        document.getElementById(
-            'modalItems'
-        );
-
-
-    body.innerHTML =
-        '';
-
-
-    pedidoAberto.itens
-        .forEach(
-            item => {
-
-                const tr =
-                    document.createElement(
-                        'tr'
-                    );
-
-
-                const quantidade =
-                    Number(
-                        item.quantidade
-                    );
-
-
-                const preco =
-                    Number(
-                        item.preco_unitario
-                    );
-
-
                 tr.innerHTML = `
 
                     <td>
-                        ${item.produto_nome}
+                        #${pedido.id}
                     </td>
 
-
-                    <td>
-
-                        ${
-                            modoEdicao
-                                ?
-                                `
-                                    <input
-                                        class="edit-qty"
-                                        type="number"
-                                        min="1"
-                                        step="1"
-                                        data-produto-id="${item.produto_id}"
-                                        value="${quantidade}"
-                                    >
-                                `
-                                :
-                                quantidade
-                        }
-
+                    <td class="name">
+                        ${pedido.cliente_nome || '-'}
                     </td>
 
-
                     <td>
-                        ${fmt(preco)}
-                    </td>
-
-
-                    <td>
-                        ${fmt(
-                            quantidade *
-                            preco
+                        ${formatarData(
+                            pedido.criado_em
                         )}
+                    </td>
+
+                    <td class="val">
+                        ${fmt(
+                            pedido.total
+                        )}
+                    </td>
+
+                    <td>
+
+                        <span
+                            class="badge ${status}"
+                        >
+
+                            ${statusLabel(
+                                status
+                            )}
+
+                        </span>
+
                     </td>
                 `;
 
 
-                body.appendChild(
+                salesBody.appendChild(
                     tr
                 );
 
@@ -1576,182 +955,299 @@ function renderItensModal() {
         );
 
 
-    recalcularResumoModal();
+        atualizarPaginacao();
 
-}
-
-
-// ============================================================
-// RECALCULAR RESUMO
-// ============================================================
-
-function recalcularResumoModal() {
-
-    const subtotal =
-        pedidoAberto.itens
-            .reduce(
-                (
-                    soma,
-                    item
-                ) => {
-
-                    return (
-                        soma
-                        +
-                        Number(
-                            item.quantidade
-                        )
-                        *
-                        Number(
-                            item.preco_unitario
-                        )
-                    );
-
-                },
-                0
-            );
+    }
 
 
-    const desconto =
-        Number(
-            pedidoAberto.desconto
-            ||
-            0
-        );
+    // ============================================================
+    // PAGINAÇÃO
+    // ============================================================
+
+    function atualizarPaginacao() {
+
+        const total =
+            pedidosFiltrados.length;
 
 
-    document
-        .getElementById(
-            'modalSubtotal'
-        )
-        .textContent =
-        fmt(
-            subtotal
-        );
+        pageNums.innerHTML =
+            '';
 
 
-    document
-        .getElementById(
-            'modalDesconto'
-        )
-        .textContent =
-        fmt(
-            desconto
-        );
+        if (total === 0) {
 
-
-    document
-        .getElementById(
-            'modalTotal'
-        )
-        .textContent =
-        fmt(
-            subtotal -
-            desconto
-        );
-
-}
-
-
-// ============================================================
-// EDITAR
-// ============================================================
-
-editarBtn.addEventListener(
-    'click',
-    async () => {
-
-        if (!pedidoAberto) {
-            return;
-        }
-
-
-        if (!modoEdicao) {
-
-            modoEdicao =
-                true;
-
-
-            renderModalPedido();
+            pageInfo.textContent =
+                'Nenhum pedido';
 
             return;
 
         }
 
 
-        const inputs =
-            document.querySelectorAll(
-                '.edit-qty'
+        const totalPaginas =
+            Math.ceil(
+                total /
+                itensPorPagina
             );
 
 
-        const itens =
-            [];
+        const inicio =
+            (
+                paginaAtual -
+                1
+            )
+            *
+            itensPorPagina
+            +
+            1;
 
 
-        inputs.forEach(
-            input => {
+        const fim =
+            Math.min(
+                paginaAtual *
+                itensPorPagina,
+                total
+            );
 
-                itens.push({
 
-                    produto_id:
-                        Number(
-                            input.dataset
-                                .produtoId
-                        ),
+        pageInfo.textContent =
+            `Mostrando ${inicio}-${fim} de ${total} pedidos`;
 
-                    quantidade:
-                        Math.max(
-                            1,
-                            Math.floor(
-                                Number(
-                                    input.value
-                                )
-                            )
-                        )
 
-                });
+        const anterior =
+            document.createElement(
+                'button'
+            );
+
+
+        anterior.textContent =
+            '◀';
+
+
+        anterior.disabled =
+            paginaAtual === 1;
+
+
+        anterior.addEventListener(
+            'click',
+            () => {
+
+                if (
+                    paginaAtual >
+                    1
+                ) {
+
+                    paginaAtual--;
+
+                    renderPedidos();
+
+                }
 
             }
         );
 
 
+        pageNums.appendChild(
+            anterior
+        );
+
+
+        for (
+            let pagina = 1;
+            pagina <= totalPaginas;
+            pagina++
+        ) {
+
+            const botao =
+                document.createElement(
+                    'button'
+                );
+
+
+            botao.textContent =
+                pagina;
+
+
+            if (
+                pagina ===
+                paginaAtual
+            ) {
+
+                botao.classList.add(
+                    'active'
+                );
+
+            }
+
+
+            botao.addEventListener(
+                'click',
+                () => {
+
+                    paginaAtual =
+                        pagina;
+
+                    renderPedidos();
+
+                }
+            );
+
+
+            pageNums.appendChild(
+                botao
+            );
+
+        }
+
+
+        const proximo =
+            document.createElement(
+                'button'
+            );
+
+
+        proximo.textContent =
+            '▶';
+
+
+        proximo.disabled =
+            paginaAtual ===
+            totalPaginas;
+
+
+        proximo.addEventListener(
+            'click',
+            () => {
+
+                if (
+                    paginaAtual <
+                    totalPaginas
+                ) {
+
+                    paginaAtual++;
+
+                    renderPedidos();
+
+                }
+
+            }
+        );
+
+
+        pageNums.appendChild(
+            proximo
+        );
+
+    }
+
+    // ============================================================
+    // CARREGAR EVENTOS
+    // ============================================================
+
+    async function carregarEventos() {
+
         try {
 
-            editarBtn.disabled =
-                true;
+            const token =
+                localStorage.getItem(
+                    'bm36_token'
+                );
 
 
             const resposta =
                 await fetch(
-                    `${API_URL}/vendas/${pedidoAberto.id}`,
+                    `${API_URL}/eventos`,
                     {
-
-                        method:
-                            'PUT',
-
                         headers: {
-
-                            'Content-Type':
-                                'application/json'
-
-                        },
-
-                      body:
-    JSON.stringify({
-
-        itens,
-
-        evento_id:
-            eventoPedido.value
-                ? Number(
-                    eventoPedido.value
-                )
-                : null
-
-    })
-
+                            Authorization:
+                                `Bearer ${token}`
+                        }
                     }
+                );
+
+
+            if (!resposta.ok) {
+
+                throw new Error(
+                    'Erro ao carregar eventos.'
+                );
+
+            }
+
+
+            eventos =
+                await resposta.json();
+
+
+            preencherSelectEventos();
+
+
+        } catch (erro) {
+
+            console.error(
+                'Erro ao carregar eventos:',
+                erro
+            );
+
+        }
+
+    }
+
+
+    // ============================================================
+    // PREENCHER SELECT DE EVENTOS
+    // ============================================================
+
+    function preencherSelectEventos() {
+
+        if (!eventoPedido) {
+            return;
+        }
+
+
+        eventoPedido.innerHTML = `
+            <option value="">
+                Sem evento
+            </option>
+        `;
+
+
+        eventos.forEach(
+            evento => {
+
+                const option =
+                    document.createElement(
+                        'option'
+                    );
+
+
+                option.value =
+                    evento.id;
+
+
+                option.textContent =
+                    evento.nome;
+
+
+                eventoPedido.appendChild(
+                    option
+                );
+
+            }
+        );
+
+    }
+    // ============================================================
+    // ABRIR PEDIDO
+    // ============================================================
+
+    async function abrirPedido(id) {
+
+        try {
+
+            const resposta =
+                await fetch(
+                    `${API_URL}/vendas/${id}`
                 );
 
 
@@ -1761,115 +1257,485 @@ editarBtn.addEventListener(
 
             if (!resposta.ok) {
 
-                alert(
+                throw new Error(
                     resultado.mensagem
                     ||
-                    'Não foi possível alterar o pedido.'
+                    'Erro ao buscar pedido.'
                 );
-
-
-                editarBtn.disabled =
-                    false;
-
-
-                return;
 
             }
 
 
-            await carregarPedidos();
+            pedidoAberto =
+                resultado.venda;
 
 
-            await abrirPedido(
-                pedidoAberto.id
+            modoEdicao =
+                false;
+
+
+            renderModalPedido();
+
+
+            overlay.classList.add(
+                'show'
             );
 
 
-    } catch (erro) {
+            document.body.style.overflow =
+                'hidden';
+
+
+        } catch (erro) {
 
             console.error(
                 erro
             );
 
-
-            alert(
-                'Não foi possível alterar o pedido.'
-            );
-
         }
 
     }
-);
 
 
-// ============================================================
-// CANCELAR
-// ============================================================
+    // ============================================================
+    // RENDER MODAL
+    // ============================================================
 
-cancelarPedidoBtn.addEventListener(
-    'click',
-    () => {
+    function renderModalPedido() {
 
         if (!pedidoAberto) {
             return;
         }
 
 
-        motivoCancelamento.value =
-            '';
+        document
+            .getElementById(
+                'modalTitle'
+            )
+            .textContent =
+            `Pedido #${pedidoAberto.id}`;
+
+
+        let cliente =
+            pedidoAberto.cliente_nome
+            ||
+            '-';
+
+
+        if (
+            pedidoAberto
+                .cliente_documento
+        ) {
+
+            cliente +=
+                ` - ${formatarDocumento(
+                    pedidoAberto
+                        .cliente_documento
+                )}`;
+
+        }
+
+
+    document
+        .getElementById(
+            'modalCliente'
+        )
+        .textContent =
+        cliente;
+
+
+    // =========================
+    // VENDEDOR
+    // =========================
+
+    const modalVendedor =
+        document.getElementById(
+            'modalVendedor'
+        );
+
+
+    if (modalVendedor) {
+
+        modalVendedor.textContent =
+            pedidoAberto.usuario_nome
+            ||
+            'Não informado';
+
+    }
+
+
+        
+        document
+            .getElementById(
+                'modalData'
+            )
+            .textContent =
+            formatarData(
+                pedidoAberto.criado_em
+            );
 
 
         document
             .getElementById(
-                'cancelTitle'
+                'modalStatus'
             )
             .textContent =
-            `Cancelar Pedido #${pedidoAberto.id}`;
+            statusLabel(
+                pedidoAberto.status
+            );
 
 
-        cancelOverlay.classList.add(
-            'show'
-        );
+        const cancelamentoInfo =
+            document.getElementById(
+                'cancelamentoInfo'
+            );
+
+
+        const cancelado =
+            normalizarStatus(
+                pedidoAberto.status
+            )
+            ===
+            'cancelada';
+
+
+        if (cancelado) {
+
+            cancelamentoInfo
+                .classList
+                .add(
+                    'visivel'
+                );
+
+
+            cancelamentoInfo.innerHTML = `
+
+                <strong>
+                    Pedido cancelado
+                </strong>
+
+                <br>
+
+                ${
+                    pedidoAberto.cancelado_em
+                        ?
+                        `Em ${formatarData(
+                            pedidoAberto.cancelado_em
+                        )}<br>`
+                        :
+                        ''
+                }
+
+                Motivo:
+                ${
+                    pedidoAberto.motivo_cancelamento
+                    ||
+                    'Não informado'
+                }
+            `;
+
+        } else {
+
+            cancelamentoInfo
+                .classList
+                .remove(
+                    'visivel'
+                );
+
+
+            cancelamentoInfo.innerHTML =
+                '';
+
+        }
+
+
+        editarBtn.disabled =
+            cancelado;
+
+
+        cancelarPedidoBtn.disabled =
+            cancelado;
+
+
+        editarBtn.textContent =
+            modoEdicao
+                ? 'Salvar Alterações'
+                : 'Editar Pedido';
+    // ============================================================
+    // EVENTO DO PEDIDO
+    // ============================================================
+
+    if (
+        campoEventoEdicao &&
+        eventoPedido
+    ) {
+
+        campoEventoEdicao.style.display =
+            modoEdicao
+                ? 'flex'
+                : 'none';
+
+
+        if (modoEdicao) {
+
+            eventoPedido.value =
+                pedidoAberto.evento_id
+                    ? String(
+                        pedidoAberto.evento_id
+                    )
+                    : '';
+
+        }
 
     }
-);
+
+        renderItensModal();
+
+    }
 
 
-confirmarCancelamentoBtn
-    .addEventListener(
+    // ============================================================
+    // ITENS
+    // ============================================================
+
+    function renderItensModal() {
+
+        const body =
+            document.getElementById(
+                'modalItems'
+            );
+
+
+        body.innerHTML =
+            '';
+
+
+        pedidoAberto.itens
+            .forEach(
+                item => {
+
+                    const tr =
+                        document.createElement(
+                            'tr'
+                        );
+
+
+                    const quantidade =
+                        Number(
+                            item.quantidade
+                        );
+
+
+                    const preco =
+                        Number(
+                            item.preco_unitario
+                        );
+
+
+                    tr.innerHTML = `
+
+                        <td>
+                            ${item.produto_nome}
+                        </td>
+
+
+                        <td>
+
+                            ${
+                                modoEdicao
+                                    ?
+                                    `
+                                        <input
+                                            class="edit-qty"
+                                            type="number"
+                                            min="1"
+                                            step="1"
+                                            data-produto-id="${item.produto_id}"
+                                            value="${quantidade}"
+                                        >
+                                    `
+                                    :
+                                    quantidade
+                            }
+
+                        </td>
+
+
+                        <td>
+                            ${fmt(preco)}
+                        </td>
+
+
+                        <td>
+                            ${fmt(
+                                quantidade *
+                                preco
+                            )}
+                        </td>
+                    `;
+
+
+                    body.appendChild(
+                        tr
+                    );
+
+                }
+            );
+
+
+        recalcularResumoModal();
+
+    }
+
+
+    // ============================================================
+    // RECALCULAR RESUMO
+    // ============================================================
+
+    function recalcularResumoModal() {
+
+        const subtotal =
+            pedidoAberto.itens
+                .reduce(
+                    (
+                        soma,
+                        item
+                    ) => {
+
+                        return (
+                            soma
+                            +
+                            Number(
+                                item.quantidade
+                            )
+                            *
+                            Number(
+                                item.preco_unitario
+                            )
+                        );
+
+                    },
+                    0
+                );
+
+
+        const desconto =
+            Number(
+                pedidoAberto.desconto
+                ||
+                0
+            );
+
+
+        document
+            .getElementById(
+                'modalSubtotal'
+            )
+            .textContent =
+            fmt(
+                subtotal
+            );
+
+
+        document
+            .getElementById(
+                'modalDesconto'
+            )
+            .textContent =
+            fmt(
+                desconto
+            );
+
+
+        document
+            .getElementById(
+                'modalTotal'
+            )
+            .textContent =
+            fmt(
+                subtotal -
+                desconto
+            );
+
+    }
+
+
+    // ============================================================
+    // EDITAR
+    // ============================================================
+
+    editarBtn.addEventListener(
         'click',
         async () => {
 
-            const motivo =
-                motivoCancelamento
-                    .value
-                    .trim();
+            if (!pedidoAberto) {
+                return;
+            }
 
 
-            if (!motivo) {
+            if (!modoEdicao) {
 
-                alert(
-                    'Informe o motivo do cancelamento.'
-                );
+                modoEdicao =
+                    true;
+
+
+                renderModalPedido();
 
                 return;
 
             }
 
 
+            const inputs =
+                document.querySelectorAll(
+                    '.edit-qty'
+                );
+
+
+            const itens =
+                [];
+
+
+            inputs.forEach(
+                input => {
+
+                    itens.push({
+
+                        produto_id:
+                            Number(
+                                input.dataset
+                                    .produtoId
+                            ),
+
+                        quantidade:
+                            Math.max(
+                                1,
+                                Math.floor(
+                                    Number(
+                                        input.value
+                                    )
+                                )
+                            )
+
+                    });
+
+                }
+            );
+
+
             try {
 
-                confirmarCancelamentoBtn.disabled =
+                editarBtn.disabled =
                     true;
 
 
                 const resposta =
                     await fetch(
-                        `${API_URL}/vendas/${pedidoAberto.id}/cancelar`,
+                        `${API_URL}/vendas/${pedidoAberto.id}`,
                         {
 
                             method:
-                                'PATCH',
+                                'PUT',
 
                             headers: {
 
@@ -1878,10 +1744,19 @@ confirmarCancelamentoBtn
 
                             },
 
-                            body:
-                                JSON.stringify({
-                                    motivo
-                                })
+                        body:
+        JSON.stringify({
+
+            itens,
+
+            evento_id:
+                eventoPedido.value
+                    ? Number(
+                        eventoPedido.value
+                    )
+                    : null
+
+        })
 
                         }
                     );
@@ -1891,49 +1766,33 @@ confirmarCancelamentoBtn
                     await resposta.json();
 
 
-                confirmarCancelamentoBtn.disabled =
-                    false;
-
-
                 if (!resposta.ok) {
 
                     alert(
                         resultado.mensagem
                         ||
-                        'Não foi possível cancelar o pedido.'
+                        'Não foi possível alterar o pedido.'
                     );
+
+
+                    editarBtn.disabled =
+                        false;
+
 
                     return;
 
                 }
 
 
-                cancelOverlay
-                    .classList
-                    .remove(
-                        'show'
-                    );
-
-
-                overlay
-                    .classList
-                    .remove(
-                        'show'
-                    );
-
-
-                document.body.style.overflow =
-                    '';
-
-
                 await carregarPedidos();
 
 
-            } catch (erro) {
+                await abrirPedido(
+                    pedidoAberto.id
+                );
 
-                confirmarCancelamentoBtn.disabled =
-                    false;
 
+        } catch (erro) {
 
                 console.error(
                     erro
@@ -1941,7 +1800,7 @@ confirmarCancelamentoBtn
 
 
                 alert(
-                    'Erro ao cancelar pedido.'
+                    'Não foi possível alterar o pedido.'
                 );
 
             }
@@ -1950,154 +1809,302 @@ confirmarCancelamentoBtn
     );
 
 
-// ============================================================
-// EVENTOS
-// ============================================================
+    // ============================================================
+    // CANCELAR
+    // ============================================================
 
-salesBody.addEventListener(
-    'click',
-    evento => {
+    cancelarPedidoBtn.addEventListener(
+        'click',
+        () => {
 
-        const tr =
-            evento.target.closest(
-                'tr[data-id]'
+            if (!pedidoAberto) {
+                return;
+            }
+
+
+            motivoCancelamento.value =
+                '';
+
+
+            document
+                .getElementById(
+                    'cancelTitle'
+                )
+                .textContent =
+                `Cancelar Pedido #${pedidoAberto.id}`;
+
+
+            cancelOverlay.classList.add(
+                'show'
             );
 
-
-        if (!tr) {
-            return;
         }
+    );
 
 
-        abrirPedido(
-            Number(
-                tr.dataset.id
-            )
-        );
+    confirmarCancelamentoBtn
+        .addEventListener(
+            'click',
+            async () => {
 
-    }
-);
-
-
-filters.addEventListener(
-    'click',
-    evento => {
-
-        const btn =
-            evento.target.closest(
-                '.pill'
-            );
+                const motivo =
+                    motivoCancelamento
+                        .value
+                        .trim();
 
 
-        if (!btn) {
-            return;
-        }
+                if (!motivo) {
+
+                    alert(
+                        'Informe o motivo do cancelamento.'
+                    );
+
+                    return;
+
+                }
 
 
-        filters
-            .querySelectorAll(
-                '.pill'
-            )
-            .forEach(
-                item =>
-                    item.classList
+                try {
+
+                    confirmarCancelamentoBtn.disabled =
+                        true;
+
+
+                    const resposta =
+                        await fetch(
+                            `${API_URL}/vendas/${pedidoAberto.id}/cancelar`,
+                            {
+
+                                method:
+                                    'PATCH',
+
+                                headers: {
+
+                                    'Content-Type':
+                                        'application/json'
+
+                                },
+
+                                body:
+                                    JSON.stringify({
+                                        motivo
+                                    })
+
+                            }
+                        );
+
+
+                    const resultado =
+                        await resposta.json();
+
+
+                    confirmarCancelamentoBtn.disabled =
+                        false;
+
+
+                    if (!resposta.ok) {
+
+                        alert(
+                            resultado.mensagem
+                            ||
+                            'Não foi possível cancelar o pedido.'
+                        );
+
+                        return;
+
+                    }
+
+
+                    cancelOverlay
+                        .classList
                         .remove(
-                            'active'
-                        )
-            );
+                            'show'
+                        );
 
 
-        btn.classList.add(
-            'active'
+                    overlay
+                        .classList
+                        .remove(
+                            'show'
+                        );
+
+
+                    document.body.style.overflow =
+                        '';
+
+
+                    await carregarPedidos();
+
+
+                } catch (erro) {
+
+                    confirmarCancelamentoBtn.disabled =
+                        false;
+
+
+                    console.error(
+                        erro
+                    );
+
+
+                    alert(
+                        'Erro ao cancelar pedido.'
+                    );
+
+                }
+
+            }
         );
 
 
-        filtroAtual =
-            btn.dataset.filter;
+    // ============================================================
+    // EVENTOS
+    // ============================================================
+
+    salesBody.addEventListener(
+        'click',
+        evento => {
+
+            const tr =
+                evento.target.closest(
+                    'tr[data-id]'
+                );
 
 
-        aplicarFiltros();
-
-    }
-);
-
-
-searchInput.addEventListener(
-    'input',
-    aplicarFiltros
-);
+            if (!tr) {
+                return;
+            }
 
 
-// ============================================================
-// FECHAR MODAIS
-// ============================================================
-
-function fecharPedido() {
-
-    overlay.classList.remove(
-        'show'
-    );
-
-
-    document.body.style.overflow =
-        '';
-
-}
-
-
-closeX.addEventListener(
-    'click',
-    fecharPedido
-);
-
-
-closeBtn.addEventListener(
-    'click',
-    fecharPedido
-);
-
-
-overlay.addEventListener(
-    'click',
-    evento => {
-
-        if (
-            evento.target ===
-            overlay
-        ) {
-
-            fecharPedido();
+            abrirPedido(
+                Number(
+                    tr.dataset.id
+                )
+            );
 
         }
-
-    }
-);
-
-
-function fecharCancelamento() {
-
-    cancelOverlay.classList.remove(
-        'show'
     );
 
-}
+
+    filters.addEventListener(
+        'click',
+        evento => {
+
+            const btn =
+                evento.target.closest(
+                    '.pill'
+                );
 
 
-cancelCloseX.addEventListener(
-    'click',
-    fecharCancelamento
-);
+            if (!btn) {
+                return;
+            }
 
 
-voltarCancelamentoBtn.addEventListener(
-    'click',
-    fecharCancelamento
-);
+            filters
+                .querySelectorAll(
+                    '.pill'
+                )
+                .forEach(
+                    item =>
+                        item.classList
+                            .remove(
+                                'active'
+                            )
+                );
 
 
-// ============================================================
-// INICIAR
-// ============================================================
+            btn.classList.add(
+                'active'
+            );
 
-carregarPedidos();
-carregarEventos();
+
+            filtroAtual =
+                btn.dataset.filter;
+
+
+            aplicarFiltros();
+
+        }
+    );
+
+
+    searchInput.addEventListener(
+        'input',
+        aplicarFiltros
+    );
+
+
+    // ============================================================
+    // FECHAR MODAIS
+    // ============================================================
+
+    function fecharPedido() {
+
+        overlay.classList.remove(
+            'show'
+        );
+
+
+        document.body.style.overflow =
+            '';
+
+    }
+
+
+    closeX.addEventListener(
+        'click',
+        fecharPedido
+    );
+
+
+    closeBtn.addEventListener(
+        'click',
+        fecharPedido
+    );
+
+
+    overlay.addEventListener(
+        'click',
+        evento => {
+
+            if (
+                evento.target ===
+                overlay
+            ) {
+
+                fecharPedido();
+
+            }
+
+        }
+    );
+
+
+    function fecharCancelamento() {
+
+        cancelOverlay.classList.remove(
+            'show'
+        );
+
+    }
+
+
+    cancelCloseX.addEventListener(
+        'click',
+        fecharCancelamento
+    );
+
+
+    voltarCancelamentoBtn.addEventListener(
+        'click',
+        fecharCancelamento
+    );
+
+
+    // ============================================================
+    // INICIAR
+    // ============================================================
+
+    carregarPedidos();
+    carregarEventos();
