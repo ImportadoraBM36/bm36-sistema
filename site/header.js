@@ -631,7 +631,7 @@ function atualizarIconeTema() {
             ? `
 
                 
-                    href="./mandarArquivosClientes.html"
+                    href="./funcionarios.html"
                     class="user-dropdown-item admin-item"
                 >
                     <span>
