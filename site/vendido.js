@@ -441,7 +441,7 @@ const adicionarCabecalhoTabela = y => {
         pdf.text(textoSeguro(item.produto_posicao), 158, y + 5, { align: 'right' });
         pdf.text(textoSeguro(item.produto_codigo_fabricante), 181, y + 5, { align: 'right' });
         pdf.text(String(Number(item.quantidade || 0)), 208, y + 5, { align: 'right' });
-    // UNIT removido
+       // UNIT removido
 pdf.text(subtotal, 238, y, { align: 'right' });
 
         y += alturaLinha;
@@ -584,7 +584,7 @@ pdf.text(subtotal, 238, y, { align: 'right' });
 
     pdf.save(nomeArquivo);
 
-}
+
 
 
 pdfPedidoBtn.addEventListener(
