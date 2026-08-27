@@ -651,6 +651,27 @@ function atualizarIconeTema() {
     <div class="user-dropdown-divider"></div>
 
 
+    ${
+        ehAdmin
+            ? `
+
+                <a
+                    href="./mandarArquivos.html"
+                    class="user-dropdown-item admin-item"
+                >
+
+                    <span>
+                        📤
+                    </span>
+
+                    Enviar arquivos
+
+                </a>
+            `
+            : ''
+    }
+
+
     <button
         type="button"
         class="user-dropdown-item logout-item"
