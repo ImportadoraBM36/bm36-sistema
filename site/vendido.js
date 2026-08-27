@@ -332,20 +332,23 @@ async function gerarPdfPedido(
         pdf.setTextColor(28, 27, 46);
 
     };
+const adicionarCabecalhoTabela = y => {
 
-    const adicionarCabecalhoTabela = y => {
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(7);
 
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(7);
-        pdf.text('PRODUTO', margem + 3, y + 5.2);
-        pdf.text('CÓDIGO', 100, y + 5.2, { align: 'right' });
-        pdf.text('CORR.', 121, y + 5.2, { align: 'right' });
-        pdf.text('PRAT.', 140, y + 5.2, { align: 'right' });
-        pdf.text('POS.', 158, y + 5.2, { align: 'right' });
-        pdf.text('CÓD. FAB.', 181, y + 5.2, { align: 'right' });
-        pdf.text('QTD.', 208, y + 5.2, { align: 'right' });
-        pdf.text('UNIT.', 238, y + 5.2, { align: 'right' });
-        pdf.text('SUBTOTAL', 285, y + 5.2, { align: 'right' });
+    pdf.text('PRODUTO', margem + 3, y + 5.2);
+    pdf.text('CÓDIGO', 100, y + 5.2, { align: 'right' });
+    pdf.text('CORR.', 121, y + 5.2, { align: 'right' });
+    pdf.text('PRAT.', 140, y + 5.2, { align: 'right' });
+    pdf.text('POS.', 158, y + 5.2, { align: 'right' });
+    pdf.text('CÓD. FAB.', 181, y + 5.2, { align: 'right' });
+    pdf.text('QTD.', 208, y + 5.2, { align: 'right' });
+
+   
+    pdf.text('SUBTOTAL', 238, y + 5.2, { align: 'right' });
+
+};
 
         pdf.setDrawColor(90, 90, 90);
         pdf.setLineWidth(0.25);
