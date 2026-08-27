@@ -584,11 +584,11 @@ function atualizarIconeTema() {
 
     </a>
 
-        ${
+    ${
         ehAdmin
             ? `
 
-                
+                <a
                     href="./mandarArquivos.html"
                     class="user-dropdown-item admin-item"
                 >
@@ -609,7 +609,7 @@ function atualizarIconeTema() {
         ehAdmin
             ? `
 
-                
+                <a
                     href="./mandarArquivosClientes.html"
                     class="user-dropdown-item admin-item"
                 >
@@ -630,7 +630,7 @@ function atualizarIconeTema() {
         ehAdmin
             ? `
 
-                
+                <a
                     href="./funcionarios.html"
                     class="user-dropdown-item admin-item"
                 >
