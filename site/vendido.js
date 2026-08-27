@@ -337,8 +337,8 @@
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(7);
 
-        pdf.text('PRODUTO', margem + 3, y + 5.2);
-        pdf.text('CÓDIGO', 100, y + 5.2, { align: 'right' });
+       pdf.text('CÓDIGO', margem + 3, y + 5.2);
+pdf.text('PRODUTO', 35, y + 5.2);
         pdf.text('CORR.', 121, y + 5.2, { align: 'right' });
         pdf.text('PRAT.', 140, y + 5.2, { align: 'right' });
         pdf.text('POS.', 158, y + 5.2, { align: 'right' });
@@ -415,7 +415,7 @@
                 item.produto_codigo || item.codigo || ''
             );
 
-            const linhasNome = pdf.splitTextToSize(nome, 84);
+           const linhasNome = pdf.splitTextToSize(nome, 83);
 
             const alturaLinha = Math.max(10, linhasNome.length * 4.3 + 3);
 
@@ -432,8 +432,8 @@
 
             pdf.setFont('helvetica', 'normal');
             pdf.setFontSize(7.5);
-            pdf.text(linhasNome, margem + 3, y + 5);
-            pdf.text(codigo || '-', 100, y + 5, { align: 'right' });
+          pdf.text(codigo || '-', margem + 3, y + 5);
+pdf.text(linhasNome, 35, y + 5);
             pdf.text(textoSeguro(item.produto_corredor), 121, y + 5, { align: 'right' });
             pdf.text(textoSeguro(item.produto_prateleira), 140, y + 5, { align: 'right' });
             pdf.text(textoSeguro(item.produto_posicao), 158, y + 5, { align: 'right' });
