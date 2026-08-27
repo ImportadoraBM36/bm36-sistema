@@ -105,7 +105,7 @@
 
     border-radius: 16px;
 
-    padding: 23px;
+    padding: 18px;
 
     box-shadow:
         0 8px 20px
@@ -290,7 +290,7 @@
 
 .tabela-wrapper {
 
-    width: 100%;
+    width: 100;
 
     overflow-x: auto;
 }
@@ -304,10 +304,9 @@
     border-collapse:
         collapse;
 
-    table-layout:
-        fixed;
-
-    color: white;
+   table-layout:
+        auto;
+        
 }
 
 
