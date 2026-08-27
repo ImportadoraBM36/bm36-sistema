@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Importar clientes - BM36</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./importarClientes.css">
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <div class="logo">
+                <img src="./imagem/logo2.jpg" alt="BM36">
+            </div>
+
+            <span class="wordmark"></span>
+        </div>
+
+        <nav class="mainnav" id="mainnav">
+            <a href="./inicio.html" data-page="inicio">Início</a>
+            <a href="./venda.html" data-page="venda">Venda</a>
+            <a href="./produtos.html" data-page="produtos">Produtos</a>
+            <a href="./estoque.html" data-page="estoque">Estoque</a>
+            <a href="./CadastroCliente.html" data-page="clientes">Clientes</a>
+            <a href="./vendido.html" data-page="pedidos">Pedidos</a>
+            <a href="./eventos.html">Eventos</a>
+        </nav>
+
+        <div class="topbar-right">
+            <button
+                class="theme-toggle"
+                id="themeToggle"
+                type="button"
+                aria-label="Alternar tema"
+                title="Alternar tema"
+            >
+                🌙
+            </button>
+
+            <div class="avatar" id="avatarInitials" title="Minha conta">AD</div>
+
+            <button
+                class="menu-toggle"
+                id="menuToggle"
+                type="button"
+                aria-label="Abrir menu"
+            >
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main class="mandar-arquivos-page">
+        <div class="page-heading">
+            <div class="breadcrumb">Administração <span>/</span> Importação de clientes</div>
+            <h1>Importar clientes do sistema antigo</h1>
+            <p>Envie as planilhas recebidas, confira as informações encontradas e só então aplique as atualizações no cadastro de clientes.</p>
+        </div>
+
+        <ol class="import-steps" aria-label="Etapas da importação">
+            <li class="import-step is-active" id="stepUpload"><span>1</span> Enviar arquivos</li>
+            <li class="import-step" id="stepReview"><span>2</span> Conferir dados</li>
+            <li class="import-step" id="stepFinish"><span>3</span> Atualizar sistema</li>
+        </ol>
+
+        <section class="import-panel" id="uploadPanel">
+            <div class="panel-heading">
+                <div>
+                    <span class="eyebrow">ETAPA 1 DE 3</span>
+                    <h2>Selecione as planilhas</h2>
+                    <p>Você poderá enviar arquivos com contato, endereço e dados adicionais dos clientes. Nenhuma informação será alterada nesta etapa.</p>
+                </div>
+                <span class="safe-badge">🔒 Conferência antes de salvar</span>
+            </div>
+
+            <div class="source-mode" role="tablist" aria-label="Forma de informar os dados">
+                <button class="source-mode-button is-active" id="fileModeButton" type="button" role="tab" aria-selected="true">📄 Enviar planilhas</button>
+                <button class="source-mode-button" id="manualModeButton" type="button" role="tab" aria-selected="false">⌨️ Digitar ou colar dados</button>
+            </div>
+
+            <div id="fileMode">
+                <label class="upload-dropzone" id="uploadDropzone" for="fileInput">
+                    <input id="fileInput" type="file" accept=".xls,.xlsx,.csv" multiple>
+                    <span class="upload-icon" aria-hidden="true">📄</span>
+                    <strong>Arraste os arquivos aqui</strong>
+                    <span>ou clique para escolher no computador</span>
+                    <small>Formatos aceitos: .xls, .xlsx e .csv</small>
+                </label>
+
+                <div class="selected-files" id="selectedFiles" hidden>
+                    <div class="selected-files-heading">
+                        <strong>Arquivos selecionados</strong>
+                        <button class="text-button" id="clearFilesButton" type="button">Limpar</button>
+                    </div>
+                    <ul id="fileList"></ul>
+                </div>
+            </div>
+
+            <div class="manual-entry" id="manualMode" hidden>
+                <div class="manual-entry-heading">
+                    <div>
+                        <h3>Monte uma importação rápida</h3>
+                        <p>Preencha uma linha por cliente ou cole uma seleção do Excel diretamente na primeira célula desejada.</p>
+                    </div>
+                    <label class="manual-origin">Tipo <select id="manualTipo"><option value="PF">Pessoa Física</option><option value="PJ">Pessoa Jurídica</option></select></label>
+                </div>
+
+                <div class="manual-table-wrap">
+                    <table class="manual-table">
+                        <thead><tr><th>CPF/CNPJ *</th><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Inscrição Estadual</th></tr></thead>
+                        <tbody id="manualRows"></tbody>
+                    </table>
+                </div>
+
+                <div class="manual-entry-actions">
+                    <p>Ao colar várias linhas e colunas do Excel, a grade será preenchida automaticamente.</p>
+                    <div><button class="text-button" id="clearManualButton" type="button">Limpar dados</button><button class="secondary-button" id="addManualRowButton" type="button">+ Adicionar linha</button></div>
+                </div>
+            </div>
+
+            <div class="upload-actions">
+                <p id="sourceHelp">Na próxima etapa, você poderá conferir as colunas antes de atualizar o banco.</p>
+                <button class="primary-button" id="reviewButton" type="button" disabled>
+                    Conferir dados <span aria-hidden="true">→</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="review-panel" id="reviewPanel" hidden>
+            <div class="panel-heading">
+                <div>
+                    <span class="eyebrow">ETAPA 2 DE 3</span>
+                    <h2>Prévia da importação</h2>
+                    <p>Este é o formato da conferência que faremos após a leitura da planilha.</p>
+                </div>
+                <button class="secondary-button" id="backButton" type="button">← Voltar</button>
+            </div>
+
+            <div class="review-notice" id="reviewNotice">
+                <span aria-hidden="true">ℹ️</span>
+                <p id="reviewNoticeText"><strong>Confira antes de aplicar:</strong> arquivos com erros não serão importados. Clientes sem correspondência no sistema (CPF/CNPJ) serão listados, mas não serão criados automaticamente.</p>
+            </div>
+
+            <div class="import-summary">
+                <article><strong id="summaryFiles">0</strong><span>arquivos enviados</span></article>
+                <article><strong id="summaryClientes">—</strong><span>clientes encontrados</span></article>
+                <article><strong id="summaryUpdates">—</strong><span>atualizações possíveis</span></article>
+            </div>
+
+            <div class="mapping-card">
+                <div class="mapping-card-heading">
+                    <div>
+                        <h3>Mapeamento de colunas</h3>
+                        <p>Você confirma o significado de cada coluna antes da importação.</p>
+                    </div>
+                    <span class="status-pill" id="readStatus">Lendo arquivos</span>
+                </div>
+
+                <div class="mapping-grid" id="mappingGrid">
+                    <div class="mapping-row mapping-labels"><span>Coluna do arquivo</span><span>Será usada como</span><span>Origem</span></div>
+                </div>
+            </div>
+
+            <section class="update-options" aria-labelledby="updateOptionsTitle">
+                <div>
+                    <h3 id="updateOptionsTitle">O que deseja atualizar?</h3>
+                    <p>Escolha apenas as informações presentes nas planilhas que você conferiu. O nome do cliente é sempre atualizado quando informado.</p>
+                </div>
+
+                <label><input id="updateContato" type="checkbox"> <span><strong>Contato</strong><small>Atualiza telefone e e-mail dos clientes encontrados.</small></span></label>
+                <label><input id="updateEndereco" type="checkbox"> <span><strong>Endereço</strong><small>Atualiza CEP, rua, número, complemento, bairro, cidade e UF.</small></span></label>
+                <label><input id="updateDados" type="checkbox"> <span><strong>Dados adicionais</strong><small>Atualiza data de nascimento, categoria, Inscrição Estadual (IE) e notas internas.</small></span></label>
+            </section>
+
+            <section class="import-errors" id="importErrors" hidden>
+                <h3>Itens que precisam de atenção</h3>
+                <ul id="errorList"></ul>
+            </section>
+
+            <section class="sample-card" id="sampleCard" hidden>
+                <h3>Exemplos encontrados</h3>
+                <div class="sample-table-wrap">
+                    <table>
+                        <thead><tr><th>CPF/CNPJ</th><th>Origem</th><th>Dados encontrados</th><th>Status</th></tr></thead>
+                        <tbody id="sampleRows"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div class="review-actions">
+                <p id="applyHint">A atualização só será liberada depois que a leitura for concluída e não houver erros.</p>
+                <button class="primary-button" id="applyButton" type="button" disabled>
+                    Atualizar sistema <span aria-hidden="true">→</span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <script src="./header.js"></script>
+    <script src="./importacao-clientes.js"></script>
+</body>
+
+</html>
