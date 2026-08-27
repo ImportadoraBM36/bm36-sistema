@@ -610,7 +610,7 @@ function atualizarIconeTema() {
             ? `
 
                 
-                    href="./ImportarClientes.html"
+                    href="./mandarArquivosClientes.html"
                     class="user-dropdown-item admin-item"
                 >
 
