@@ -2299,8 +2299,7 @@ function renderSummary() {
 
 
 
-const porcentagem = 10; // Exemplo de porcentagem de desconto
-    const desconto = item * porcentagem / 100;
+
 
 // ============================================================
 // CANCELAR VENDA
