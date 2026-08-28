@@ -5008,16 +5008,15 @@ function lerPlanilhaClientesImportacao(arquivo) {
         }
 
         // O relatório legado usa colunas vazias entre os campos visuais.
+        // A coluna Razão pode conter apenas o CPF/CNPJ; nesse caso, tenta Nome.
+        const nomeDaRazao = String(linha[3] || '').trim();
         const nomeBruto = String(
-            indiceNomeManual >= 0 ? linha[indiceNomeManual] : (linha[3] || linha[1])
+            indiceNomeManual >= 0
+                ? linha[indiceNomeManual]
+                : (/[^\d\s.\-/]/.test(nomeDaRazao) ? nomeDaRazao : (linha[1] || ''))
         ).trim();
         const documento = documentoManual || extrairDocumentoImportacaoCliente(nomeBruto);
         const nome = limparNomeImportacaoCliente(nomeBruto, documento);
-
-        if (!nome) {
-            erros.push(`Linha ${indiceCabecalho + indice + 2}: cliente sem nome (código ${codigo}).`);
-            return;
-        }
 
         registros.push({
             codigo,
@@ -5089,7 +5088,7 @@ async function analisarImportacaoClientes(arquivos) {
             encontrados += 1;
             if (registro.telefone || registro.email) atualizacoesContato += 1;
             if (registro.nome || registro.contato) atualizacoesDados += 1;
-        } else {
+        } else if (registro.nome) {
             novos += 1;
         }
 
@@ -5103,7 +5102,7 @@ async function analisarImportacaoClientes(arquivos) {
             encontrados += 1;
             if (registro.telefone || registro.email) atualizacoesContato += 1;
             if (registro.nome || registro.contato) atualizacoesDados += 1;
-        } else {
+        } else if (registro.nome) {
             novos += 1;
         }
     });
@@ -5187,6 +5186,7 @@ app.post(
             let contatoAtualizado = 0;
             let dadosAtualizados = 0;
             let criados = 0;
+            let ignoradosSemNome = 0;
 
             for (const registro of analise.registros) {
                 const existente = await client.query(`
@@ -5204,16 +5204,18 @@ app.post(
                         UPDATE clientes SET
                             codigo_sistema_antigo = $1,
                             origem_sistema_antigo = $2,
-                            telefone = CASE WHEN $3 THEN COALESCE($4, telefone) ELSE telefone END,
-                            email = CASE WHEN $3 THEN COALESCE($5, email) ELSE email END,
-                            nome = CASE WHEN $6 THEN $7 ELSE nome END,
-                            observacoes = CASE WHEN $6 AND $8 IS NOT NULL THEN $8 ELSE observacoes END,
+                            telefone = CASE WHEN $3 THEN COALESCE(NULLIF(telefone, ''), $4) ELSE telefone END,
+                            email = CASE WHEN $3 THEN COALESCE(NULLIF(email, ''), $5) ELSE email END,
+                            nome = CASE WHEN $6 THEN COALESCE(NULLIF(nome, ''), NULLIF($7, '')) ELSE nome END,
+                            observacoes = CASE WHEN $6 THEN COALESCE(NULLIF(observacoes, ''), $8) ELSE observacoes END,
                             atualizado_em = NOW()
                         WHERE id = $9
                     `, [registro.codigo, registro.origem, atualizarContato, registro.telefone, registro.email,
                         atualizarDados, registro.nome, observacoes, existente.rows[0].id]);
                     if (atualizarContato && (registro.telefone || registro.email)) contatoAtualizado += 1;
                     if (atualizarDados && (registro.nome || observacoes)) dadosAtualizados += 1;
+                } else if (!registro.nome) {
+                    ignoradosSemNome += 1;
                 } else {
                     await client.query(`
                         INSERT INTO clientes (
@@ -5231,7 +5233,7 @@ app.post(
             res.json({
                 sucesso: true,
                 mensagem: 'Importação de clientes concluída com sucesso.',
-                resumo: { contatoAtualizado, enderecoAtualizado: 0, dadosAtualizados, criados }
+                resumo: { contatoAtualizado, enderecoAtualizado: 0, dadosAtualizados, criados, ignoradosSemNome }
             });
         } catch (erro) {
             await client.query('ROLLBACK');

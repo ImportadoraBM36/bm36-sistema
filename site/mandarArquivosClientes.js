@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyHint = elemento('applyHint');
     const reviewNoticeText = elemento('reviewNoticeText');
 
-    const COLUNAS_MANUAIS = ['cpf_cnpj', 'nome', 'telefone', 'email', 'ie'];
+    const COLUNAS_MANUAIS = ['codigo', 'nome', 'telefone', 'email', 'ie'];
 
     let arquivosSelecionados = [];
     let analiseAtual = null;
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             input.autocomplete = 'off';
             input.dataset.coluna = campo;
             input.value = valores[indice] || '';
-            input.placeholder = indice === 0 ? 'Ex.: 000.000.000-00' : '—';
+            input.placeholder = indice === 0 ? 'Ex.: 4204' : '—';
             input.addEventListener('input', atualizarEstadoManual);
             input.addEventListener('paste', colarDadosManuais);
 
@@ -151,12 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function atualizarEstadoManual() {
-        const possuiDocumento = [...manualRows.querySelectorAll('input[data-coluna="cpf_cnpj"]')]
+        const possuiCodigo = [...manualRows.querySelectorAll('input[data-coluna="codigo"]')]
             .some(input => input.value.trim());
 
         if (modoImportacao === 'manual') {
-            reviewButton.disabled = !possuiDocumento;
-            summaryFiles.textContent = possuiDocumento ? '1' : '0';
+            reviewButton.disabled = !possuiCodigo;
+            summaryFiles.textContent = possuiCodigo ? '1' : '0';
         }
     }
 
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .filter(linha => linha[0]);
 
         const colunas = [
-            ['CPF/CNPJ', 0],
+            ['Código', 0],
             ['Nome', 1],
             ['Telefone', 2],
             ['E-mail', 3],
@@ -357,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (!existemAlteracoes) {
             applyHint.textContent = 'Selecione pelo menos um tipo de atualização.';
         } else {
-            applyHint.textContent = 'A importação relaciona pelo código e origem do sistema antigo. Clientes ainda não cadastrados serão incluídos.';
+            applyHint.textContent = 'A importação relaciona pelo código e origem. Campos vazios são ignorados e dados existentes são preservados.';
         }
     }
 
@@ -384,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         reviewNoticeText.innerHTML = resumo.novos > 0
             ? `<strong>Pronto para importar:</strong> ${resumo.novos} cliente(s) novo(s) serão incluídos usando o código e a origem do sistema antigo.`
-            : '<strong>Confira antes de aplicar:</strong> arquivos com erros não serão importados. Os clientes encontrados serão atualizados somente nas opções escolhidas acima.';
+            : '<strong>Confira antes de aplicar:</strong> os dados informados preencherão apenas campos vazios dos clientes encontrados.';
 
         atualizarBotaoAplicar();
     }
@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
     [updateContato, updateEndereco, updateDados].forEach(opcao => opcao.addEventListener('change', atualizarBotaoAplicar));
 
     applyButton.addEventListener('click', async () => {
-        if (!window.confirm('Confirmar a importação dos clientes? Cadastros já existentes serão atualizados e os novos serão incluídos.')) return;
+        if (!window.confirm('Confirmar a importação dos clientes? O código e a origem serão usados para localizar cada cliente. Dados existentes não serão substituídos.')) return;
 
         const formData = criarFormData();
         formData.append('atualizarContato', String(updateContato.checked));
@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const resultado = await requisicaoImportacao('/importacoes-clientes/aplicar', formData);
-            alert(`${resultado.mensagem}\n\nNovos clientes: ${resultado.resumo.criados || 0}\nContato: ${resultado.resumo.contatoAtualizado}\nEndereço: ${resultado.resumo.enderecoAtualizado}\nDados adicionais: ${resultado.resumo.dadosAtualizados}`);
+            alert(`${resultado.mensagem}\n\nNovos clientes: ${resultado.resumo.criados || 0}\nSem nome e não cadastrados: ${resultado.resumo.ignoradosSemNome || 0}\nContato: ${resultado.resumo.contatoAtualizado}\nEndereço: ${resultado.resumo.enderecoAtualizado}\nDados adicionais: ${resultado.resumo.dadosAtualizados}`);
             importacaoConcluida = true;
             applyHint.textContent = 'Importação concluída. Reenvie as planilhas se desejar executar uma nova atualização.';
         } catch (erro) {

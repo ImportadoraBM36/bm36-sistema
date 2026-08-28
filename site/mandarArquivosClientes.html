@@ -119,7 +119,7 @@
 
                 <div class="manual-table-wrap">
                     <table class="manual-table">
-                        <thead><tr><th>CPF/CNPJ *</th><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Inscrição Estadual</th></tr></thead>
+                        <thead><tr><th>Código do cliente *</th><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Inscrição Estadual</th></tr></thead>
                         <tbody id="manualRows"></tbody>
                     </table>
                 </div>
@@ -150,7 +150,7 @@
 
             <div class="review-notice" id="reviewNotice">
                 <span aria-hidden="true">ℹ️</span>
-                <p id="reviewNoticeText"><strong>Confira antes de aplicar:</strong> arquivos com erros não serão importados. Clientes sem correspondência no sistema (CPF/CNPJ) serão listados, mas não serão criados automaticamente.</p>
+                <p id="reviewNoticeText"><strong>Confira antes de aplicar:</strong> o código do cliente e a origem identificam cada cadastro. Campos em branco não substituem dados já guardados.</p>
             </div>
 
             <div class="import-summary">
@@ -176,7 +176,7 @@
             <section class="update-options" aria-labelledby="updateOptionsTitle">
                 <div>
                     <h3 id="updateOptionsTitle">O que deseja atualizar?</h3>
-                    <p>Escolha apenas as informações presentes nas planilhas que você conferiu. O nome do cliente é sempre atualizado quando informado.</p>
+                    <p>O código do cliente e a origem identificam cada cadastro. Campos vazios são ignorados e dados já preenchidos no sistema são preservados.</p>
                 </div>
 
                 <label><input id="updateContato" type="checkbox"> <span><strong>Contato</strong><small>Atualiza telefone e e-mail dos clientes encontrados.</small></span></label>
@@ -193,7 +193,7 @@
                 <h3>Exemplos encontrados</h3>
                 <div class="sample-table-wrap">
                     <table>
-                        <thead><tr><th>CPF/CNPJ</th><th>Origem</th><th>Dados encontrados</th><th>Status</th></tr></thead>
+                        <thead><tr><th>Código do cliente</th><th>Origem</th><th>Dados encontrados</th><th>Status</th></tr></thead>
                         <tbody id="sampleRows"></tbody>
                     </table>
                 </div>
