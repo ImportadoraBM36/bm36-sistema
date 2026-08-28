@@ -1781,26 +1781,6 @@ function unidadesAvulsas(
 
 }
 
-function descontoDoProduto(
-    item
-) {
-
-    if (
-        item.packageSize <=
-        0
-    ) {
-
-        return item.qty;
-
-    }
-
-
-    return (
-        item.qty %
-        item.packageSize
-    );
-
-}
 
 // ============================================================
 // RENDER CARRINHO
@@ -1822,9 +1802,8 @@ function renderCart() {
         item => {
 
             const subtotal =
-                (item.price *
-                item.qty)/100 * desconto.value;
-                
+                item.price *
+                item.qty;
 
 
             const caixas =
@@ -1835,10 +1814,6 @@ function renderCart() {
 
             const avulsas =
                 unidadesAvulsas(
-                    item
-                );
-                 const desconto =
-                descontoDoProduto(
                     item
                 );
 
@@ -1929,15 +1904,6 @@ function renderCart() {
                                         ? `
                                             <small class="avulsas-info">
                                                 + ${avulsas} avul.
-                                            </small>
-                                        `
-                                        : ''
-                                }
-                                 ${
-                                    desconto > 0
-                                        ? `
-                                            <small class="avulsas-info">
-                                                + ${desconto} desconto
                                             </small>
                                         `
                                         : ''
@@ -3380,19 +3346,6 @@ document.addEventListener(
 
     }
 );
-
-
-// ============================================================
-// desconto no preço
-// ============================================================
-
-    /*const desconto = document.getElementById('desconto');
-const numero = document.getElementById('sumTotal');
-let resultado = document.getElementById('resultado');
-function aplicarDesconto() {
-resultado.value = document.getElementById('sumTotal').value/100 * desconto.value;
-document.getElementById("resultado").innerHTML = resultado.value;
-}*/
 
 
 // ============================================================
