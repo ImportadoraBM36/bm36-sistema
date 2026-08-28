@@ -1913,6 +1913,15 @@ function renderCart() {
                                         `
                                         : ''
                                 }
+                                 ${
+                                    desconto > 0
+                                        ? `
+                                            <small class="avulsas-info">
+                                                + ${desconto} desconto
+                                            </small>
+                                        `
+                                        : ''
+                                }
 
                             `
                             : `
