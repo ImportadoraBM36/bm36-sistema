@@ -4499,7 +4499,7 @@ async function analisarImportacaoPlanilhas(arquivos) {
                     CASE
                         WHEN m.tipo IN ('ENTRADA', 'AJUSTE_POSITIVO')
                             THEN m.quantidade
-                        WHEN m.tipo IN ('SAIDA', 'AJUSTE_NEGATIVO')
+                        WHEN m.tipo IN ('SAIDA', 'VENDA', 'AJUSTE_NEGATIVO')
                             THEN -m.quantidade
                         ELSE 0
                     END
@@ -4526,10 +4526,11 @@ async function analisarImportacaoPlanilhas(arquivos) {
     const produtosPorNome = new Map();
 
     resultadoProdutos.rows.forEach(produto => {
-        const chave = `${produto.origem}::${normalizarNomeImportacao(produto.nome)}`;
+        const chave = normalizarNomeImportacao(produto.nome);
         const atual = produtosPorNome.get(chave);
 
-        // Só permite a alternativa pelo nome quando ela aponta para um produto único.
+        // Só permite a alternativa pelo nome quando ela aponta para um produto único,
+        // mesmo que o relatório antigo apresente código ou origem divergentes.
         produtosPorNome.set(chave, atual ? null : produto);
     });
 
@@ -4538,7 +4539,7 @@ async function analisarImportacaoPlanilhas(arquivos) {
 
         if (!produtosPorChave.has(chaveCodigo) && registro.nome) {
             const produtoPorNome = produtosPorNome.get(
-                `${registro.origem}::${normalizarNomeImportacao(registro.nome)}`
+                normalizarNomeImportacao(registro.nome)
             );
 
             if (produtoPorNome) {
@@ -4817,12 +4818,12 @@ app.post(
 
                         SET
                             corredor = CASE
-                                WHEN $1 THEN $2
+                                WHEN $1 THEN COALESCE(NULLIF($2, ''), corredor)
                                 ELSE corredor
                             END,
 
                             prateleira = CASE
-                                WHEN $1 THEN $3
+                                WHEN $1 THEN COALESCE(NULLIF($3, ''), prateleira)
                                 ELSE prateleira
                             END,
 

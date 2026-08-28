@@ -954,7 +954,7 @@ async function carregarClientes() {
 
         clientesBody.innerHTML = `
             <tr>
-                <td colspan="6">
+                <td colspan="7">
                     Carregando clientes...
                 </td>
             </tr>
@@ -992,7 +992,7 @@ async function carregarClientes() {
 
         clientesBody.innerHTML = `
             <tr>
-                <td colspan="6">
+                <td colspan="7">
                     Não foi possível carregar os clientes.
                 </td>
             </tr>
@@ -1044,6 +1044,18 @@ function aplicarFiltroClientes() {
                     );
 
 
+                const codigo =
+                    String(
+                        cliente.id || ''
+                    );
+
+
+                const codigoAntigo =
+                    String(
+                        cliente.codigo_sistema_antigo || ''
+                    );
+
+
                 return (
                     !termo
                     ||
@@ -1064,6 +1076,20 @@ function aplicarFiltroClientes() {
                         &&
                         telefone.includes(
                             numeros
+                        )
+                    )
+                    ||
+                    (
+                        numeros
+                        &&
+                        (
+                            codigo.includes(
+                                numeros
+                            )
+                            ||
+                            codigoAntigo.includes(
+                                numeros
+                            )
                         )
                     )
                 );
@@ -1120,7 +1146,7 @@ function renderizarClientes() {
 
         clientesBody.innerHTML = `
             <tr>
-                <td colspan="6">
+                <td colspan="7">
                     Nenhum cliente encontrado.
                 </td>
             </tr>
@@ -1144,6 +1170,12 @@ function renderizarClientes() {
 
 
             tr.innerHTML = `
+
+                <td class="cliente-codigo-tabela">
+
+                    ${cliente.id}
+
+                </td>
 
                 <td>
 
