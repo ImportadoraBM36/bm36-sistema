@@ -5107,6 +5107,15 @@ async function analisarImportacaoClientes(arquivos) {
         }
     });
 
+    // As opções da tela devem refletir os dados disponíveis no arquivo,
+    // inclusive quando todos os clientes ainda serão criados agora.
+    atualizacoesContato = registros.filter(registro =>
+        Boolean(registro.telefone || registro.email)
+    ).length;
+    atualizacoesDados = registros.filter(registro =>
+        Boolean(registro.nome || registro.contato)
+    ).length;
+
     planilhas.forEach(planilha => erros.push(...planilha.erros));
 
     return {
