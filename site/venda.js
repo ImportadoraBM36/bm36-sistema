@@ -4,8 +4,6 @@ const API_URL =
 // ESTADO
 // ============================================================
 
-
-
 let clientes = [];
 
 let clienteSelecionado =
@@ -2243,11 +2241,10 @@ function renderSummary() {
         );
 
 
+    const desconto =
+        0;
 
- document
-        .getElementById(
-            'modaldesconto'
-        )
+
     document
         .getElementById(
             'sumItens'
@@ -2295,10 +2292,6 @@ function renderSummary() {
         );
 
 }
-
-
-
-
 
 
 // ============================================================
@@ -2508,11 +2501,6 @@ finalizarBtn.addEventListener(
 
     }
 );
-
-// ============================================================
-// DESCONTO NO PREÇO
-// ============================================================
-
 
 
 // ============================================================
