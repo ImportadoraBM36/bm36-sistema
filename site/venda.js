@@ -1781,6 +1781,26 @@ function unidadesAvulsas(
 
 }
 
+function descontoDoProduto(
+    item
+) {
+
+    if (
+        item.packageSize <=
+        0
+    ) {
+
+        return item.qty;
+
+    }
+
+
+    return (
+        item.qty %
+        item.packageSize
+    );
+
+}
 
 // ============================================================
 // RENDER CARRINHO
