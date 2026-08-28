@@ -342,13 +342,17 @@ function mascaraCNPJ(valor) {
 function mascaraTelefone(valor) {
 
     let v =
-        somenteNumeros(
-            valor
-        )
-            .slice(
-                0,
-                11
-            );
+        somenteNumeros(valor);
+
+
+    // Alguns relatórios antigos gravam o DDD com dois zeros à esquerda,
+    // por exemplo "(0054) 358-1351 358". Remove esse prefixo inválido e
+    // conserva DDD + telefone fixo (10 dígitos).
+    if (v.startsWith('00')) {
+        v = v.replace(/^00+/, '').slice(0, 10);
+    } else {
+        v = v.slice(0, 11);
+    }
 
 
     if (
@@ -1310,11 +1314,29 @@ function atualizarPaginacaoClientes() {
         '';
 
 
-    for (
-        let i = 1;
-        i <= totalPaginas;
-        i++
-    ) {
+    const paginasVisiveis = new Set([
+        1,
+        totalPaginas,
+        paginaClientes - 1,
+        paginaClientes,
+        paginaClientes + 1
+    ]);
+
+    const paginasOrdenadas = [...paginasVisiveis]
+        .filter(numero => numero >= 1 && numero <= totalPaginas)
+        .sort((a, b) => a - b);
+
+    let paginaAnteriorExibida = 0;
+
+    paginasOrdenadas.forEach(i => {
+
+        if (i - paginaAnteriorExibida > 1) {
+            const reticencias = document.createElement('span');
+            reticencias.className = 'clientes-paginacao-reticencias';
+            reticencias.textContent = '…';
+            reticencias.setAttribute('aria-hidden', 'true');
+            clientesNumerosPaginas.appendChild(reticencias);
+        }
 
         const botao =
             document.createElement(
@@ -1360,7 +1382,9 @@ function atualizarPaginacaoClientes() {
                 botao
             );
 
-    }
+        paginaAnteriorExibida = i;
+
+    });
 
 }
 

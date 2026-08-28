@@ -4954,6 +4954,21 @@ function limparNomeImportacaoCliente(valor, documento) {
 }
 
 
+function normalizarTelefoneImportacaoCliente(valor) {
+
+    let telefone = String(valor || '').replace(/\D/g, '');
+
+    if (telefone.startsWith('00')) {
+        telefone = telefone.replace(/^00+/, '').slice(0, 10);
+    } else {
+        telefone = telefone.slice(0, 11);
+    }
+
+    return telefone || null;
+
+}
+
+
 function lerPlanilhaClientesImportacao(arquivo) {
 
     const workbook = XLSX.read(arquivo.buffer, { type: 'buffer', raw: false });
@@ -5023,9 +5038,9 @@ function lerPlanilhaClientesImportacao(arquivo) {
             origem,
             nome,
             documento,
-            telefone: String(
+            telefone: normalizarTelefoneImportacaoCliente(
                 indiceTelefoneManual >= 0 ? linha[indiceTelefoneManual] : (linha[7] || linha[8])
-            ).trim() || null,
+            ),
             contato: String(linha[10] || '').trim() || null,
             email: String(
                 indiceEmailManual >= 0 ? linha[indiceEmailManual] : linha[11]

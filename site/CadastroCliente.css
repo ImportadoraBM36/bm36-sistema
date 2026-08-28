@@ -817,6 +817,18 @@ select{
   display:flex;
 
   gap:5px;
+
+  align-items:center;
+}
+
+.clientes-paginacao-reticencias{
+  min-width:20px;
+
+  text-align:center;
+
+  color:rgba(255,255,255,.65);
+
+  font-weight:800;
 }
 
 .clientes-paginas button{
