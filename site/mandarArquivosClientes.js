@@ -8,8 +8,8 @@ const API_URL = 'https://bm36-sistema-production.up.railway.app/api';
  * nascimento, Categoria, Endereço (CEP/Rua/Número/Complemento/Bairro/
  * Cidade/UF), Inscrição Estadual (IE) e Notas internas.
  *
- * O casamento do registro da planilha com o cliente já cadastrado é
- * feito pelo CPF/CNPJ (normalizado, sem pontuação).
+ * O casamento do registro da planilha é feito pelo código e pela origem
+ * do sistema antigo; quando houver CPF/CNPJ, ele também é usado como apoio.
  *
  * IDs de elementos esperados no HTML (mesmos nomes usados abaixo):
  * fileInput, uploadDropzone, selectedFiles, fileList, clearFilesButton,
@@ -21,8 +21,8 @@ const API_URL = 'https://bm36-sistema-production.up.railway.app/api';
  * errorList, sampleCard, sampleRows, applyButton, applyHint,
  * reviewNoticeText.
  *
- * Rotas de API sugeridas (backend ainda precisa implementá-las, no
- * mesmo padrão de /importacoes/preview e /importacoes/aplicar):
+ * Rotas de API implementadas no backend, no mesmo padrão de
+ * /importacoes/preview e /importacoes/aplicar:
  * POST /importacoes-clientes/preview
  * POST /importacoes-clientes/aplicar
  */
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ]);
 
         planilhas.forEach(planilha => {
-            const [coluna, uso] = mapeamentos.get(planilha.tipo) || ['CPF/CNPJ', 'Identificação do cliente'];
+            const [coluna, uso] = mapeamentos.get(planilha.tipo) || ['Código antigo', 'Identificação do cliente'];
             adicionarLinhaMapeamento(coluna, uso, planilha.origem);
         });
     }
@@ -357,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (!existemAlteracoes) {
             applyHint.textContent = 'Selecione pelo menos um tipo de atualização.';
         } else {
-            applyHint.textContent = 'A importação atualizará somente clientes já cadastrados (casados pelo CPF/CNPJ). Nenhum cliente novo será criado.';
+            applyHint.textContent = 'A importação relaciona pelo código e origem do sistema antigo. Clientes ainda não cadastrados serão incluídos.';
         }
     }
 
@@ -382,9 +382,9 @@ document.addEventListener('DOMContentLoaded', () => {
         preencherAmostra(analise.amostra);
         preencherErros(analise.erros);
 
-        reviewNoticeText.innerHTML = resumo.naoEncontrados > 0
-            ? `<strong>Atenção:</strong> ${resumo.naoEncontrados} cliente(s) não foram encontrados no sistema (CPF/CNPJ não bate com nenhum cadastro) e serão ignorados. Nenhum cliente será criado automaticamente.`
-            : '<strong>Confira antes de aplicar:</strong> arquivos com erros não serão importados. Os clientes encontrados serão atualizados somente nas opções escolhidas abaixo.';
+        reviewNoticeText.innerHTML = resumo.novos > 0
+            ? `<strong>Pronto para importar:</strong> ${resumo.novos} cliente(s) novo(s) serão incluídos usando o código e a origem do sistema antigo.`
+            : '<strong>Confira antes de aplicar:</strong> arquivos com erros não serão importados. Os clientes encontrados serão atualizados somente nas opções escolhidas acima.';
 
         atualizarBotaoAplicar();
     }
@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
     [updateContato, updateEndereco, updateDados].forEach(opcao => opcao.addEventListener('change', atualizarBotaoAplicar));
 
     applyButton.addEventListener('click', async () => {
-        if (!window.confirm('Confirmar a atualização dos clientes? Somente cadastros já existentes (casados pelo CPF/CNPJ) serão alterados.')) return;
+        if (!window.confirm('Confirmar a importação dos clientes? Cadastros já existentes serão atualizados e os novos serão incluídos.')) return;
 
         const formData = criarFormData();
         formData.append('atualizarContato', String(updateContato.checked));
@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const resultado = await requisicaoImportacao('/importacoes-clientes/aplicar', formData);
-            alert(`${resultado.mensagem}\n\nContato: ${resultado.resumo.contatoAtualizado}\nEndereço: ${resultado.resumo.enderecoAtualizado}\nDados adicionais: ${resultado.resumo.dadosAtualizados}`);
+            alert(`${resultado.mensagem}\n\nNovos clientes: ${resultado.resumo.criados || 0}\nContato: ${resultado.resumo.contatoAtualizado}\nEndereço: ${resultado.resumo.enderecoAtualizado}\nDados adicionais: ${resultado.resumo.dadosAtualizados}`);
             importacaoConcluida = true;
             applyHint.textContent = 'Importação concluída. Reenvie as planilhas se desejar executar uma nova atualização.';
         } catch (erro) {

@@ -1124,6 +1124,9 @@ app.get(
                     email,
                     data_nascimento,
                     categoria,
+                    ie,
+                    codigo_sistema_antigo,
+                    origem_sistema_antigo,
                     cep,
                     rua,
                     numero,
@@ -1185,6 +1188,9 @@ app.get(
                     email,
                     data_nascimento,
                     categoria,
+                    ie,
+                    codigo_sistema_antigo,
+                    origem_sistema_antigo,
                     cep,
                     rua,
                     numero,
@@ -1255,6 +1261,7 @@ app.post(
                 email,
                 data_nascimento,
                 categoria,
+                ie,
                 cep,
                 rua,
                 numero,
@@ -1346,6 +1353,7 @@ app.post(
                         email,
                         data_nascimento,
                         categoria,
+                        ie,
                         cep,
                         rua,
                         numero,
@@ -1373,12 +1381,14 @@ app.post(
                         $13,
                         $14,
                         $15,
-                        $16
+                        $16,
+                        $17
                     )
 
                     RETURNING *
                     `,
                     [
+
                         tipo_pessoa || 'FISICA',
 
                         nome.trim(),
@@ -1396,6 +1406,10 @@ app.post(
                         data_nascimento || null,
 
                         categoria || null,
+
+                        ie
+                            ? ie.trim()
+                            : null,
 
                         cep
                             ? String(cep).replace(/\D/g, '')
@@ -1498,6 +1512,7 @@ app.put(
                 email,
                 data_nascimento,
                 categoria,
+                ie,
                 cep,
                 rua,
                 numero,
@@ -1572,18 +1587,19 @@ app.put(
                         email = $5,
                         data_nascimento = $6,
                         categoria = $7,
-                        cep = $8,
-                        rua = $9,
-                        numero = $10,
-                        complemento = $11,
-                        bairro = $12,
-                        cidade = $13,
-                        uf = $14,
-                        observacoes = $15,
-                        ativo = $16,
+                        ie = $8,
+                        cep = $9,
+                        rua = $10,
+                        numero = $11,
+                        complemento = $12,
+                        bairro = $13,
+                        cidade = $14,
+                        uf = $15,
+                        observacoes = $16,
+                        ativo = $17,
                         atualizado_em = NOW()
 
-                    WHERE id = $17
+                    WHERE id = $18
 
                     RETURNING *
                     `,
@@ -1595,6 +1611,7 @@ app.put(
                         email || null,
                         data_nascimento || null,
                         categoria || null,
+                        ie || null,
                         cep || null,
                         rua || null,
                         numero || null,
@@ -4065,6 +4082,14 @@ function normalizarCodigoImportacao(valor) {
 }
 
 
+function normalizarNomeImportacao(valor) {
+
+    return normalizarTextoImportacao(valor)
+        .replace(/\s+/g, ' ');
+
+}
+
+
 function converterNumeroImportacao(valor) {
 
     if (
@@ -4244,11 +4269,18 @@ function lerPlanilhaImportacao(arquivo) {
         encontrarIndiceColunaImportacao(
             cabecalho,
             [
+                'pr. venda',
                 'preco venda',
                 'preco',
                 'valor venda',
                 'vl venda'
             ]
+        );
+
+    const indiceNome =
+        encontrarIndiceColunaImportacao(
+            cabecalho,
+            ['descricao', 'descrição', 'nome']
         );
 
     const origem = detectarOrigemImportacao(linhas);
@@ -4300,6 +4332,11 @@ function lerPlanilhaImportacao(arquivo) {
                 origem,
                 linha: indiceCabecalho + indice + 2
             };
+
+
+            if (indiceNome >= 0) {
+                registro.nome = String(linha[indiceNome] || '').trim();
+            }
 
 
             if (indiceEstoque >= 0) {
@@ -4398,6 +4435,7 @@ function consolidarRegistrosImportacao(planilhas) {
             [
                 'estoque',
                 'preco',
+                'nome',
                 'corredor',
                 'prateleira'
             ].forEach(campo => {
@@ -4454,6 +4492,7 @@ async function analisarImportacaoPlanilhas(arquivos) {
             p.corredor,
             p.prateleira,
             p.preco_venda,
+            p.nome,
 
             COALESCE(
                 SUM(
@@ -4483,6 +4522,30 @@ async function analisarImportacaoPlanilhas(arquivos) {
             produto
         ])
     );
+
+    const produtosPorNome = new Map();
+
+    resultadoProdutos.rows.forEach(produto => {
+        const chave = `${produto.origem}::${normalizarNomeImportacao(produto.nome)}`;
+        const atual = produtosPorNome.get(chave);
+
+        // Só permite a alternativa pelo nome quando ela aponta para um produto único.
+        produtosPorNome.set(chave, atual ? null : produto);
+    });
+
+    registros.forEach(registro => {
+        const chaveCodigo = `${registro.origem}::${registro.codigo}`;
+
+        if (!produtosPorChave.has(chaveCodigo) && registro.nome) {
+            const produtoPorNome = produtosPorNome.get(
+                `${registro.origem}::${normalizarNomeImportacao(registro.nome)}`
+            );
+
+            if (produtoPorNome) {
+                produtosPorChave.set(chaveCodigo, produtoPorNome);
+            }
+        }
+    });
 
     let encontrados = 0;
     let naoEncontrados = 0;
@@ -4860,6 +4923,320 @@ app.post(
                 sucesso: false,
                 mensagem: 'Não foi possível aplicar a importação.'
             });
+        } finally {
+            client.release();
+        }
+    }
+);
+
+
+// ============================================================
+// IMPORTAÇÃO DE CLIENTES (SISTEMA ANTIGO)
+// ============================================================
+
+function extrairDocumentoImportacaoCliente(valor) {
+
+    const encontrado = String(valor || '').match(/(?:^|\s)(\d{11}|\d{14})\s*$/);
+
+    return encontrado ? encontrado[1] : null;
+
+}
+
+
+function limparNomeImportacaoCliente(valor, documento) {
+
+    const nome = String(valor || '').trim();
+
+    return documento
+        ? nome.replace(new RegExp(`\\s*${documento}\\s*$`), '').trim()
+        : nome;
+
+}
+
+
+function lerPlanilhaClientesImportacao(arquivo) {
+
+    const workbook = XLSX.read(arquivo.buffer, { type: 'buffer', raw: false });
+    const primeiraAba = workbook.SheetNames[0];
+
+    if (!primeiraAba) {
+        throw new Error('A planilha não possui nenhuma aba.');
+    }
+
+    const linhas = XLSX.utils.sheet_to_json(workbook.Sheets[primeiraAba], {
+        header: 1,
+        defval: '',
+        raw: false,
+        blankrows: false
+    });
+    const indiceCabecalho = linhas.findIndex(linha =>
+        linha.some(celula => {
+            const titulo = normalizarTextoImportacao(celula);
+            return titulo === 'codigo' || titulo === 'cpf/cnpj';
+        })
+    );
+
+    if (indiceCabecalho < 0) {
+        throw new Error('Não encontramos a coluna "Código" nesta planilha de clientes.');
+    }
+
+    const origem = detectarOrigemImportacao(linhas);
+
+    if (!origem) {
+        throw new Error('Não foi possível identificar a origem BM36 ou WORLD CLASSIC.');
+    }
+
+    const registros = [];
+    const erros = [];
+
+    const cabecalho = linhas[indiceCabecalho];
+    const indiceDocumentoManual = encontrarIndiceColunaImportacao(cabecalho, ['cpf/cnpj']);
+    const indiceNomeManual = encontrarIndiceColunaImportacao(cabecalho, ['nome']);
+    const indiceTelefoneManual = encontrarIndiceColunaImportacao(cabecalho, ['telefone']);
+    const indiceEmailManual = encontrarIndiceColunaImportacao(cabecalho, ['e-mail', 'email']);
+
+    linhas.slice(indiceCabecalho + 1).forEach((linha, indice) => {
+        const documentoManual = indiceDocumentoManual >= 0
+            ? String(linha[indiceDocumentoManual] || '').replace(/\D/g, '')
+            : null;
+        const codigo = normalizarCodigoImportacao(
+            indiceDocumentoManual >= 0 ? documentoManual : linha[0]
+        );
+
+        if (!codigo) {
+            return;
+        }
+
+        // O relatório legado usa colunas vazias entre os campos visuais.
+        const nomeBruto = String(
+            indiceNomeManual >= 0 ? linha[indiceNomeManual] : (linha[3] || linha[1])
+        ).trim();
+        const documento = documentoManual || extrairDocumentoImportacaoCliente(nomeBruto);
+        const nome = limparNomeImportacaoCliente(nomeBruto, documento);
+
+        if (!nome) {
+            erros.push(`Linha ${indiceCabecalho + indice + 2}: cliente sem nome (código ${codigo}).`);
+            return;
+        }
+
+        registros.push({
+            codigo,
+            origem,
+            nome,
+            documento,
+            telefone: String(
+                indiceTelefoneManual >= 0 ? linha[indiceTelefoneManual] : (linha[7] || linha[8])
+            ).trim() || null,
+            contato: String(linha[10] || '').trim() || null,
+            email: String(
+                indiceEmailManual >= 0 ? linha[indiceEmailManual] : linha[11]
+            ).trim().toLowerCase() || null,
+            linha: indiceCabecalho + indice + 2
+        });
+    });
+
+    return {
+        nome: arquivo.originalname,
+        aba: primeiraAba,
+        origem,
+        tipo: 'contato',
+        cabecalho: ['Código', 'Razão/Nome', 'Telefone', 'Contato', 'E-mail'],
+        registros,
+        erros
+    };
+}
+
+
+async function analisarImportacaoClientes(arquivos) {
+
+    const planilhas = [];
+    const erros = [];
+
+    arquivos.forEach(arquivo => {
+        try {
+            planilhas.push(lerPlanilhaClientesImportacao(arquivo));
+        } catch (erro) {
+            erros.push(`${arquivo.originalname}: ${erro.message}`);
+        }
+    });
+
+    const registros = planilhas.flatMap(planilha => planilha.registros);
+    const resultado = await pool.query(`
+        SELECT id, documento, codigo_sistema_antigo, origem_sistema_antigo
+        FROM clientes
+    `);
+    const porCodigo = new Map();
+    const porDocumento = new Map();
+
+    resultado.rows.forEach(cliente => {
+        if (cliente.codigo_sistema_antigo && cliente.origem_sistema_antigo) {
+            porCodigo.set(`${cliente.origem_sistema_antigo}::${cliente.codigo_sistema_antigo}`, cliente);
+        }
+        if (cliente.documento) {
+            porDocumento.set(String(cliente.documento).replace(/\D/g, ''), cliente);
+        }
+    });
+
+    let encontrados = 0;
+    let novos = 0;
+    let atualizacoesContato = 0;
+    let atualizacoesDados = 0;
+    const amostra = registros.slice(0, 12).map(registro => {
+        const cliente = porCodigo.get(`${registro.origem}::${registro.codigo}`)
+            || (registro.documento ? porDocumento.get(registro.documento) : null);
+
+        if (cliente) {
+            encontrados += 1;
+            if (registro.telefone || registro.email) atualizacoesContato += 1;
+            if (registro.nome || registro.contato) atualizacoesDados += 1;
+        } else {
+            novos += 1;
+        }
+
+        return { ...registro, encontrado: Boolean(cliente) };
+    });
+
+    registros.slice(12).forEach(registro => {
+        const cliente = porCodigo.get(`${registro.origem}::${registro.codigo}`)
+            || (registro.documento ? porDocumento.get(registro.documento) : null);
+        if (cliente) {
+            encontrados += 1;
+            if (registro.telefone || registro.email) atualizacoesContato += 1;
+            if (registro.nome || registro.contato) atualizacoesDados += 1;
+        } else {
+            novos += 1;
+        }
+    });
+
+    planilhas.forEach(planilha => erros.push(...planilha.erros));
+
+    return {
+        planilhas: planilhas.map(planilha => ({
+            nome: planilha.nome,
+            aba: planilha.aba,
+            origem: planilha.origem,
+            tipo: planilha.tipo,
+            cabecalho: planilha.cabecalho,
+            registros: planilha.registros.length
+        })),
+        registros,
+        resumo: {
+            arquivos: planilhas.length,
+            registros: registros.length,
+            encontrados,
+            novos,
+            naoEncontrados: novos,
+            atualizacoesContato,
+            atualizacoesEndereco: 0,
+            atualizacoesDados,
+            erros: erros.length
+        },
+        amostra,
+        erros: erros.slice(0, 30)
+    };
+}
+
+
+app.post(
+    '/api/importacoes-clientes/preview',
+    autenticar,
+    somenteAdmin,
+    uploadPlanilhasImportacao.array('arquivos', 6),
+    async (req, res) => {
+        try {
+            if (!req.files || req.files.length === 0) {
+                return res.status(400).json({ sucesso: false, mensagem: 'Selecione ao menos uma planilha.' });
+            }
+
+            const analise = await analisarImportacaoClientes(req.files);
+            res.json({ sucesso: true, ...analise, registros: undefined });
+        } catch (erro) {
+            console.error('Erro ao gerar prévia da importação de clientes:', erro);
+            res.status(500).json({ sucesso: false, mensagem: 'Não foi possível ler as planilhas de clientes.' });
+        }
+    }
+);
+
+
+app.post(
+    '/api/importacoes-clientes/aplicar',
+    autenticar,
+    somenteAdmin,
+    uploadPlanilhasImportacao.array('arquivos', 6),
+    async (req, res) => {
+        const client = await pool.connect();
+
+        try {
+            if (!req.files || req.files.length === 0) {
+                return res.status(400).json({ sucesso: false, mensagem: 'Selecione novamente as planilhas para confirmar a importação.' });
+            }
+
+            const atualizarContato = req.body.atualizarContato === 'true';
+            const atualizarDados = req.body.atualizarDados === 'true';
+
+            if (!atualizarContato && !atualizarDados) {
+                return res.status(400).json({ sucesso: false, mensagem: 'Selecione contato ou dados adicionais para importar.' });
+            }
+
+            const analise = await analisarImportacaoClientes(req.files);
+            if (analise.resumo.erros > 0) {
+                return res.status(400).json({ sucesso: false, mensagem: 'Corrija os erros da planilha antes de aplicar a importação.', erros: analise.erros });
+            }
+
+            await client.query('BEGIN');
+            let contatoAtualizado = 0;
+            let dadosAtualizados = 0;
+            let criados = 0;
+
+            for (const registro of analise.registros) {
+                const existente = await client.query(`
+                    SELECT id FROM clientes
+                    WHERE (codigo_sistema_antigo = $1 AND origem_sistema_antigo = $2)
+                       OR ($3::TEXT IS NOT NULL AND documento = $3)
+                    ORDER BY id LIMIT 1
+                `, [registro.codigo, registro.origem, registro.documento]);
+                const observacoes = registro.contato
+                    ? `Contato importado do sistema antigo: ${registro.contato}`
+                    : null;
+
+                if (existente.rows.length > 0) {
+                    await client.query(`
+                        UPDATE clientes SET
+                            codigo_sistema_antigo = $1,
+                            origem_sistema_antigo = $2,
+                            telefone = CASE WHEN $3 THEN COALESCE($4, telefone) ELSE telefone END,
+                            email = CASE WHEN $3 THEN COALESCE($5, email) ELSE email END,
+                            nome = CASE WHEN $6 THEN $7 ELSE nome END,
+                            observacoes = CASE WHEN $6 AND $8 IS NOT NULL THEN $8 ELSE observacoes END,
+                            atualizado_em = NOW()
+                        WHERE id = $9
+                    `, [registro.codigo, registro.origem, atualizarContato, registro.telefone, registro.email,
+                        atualizarDados, registro.nome, observacoes, existente.rows[0].id]);
+                    if (atualizarContato && (registro.telefone || registro.email)) contatoAtualizado += 1;
+                    if (atualizarDados && (registro.nome || observacoes)) dadosAtualizados += 1;
+                } else {
+                    await client.query(`
+                        INSERT INTO clientes (
+                            tipo_pessoa, nome, documento, telefone, email, observacoes,
+                            ativo, codigo_sistema_antigo, origem_sistema_antigo
+                        ) VALUES ($1, $2, $3, $4, $5, $6, TRUE, $7, $8)
+                    `, [registro.documento && registro.documento.length === 14 ? 'JURIDICA' : 'FISICA',
+                        registro.nome, registro.documento, registro.telefone, registro.email, observacoes,
+                        registro.codigo, registro.origem]);
+                    criados += 1;
+                }
+            }
+
+            await client.query('COMMIT');
+            res.json({
+                sucesso: true,
+                mensagem: 'Importação de clientes concluída com sucesso.',
+                resumo: { contatoAtualizado, enderecoAtualizado: 0, dadosAtualizados, criados }
+            });
+        } catch (erro) {
+            await client.query('ROLLBACK');
+            console.error('Erro ao aplicar importação de clientes:', erro);
+            res.status(500).json({ sucesso: false, mensagem: 'Não foi possível aplicar a importação de clientes.' });
         } finally {
             client.release();
         }
@@ -7479,6 +7856,25 @@ async function iniciarServidor() {
                 ADD COLUMN IF NOT EXISTS corredor TEXT,
                 ADD COLUMN IF NOT EXISTS prateleira TEXT,
                 ADD COLUMN IF NOT EXISTS posicao TEXT
+        `);
+
+        await pool.query(`
+            ALTER TABLE clientes
+                ADD COLUMN IF NOT EXISTS ie TEXT,
+                ADD COLUMN IF NOT EXISTS codigo_sistema_antigo TEXT,
+                ADD COLUMN IF NOT EXISTS origem_sistema_antigo TEXT
+        `);
+
+        await pool.query(`
+            ALTER TABLE clientes
+                ALTER COLUMN documento DROP NOT NULL
+        `);
+
+        await pool.query(`
+            CREATE UNIQUE INDEX IF NOT EXISTS clientes_codigo_sistema_antigo_origem_uidx
+                ON clientes (codigo_sistema_antigo, origem_sistema_antigo)
+                WHERE codigo_sistema_antigo IS NOT NULL
+                  AND origem_sistema_antigo IS NOT NULL
         `);
 
         app.listen(
