@@ -1,5 +1,7 @@
 const API_URL =
     'https://bm36-sistema-production.up.railway.app/api';
+
+
 // ============================================================
 // ESTADO
 // ============================================================
@@ -1800,8 +1802,9 @@ function renderCart() {
         item => {
 
             const subtotal =
-                item.price *
-                item.qty;
+                (item.price *
+                item.qty)/100 * desconto.value;
+                
 
 
             const caixas =
@@ -1812,6 +1815,10 @@ function renderCart() {
 
             const avulsas =
                 unidadesAvulsas(
+                    item
+                );
+                 const desconto =
+                descontoDoProduto(
                     item
                 );
 
@@ -3344,6 +3351,19 @@ document.addEventListener(
 
     }
 );
+
+
+// ============================================================
+// desconto no preço
+// ============================================================
+
+    /*const desconto = document.getElementById('desconto');
+const numero = document.getElementById('sumTotal');
+let resultado = document.getElementById('resultado');
+function aplicarDesconto() {
+resultado.value = document.getElementById('sumTotal').value/100 * desconto.value;
+document.getElementById("resultado").innerHTML = resultado.value;
+}*/
 
 
 // ============================================================
