@@ -4,6 +4,8 @@ const API_URL =
 // ESTADO
 // ============================================================
 
+
+
 let clientes = [];
 
 let clienteSelecionado =
@@ -2241,10 +2243,11 @@ function renderSummary() {
         );
 
 
-    const desconto =
-        0;
 
-
+ document
+        .getElementById(
+            'modaldesconto'
+        )
     document
         .getElementById(
             'sumItens'
@@ -2293,6 +2296,11 @@ function renderSummary() {
 
 }
 
+
+
+
+const porcentagem = 10; // Exemplo de porcentagem de desconto
+    const desconto = item * porcentagem / 100;
 
 // ============================================================
 // CANCELAR VENDA
@@ -2501,6 +2509,11 @@ finalizarBtn.addEventListener(
 
     }
 );
+
+// ============================================================
+// DESCONTO NO PREÇO
+// ============================================================
+
 
 
 // ============================================================
