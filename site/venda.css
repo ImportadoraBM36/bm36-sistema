@@ -1642,6 +1642,23 @@ table {
     border-color: var(--pink);
 }
 
+.item-discount-input {
+    width: 86px;
+    padding: 7px;
+    border: 1px solid var(--navy-border);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--ink);
+    text-align: right;
+}
+
+.item-total {
+    display: block;
+    margin-top: 6px;
+    color: #a9a6d6;
+    white-space: nowrap;
+}
+
 
 @media (max-width: 600px) {
     .modal-quantidade {

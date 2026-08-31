@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function criarLinhaManual(valores = []) {
         const linha = document.createElement('tr');
 
-        ['codigo', 'estoque', 'corredor', 'prateleira', 'preco'].forEach((campo, indice) => {
+        ['codigo', 'estoque', 'corredor', 'prateleira', 'posicao', 'preco'].forEach((campo, indice) => {
             const celula = document.createElement('td');
             const input = document.createElement('input');
 
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const linhaInicial = [...manualRows.children]
             .indexOf(event.target.closest('tr'));
 
-        const colunaInicial = ['codigo', 'estoque', 'corredor', 'prateleira', 'preco']
+        const colunaInicial = ['codigo', 'estoque', 'corredor', 'prateleira', 'posicao', 'preco']
             .indexOf(event.target.dataset.coluna);
 
         garantirLinhasManuais(linhaInicial + linhasColadas.length);
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             linhaColada.forEach((valor, deslocamentoColuna) => {
                 const coluna = colunaInicial + deslocamentoColuna;
 
-                if (coluna < 5) {
+                if (coluna < 6) {
                     const input = manualRows.children[linhaInicial + deslocamentoLinha]
                         .querySelectorAll('input')[coluna];
                     input.value = valor.trim();
@@ -179,7 +179,8 @@ document.addEventListener('DOMContentLoaded', () => {
             ['Est. Físico', 1],
             ['Cor.', 2],
             ['Prat', 3],
-            ['Preço de Venda', 4]
+            ['Posição', 4],
+            ['Preço de Venda', 5]
         ].filter(([, indice]) => indice === 0 || registros.some(linha => linha[indice]));
 
         const titulo = manualOrigin.value === 'WORLD CLASSIC'
@@ -266,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const mapeamentos = new Map([
             ['estoque_fisico', ['Est. Físico', 'Estoque físico']],
-            ['localizacao', ['Cor. / Prat', 'Corredor e prateleira']],
+            ['localizacao', ['Cor. / Prat / Posição', 'Corredor, prateleira e posição']],
             ['precos', ['Preço de venda', 'Preço de venda']]
         ]);
 
@@ -283,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const linha = document.createElement('tr');
             const dados = [];
             if (registro.estoque !== undefined) dados.push(`Estoque: ${registro.estoque}`);
-            if (registro.corredor !== undefined || registro.prateleira !== undefined) dados.push(`Local: ${registro.corredor || '—'} / ${registro.prateleira || '—'}`);
+            if (registro.corredor !== undefined || registro.prateleira !== undefined || registro.posicao !== undefined) dados.push(`Local: ${registro.corredor || '—'} / ${registro.prateleira || '—'} / ${registro.posicao || '—'}`);
             if (registro.preco !== undefined) dados.push(`Preço: ${registro.preco}`);
 
             [

@@ -1,7 +1,5 @@
 const API_URL =
     'https://bm36-sistema-production.up.railway.app/api';
-
-
 // ============================================================
 // ESTADO
 // ============================================================
@@ -1473,6 +1471,9 @@ const modalQuantidadeEstoque =
 const inputQuantidadeProduto =
     document.getElementById('inputQuantidadeProduto');
 
+const inputDescontoProduto =
+    document.getElementById('inputDescontoProduto');
+
 const btnFecharModalQuantidade =
     document.getElementById('btnFecharModalQuantidade');
 
@@ -1523,6 +1524,7 @@ function abrirModalQuantidade(produto) {
     );
 
     inputQuantidadeProduto.value = 1;
+    inputDescontoProduto.value = 0;
 
     modalQuantidade.classList.add('aberto');
     modalQuantidade.setAttribute('aria-hidden', 'false');
@@ -1561,13 +1563,26 @@ function confirmarAdicionarProduto() {
 
     const produto = produtoParaAdicionar;
 
+    const desconto = Math.max(
+        0,
+        Number(inputDescontoProduto.value) || 0
+    );
+
+    const subtotal = Number(produto?.price || 0) * quantidade;
+
+    if (desconto > subtotal) {
+        inputDescontoProduto.focus();
+        return;
+    }
+
     fecharModalQuantidade();
 
     if (produto) {
 
         adicionarProdutoAoCarrinho(
             produto,
-            quantidade
+            quantidade,
+            desconto
         );
 
     }
@@ -1692,7 +1707,8 @@ productsBody.addEventListener(
 
 function adicionarProdutoAoCarrinho(
     produto,
-    quantidade = 1
+    quantidade = 1,
+    desconto = 0
 ) {
 
     const existente =
@@ -1713,6 +1729,7 @@ function adicionarProdutoAoCarrinho(
     ) {
 
         existente.qty += quantidade;
+        existente.desconto = Number(existente.desconto || 0) + desconto;
 
 
     } else {
@@ -1722,7 +1739,9 @@ function adicionarProdutoAoCarrinho(
             ...produto,
 
             qty:
-                quantidade
+                quantidade,
+
+            desconto
 
         });
 
@@ -1804,6 +1823,13 @@ function renderCart() {
             const subtotal =
                 item.price *
                 item.qty;
+
+            const desconto = Math.min(
+                Math.max(0, Number(item.desconto || 0)),
+                subtotal
+            );
+
+            item.desconto = desconto;
 
 
             const caixas =
@@ -1937,9 +1963,20 @@ function renderCart() {
 
 
                 <td>
-                    ${fmt(
-                        subtotal
-                    )}
+                    <input
+                        class="item-discount-input"
+                        type="number"
+                        min="0"
+                        max="${subtotal.toFixed(2)}"
+                        step="0.01"
+                        value="${desconto.toFixed(2)}"
+                        data-id="${item.id}"
+                        aria-label="Desconto para ${item.name}"
+                    >
+                </td>
+
+                <td>
+                    ${fmt(subtotal - desconto)}
                 </td>
 
 
@@ -2124,6 +2161,25 @@ itemsBody.addEventListener(
     }
 );
 
+itemsBody.addEventListener(
+    'change',
+    evento => {
+
+        const input = evento.target.closest('.item-discount-input');
+
+        if (!input) return;
+
+        const item = cart.find(produto => Number(produto.id) === Number(input.dataset.id));
+
+        if (!item) return;
+
+        const subtotal = Number(item.price || 0) * Number(item.qty || 0);
+        item.desconto = Math.min(Math.max(0, Number(input.value) || 0), subtotal);
+        renderCart();
+
+    }
+);
+
 
 // ============================================================
 // QUANTIDADE DIGITADA
@@ -2242,10 +2298,19 @@ function renderSummary() {
             0
         );
 
+    const descontoItens = cart.reduce(
+        (total, item) => total + Math.min(
+            Math.max(0, Number(item.desconto || 0)),
+            Number(item.price || 0) * Number(item.qty || 0)
+        ),
+        0
+    );
 
-    const desconto =
-        0;
 
+    // Em vez de "const desconto = 0;", pegue o valor do input do HTML:
+const inputDesconto = document.getElementById('inputDesconto');
+    const descontoGeral = inputDesconto ? Number(inputDesconto.value) || 0 : 0;
+    const desconto = Math.min(subtotal, descontoItens + Math.max(0, descontoGeral));
 
     document
         .getElementById(
@@ -2294,6 +2359,8 @@ function renderSummary() {
         );
 
 }
+
+inputDesconto?.addEventListener('input', renderSummary);
 
 
 // ============================================================
@@ -2517,7 +2584,11 @@ async function prepararVenda() {
             clienteSelecionado.id,
 
         desconto:
-            0,
+            Math.min(
+                cart.reduce((total, item) => total + Number(item.price || 0) * Number(item.qty || 0), 0),
+                cart.reduce((total, item) => total + Number(item.desconto || 0), 0)
+                    + Math.max(0, Number(inputDesconto?.value) || 0)
+            ),
 
         itens:
             cart.map(
