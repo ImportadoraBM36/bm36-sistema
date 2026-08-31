@@ -361,7 +361,8 @@ pdf.text('PRODUTO', 35, y + 5.2);
         let y = 42;
 
         const cliente = pedidoAberto.cliente_nome || 'Não informado';
-        const documento = pedidoAberto.cliente_documento
+        const documento = pedidoAberto.cliente_documento;
+        const codigo = pedidoAberto.codigo || ''
             ? formatarDocumento(pedidoAberto.cliente_documento)
             : '';
 
