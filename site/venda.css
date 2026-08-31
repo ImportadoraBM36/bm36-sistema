@@ -1652,6 +1652,42 @@ table {
     text-align: right;
 }
 
+.input-percentual {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border: 1px solid var(--navy-border);
+    border-radius: 7px;
+    background: #fff;
+}
+
+.input-percentual input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+}
+
+.input-percentual > span {
+    padding-right: 11px;
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.campo-quantidade .input-percentual input {
+    padding-right: 3px;
+}
+
+.input-percentual-carrinho {
+    width: 86px;
+}
+
+.input-percentual-carrinho .item-discount-input {
+    width: 100%;
+    border: 0;
+}
+
 .item-total {
     display: block;
     margin-top: 6px;

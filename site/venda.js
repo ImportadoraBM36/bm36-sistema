@@ -1474,6 +1474,21 @@ const inputQuantidadeProduto =
 const inputDescontoProduto =
     document.getElementById('inputDescontoProduto');
 
+function lerPercentual(valor) {
+    return Math.min(
+        100,
+        Math.max(
+            0,
+            Number(String(valor || '').replace('%', '').replace(',', '.')) || 0
+        )
+    );
+}
+
+function formatarPercentual(valor) {
+    return String(Math.round(lerPercentual(valor) * 100) / 100)
+        .replace('.', ',');
+}
+
 const btnFecharModalQuantidade =
     document.getElementById('btnFecharModalQuantidade');
 
@@ -1563,10 +1578,7 @@ function confirmarAdicionarProduto() {
 
     const produto = produtoParaAdicionar;
 
-    const descontoPercentual = Math.min(100, Math.max(
-        0,
-        Number(inputDescontoProduto.value) || 0
-    ));
+    const descontoPercentual = lerPercentual(inputDescontoProduto.value);
 
     fecharModalQuantidade();
 
@@ -1740,7 +1752,7 @@ function adicionarProdutoAoCarrinho(
             qty:
                 quantidade,
 
-            descontoPercentual: Math.min(100, Math.max(0, descontoPercentual))
+            descontoPercentual: lerPercentual(descontoPercentual)
 
         });
 
@@ -1823,10 +1835,7 @@ function renderCart() {
                 item.price *
                 item.qty;
 
-            const descontoPercentual = Math.min(
-                100,
-                Math.max(0, Number(item.descontoPercentual || 0))
-            );
+            const descontoPercentual = lerPercentual(item.descontoPercentual);
 
             const desconto = subtotal * (descontoPercentual / 100);
 
@@ -1964,16 +1973,17 @@ function renderCart() {
 
 
                 <td>
+                    <span class="input-percentual input-percentual-carrinho">
                     <input
                         class="item-discount-input"
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="0.01"
-                        value="${descontoPercentual.toFixed(2)}"
+                        type="text"
+                        inputmode="decimal"
+                        value="${formatarPercentual(descontoPercentual)}"
                         data-id="${item.id}"
                         aria-label="Desconto percentual para ${item.name}"
                     >
+                    <span aria-hidden="true">%</span>
+                    </span>
                 </td>
 
                 <td>
@@ -2174,7 +2184,7 @@ itemsBody.addEventListener(
 
         if (!item) return;
 
-        item.descontoPercentual = Math.min(Math.max(0, Number(input.value) || 0), 100);
+        item.descontoPercentual = lerPercentual(input.value);
         renderCart();
 
     }
