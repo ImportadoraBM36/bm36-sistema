@@ -719,6 +719,99 @@ busca.addEventListener(
 
 
 // =========================
+// LEITOR DE CÓDIGO DE BARRAS
+// =========================
+
+const abrirScannerProdutosBtn =
+    document.getElementById('abrirScannerProdutosBtn');
+
+const fecharScannerProdutosBtn =
+    document.getElementById('fecharScannerProdutosBtn');
+
+const scannerProdutosOverlay =
+    document.getElementById('scannerProdutosOverlay');
+
+const scannerProdutosStatus =
+    document.getElementById('scannerProdutosStatus');
+
+let scannerProdutos = null;
+let scannerProdutosAtivo = false;
+
+async function fecharScannerProdutos() {
+
+    scannerProdutosAtivo = false;
+
+    try {
+        if (scannerProdutos) {
+            await scannerProdutos.stop();
+            await scannerProdutos.clear();
+        }
+    } catch (erro) {
+        // O leitor pode já estar parado ao fechar o modal.
+    }
+
+    scannerProdutos = null;
+    scannerProdutosOverlay.classList.remove('show');
+    scannerProdutosOverlay.setAttribute('aria-hidden', 'true');
+}
+
+async function abrirScannerProdutos() {
+
+    if (typeof Html5Qrcode === 'undefined') {
+        scannerProdutosStatus.textContent = 'O leitor de código não foi carregado. Atualize a página e tente novamente.';
+        return;
+    }
+
+    scannerProdutosOverlay.classList.add('show');
+    scannerProdutosOverlay.setAttribute('aria-hidden', 'false');
+    scannerProdutosStatus.textContent = 'Iniciando câmera...';
+
+    const formatos = [
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E,
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.CODE_39,
+        Html5QrcodeSupportedFormats.ITF,
+        Html5QrcodeSupportedFormats.CODABAR
+    ];
+
+    try {
+        scannerProdutos = new Html5Qrcode('readerProdutos', { formatsToSupport: formatos });
+        scannerProdutosAtivo = true;
+
+        await scannerProdutos.start(
+            { facingMode: 'environment' },
+            { fps: 15, qrbox: { width: 320, height: 150 } },
+            async codigo => {
+                if (!scannerProdutosAtivo) return;
+
+                busca.value = String(codigo).trim().replace(/\s/g, '');
+                busca.dispatchEvent(new Event('input', { bubbles: true }));
+                await fecharScannerProdutos();
+                busca.focus();
+            },
+            () => {}
+        );
+
+        scannerProdutosStatus.textContent = 'Centralize o código de barras dentro da área.';
+    } catch (erro) {
+        console.error('Erro ao abrir leitor de código:', erro);
+        scannerProdutosAtivo = false;
+        scannerProdutosStatus.textContent = 'Não foi possível acessar a câmera deste dispositivo.';
+    }
+}
+
+abrirScannerProdutosBtn?.addEventListener('click', abrirScannerProdutos);
+fecharScannerProdutosBtn?.addEventListener('click', fecharScannerProdutos);
+
+scannerProdutosOverlay?.addEventListener('click', evento => {
+    if (evento.target === scannerProdutosOverlay) fecharScannerProdutos();
+});
+
+
+// =========================
 // SETA ANTERIOR
 // =========================
 

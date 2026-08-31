@@ -761,3 +761,66 @@ button {
     }
 
 }
+
+.btn-scanner-produtos {
+    align-self: flex-start;
+    padding: 8px 12px;
+    border: 1px solid var(--amber);
+    border-radius: 6px;
+    background: transparent;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-scanner-produtos:hover {
+    background: rgba(245, 183, 0, .16);
+}
+
+.scanner-produtos-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(8, 11, 24, .8);
+}
+
+.scanner-produtos-overlay.show {
+    display: flex;
+}
+
+.scanner-produtos-modal {
+    width: min(100%, 480px);
+    padding: 20px;
+    border-radius: 14px;
+    background: #fff;
+    color: var(--ink);
+}
+
+.scanner-produtos-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.scanner-produtos-header h2 {
+    margin: 0;
+    font-size: 19px;
+}
+
+.scanner-produtos-header button {
+    border: 0;
+    background: transparent;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+#scannerProdutosStatus {
+    margin: 14px 0 0;
+    text-align: center;
+}

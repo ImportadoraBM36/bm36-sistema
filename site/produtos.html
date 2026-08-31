@@ -236,6 +236,10 @@
                     autocomplete="off"
                 >
 
+                <button id="abrirScannerProdutosBtn" class="btn-scanner-produtos" type="button">
+                    📷 Ler código
+                </button>
+
             </div>
 
 
@@ -267,7 +271,7 @@
                         </th>
 
                         <th>
-                            PRODUTO
+                            DESCRIÇÃO
                         </th>
 
                         <th>
@@ -604,11 +608,24 @@
 </div>
 
 
+<div id="scannerProdutosOverlay" class="scanner-produtos-overlay" aria-hidden="true">
+    <section class="scanner-produtos-modal" role="dialog" aria-modal="true" aria-labelledby="scannerProdutosTitulo">
+        <div class="scanner-produtos-header">
+            <h2 id="scannerProdutosTitulo">Ler código de barras</h2>
+            <button id="fecharScannerProdutosBtn" type="button" aria-label="Fechar">×</button>
+        </div>
+        <div id="readerProdutos"></div>
+        <p id="scannerProdutosStatus">Aponte a câmera para o código de barras.</p>
+    </section>
+</div>
+
+
 <!-- ============================================================
      JAVASCRIPT
      ============================================================ -->
 
 <script src="./header.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 <script src="./produto.js"></script>
 
 

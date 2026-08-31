@@ -1563,17 +1563,10 @@ function confirmarAdicionarProduto() {
 
     const produto = produtoParaAdicionar;
 
-    const desconto = Math.max(
+    const descontoPercentual = Math.min(100, Math.max(
         0,
         Number(inputDescontoProduto.value) || 0
-    );
-
-    const subtotal = Number(produto?.price || 0) * quantidade;
-
-    if (desconto > subtotal) {
-        inputDescontoProduto.focus();
-        return;
-    }
+    ));
 
     fecharModalQuantidade();
 
@@ -1582,7 +1575,7 @@ function confirmarAdicionarProduto() {
         adicionarProdutoAoCarrinho(
             produto,
             quantidade,
-            desconto
+            descontoPercentual
         );
 
     }
@@ -1708,7 +1701,7 @@ productsBody.addEventListener(
 function adicionarProdutoAoCarrinho(
     produto,
     quantidade = 1,
-    desconto = 0
+    descontoPercentual = 0
 ) {
 
     const existente =
@@ -1728,8 +1721,14 @@ function adicionarProdutoAoCarrinho(
         existente
     ) {
 
+        const subtotalAnterior = Number(existente.price || 0) * existente.qty;
+        const descontoAnterior = subtotalAnterior * (Number(existente.descontoPercentual || 0) / 100);
+        const subtotalAdicionado = Number(produto.price || 0) * quantidade;
+        const descontoAdicionado = subtotalAdicionado * (descontoPercentual / 100);
+
         existente.qty += quantidade;
-        existente.desconto = Number(existente.desconto || 0) + desconto;
+        existente.descontoPercentual = (descontoAnterior + descontoAdicionado)
+            / (subtotalAnterior + subtotalAdicionado || 1) * 100;
 
 
     } else {
@@ -1741,7 +1740,7 @@ function adicionarProdutoAoCarrinho(
             qty:
                 quantidade,
 
-            desconto
+            descontoPercentual: Math.min(100, Math.max(0, descontoPercentual))
 
         });
 
@@ -1824,12 +1823,14 @@ function renderCart() {
                 item.price *
                 item.qty;
 
-            const desconto = Math.min(
-                Math.max(0, Number(item.desconto || 0)),
-                subtotal
+            const descontoPercentual = Math.min(
+                100,
+                Math.max(0, Number(item.descontoPercentual || 0))
             );
 
-            item.desconto = desconto;
+            const desconto = subtotal * (descontoPercentual / 100);
+
+            item.descontoPercentual = descontoPercentual;
 
 
             const caixas =
@@ -1967,11 +1968,11 @@ function renderCart() {
                         class="item-discount-input"
                         type="number"
                         min="0"
-                        max="${subtotal.toFixed(2)}"
+                        max="100"
                         step="0.01"
-                        value="${desconto.toFixed(2)}"
+                        value="${descontoPercentual.toFixed(2)}"
                         data-id="${item.id}"
-                        aria-label="Desconto para ${item.name}"
+                        aria-label="Desconto percentual para ${item.name}"
                     >
                 </td>
 
@@ -2173,8 +2174,7 @@ itemsBody.addEventListener(
 
         if (!item) return;
 
-        const subtotal = Number(item.price || 0) * Number(item.qty || 0);
-        item.desconto = Math.min(Math.max(0, Number(input.value) || 0), subtotal);
+        item.descontoPercentual = Math.min(Math.max(0, Number(input.value) || 0), 100);
         renderCart();
 
     }
@@ -2299,9 +2299,9 @@ function renderSummary() {
         );
 
     const descontoItens = cart.reduce(
-        (total, item) => total + Math.min(
-            Math.max(0, Number(item.desconto || 0)),
+        (total, item) => total + (
             Number(item.price || 0) * Number(item.qty || 0)
+            * Math.min(100, Math.max(0, Number(item.descontoPercentual || 0))) / 100
         ),
         0
     );
@@ -2586,7 +2586,10 @@ async function prepararVenda() {
         desconto:
             Math.min(
                 cart.reduce((total, item) => total + Number(item.price || 0) * Number(item.qty || 0), 0),
-                cart.reduce((total, item) => total + Number(item.desconto || 0), 0)
+                cart.reduce((total, item) => total + (
+                    Number(item.price || 0) * Number(item.qty || 0)
+                    * Math.min(100, Math.max(0, Number(item.descontoPercentual || 0))) / 100
+                ), 0)
                     + Math.max(0, Number(inputDesconto?.value) || 0)
             ),
 
