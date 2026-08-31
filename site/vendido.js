@@ -362,7 +362,7 @@ pdf.text('PRODUTO', 35, y + 5.2);
 
         const cliente = pedidoAberto.cliente_nome || 'Não informado';
         const documento = pedidoAberto.cliente_documento;
-        const codigo = pedidoAberto.codigo || ''
+        const codigocliente = pedidoAberto.codigo_sistema_antigo
             ? formatarDocumento(pedidoAberto.cliente_documento)
             : '';
 
@@ -390,6 +390,19 @@ pdf.text('PRODUTO', 35, y + 5.2);
         );
 
         y += 8;
+
+
+
+         pdf.setFontSize(8.5);
+        pdf.setTextColor(95, 99, 117);
+        pdf.text(codigocliente || 'Código não informado', margem, y);
+        pdf.text(
+            `Status: ${statusLabel(pedidoAberto.status)}`,
+            165,
+            y
+        );
+
+        y += 11;
 
         pdf.setTextColor(28, 27, 46);
         pdf.setFont('helvetica', 'normal');
