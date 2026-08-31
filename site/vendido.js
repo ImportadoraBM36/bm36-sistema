@@ -304,7 +304,7 @@
             pdf.setTextColor(20, 20, 20);
             pdf.setFont('helvetica', 'bold');
             pdf.setFontSize(16);
-            pdf.text('BM36', margem, 13);
+            pdf.text('BM36 | WC', margem, 13);
 
             pdf.setFontSize(9);
             pdf.text('COMPROVANTE DE PEDIDO', margem, 19);
