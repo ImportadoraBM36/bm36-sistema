@@ -4469,6 +4469,7 @@ async function analisarImportacaoPlanilhas(arquivos) {
         SELECT
             p.id,
             p.codigo,
+            p.codigo_fabricante,
             p.origem,
             p.corredor,
             p.prateleira,
@@ -4497,12 +4498,18 @@ async function analisarImportacaoPlanilhas(arquivos) {
     `);
 
 
-    const produtosPorChave = new Map(
-        resultadoProdutos.rows.map(produto => [
-            `${produto.origem}::${produto.codigo}`,
-            produto
-        ])
-    );
+    const produtosPorChave = new Map();
+
+    resultadoProdutos.rows.forEach(produto => {
+        [produto.codigo, produto.codigo_fabricante]
+            .filter(Boolean)
+            .forEach(codigo => {
+                produtosPorChave.set(
+                    `${produto.origem}::${codigo}`,
+                    produto
+                );
+            });
+    });
 
     let encontrados = 0;
     let naoEncontrados = 0;

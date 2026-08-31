@@ -242,6 +242,10 @@
                     autocomplete="off"
                 >
 
+                <button id="abrirScannerEstoqueBtn" class="btn-scanner-estoque" type="button">
+                    📷 Ler código
+                </button>
+
             </div>
 
 
@@ -643,7 +647,20 @@
 </div>
 
 
+<div id="scannerEstoqueOverlay" class="scanner-estoque-overlay" aria-hidden="true">
+    <section class="scanner-estoque-modal" role="dialog" aria-modal="true" aria-labelledby="scannerEstoqueTitulo">
+        <div class="scanner-estoque-header">
+            <h2 id="scannerEstoqueTitulo">Ler código de barras</h2>
+            <button id="fecharScannerEstoqueBtn" type="button" aria-label="Fechar">×</button>
+        </div>
+        <div id="readerEstoque"></div>
+        <p id="scannerEstoqueStatus">Aponte a câmera para o código de barras.</p>
+    </section>
+</div>
+
+
 <script src="./header.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 <script src="./estoque.js"></script>
 
 

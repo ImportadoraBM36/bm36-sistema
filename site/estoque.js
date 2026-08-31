@@ -292,6 +292,12 @@ function aplicarFiltros() {
                     )
                         .toLowerCase();
 
+                const codigoFabricante =
+                    String(
+                        produto.codigo_fabricante || ''
+                    )
+                        .toLowerCase();
+
 
                 const nome =
                     String(
@@ -347,6 +353,8 @@ const posicao =
 
              const correspondeBusca =
     codigo.includes(termo)
+    ||
+    codigoFabricante.includes(termo)
     ||
     nome.includes(termo)
     ||
@@ -460,6 +468,73 @@ buscaEstoque.addEventListener(
     'input',
     aplicarFiltros
 );
+
+
+// =========================
+// LEITOR DE CÓDIGO DE BARRAS
+// =========================
+
+const abrirScannerEstoqueBtn = document.getElementById('abrirScannerEstoqueBtn');
+const fecharScannerEstoqueBtn = document.getElementById('fecharScannerEstoqueBtn');
+const scannerEstoqueOverlay = document.getElementById('scannerEstoqueOverlay');
+const scannerEstoqueStatus = document.getElementById('scannerEstoqueStatus');
+let scannerEstoque = null;
+let scannerEstoqueAtivo = false;
+
+async function fecharScannerEstoque() {
+    scannerEstoqueAtivo = false;
+    try {
+        if (scannerEstoque) {
+            await scannerEstoque.stop();
+            await scannerEstoque.clear();
+        }
+    } catch (erro) {
+        // O leitor pode já ter sido interrompido após a leitura.
+    }
+    scannerEstoque = null;
+    scannerEstoqueOverlay.classList.remove('show');
+    scannerEstoqueOverlay.setAttribute('aria-hidden', 'true');
+}
+
+async function abrirScannerEstoque() {
+    if (typeof Html5Qrcode === 'undefined') {
+        scannerEstoqueStatus.textContent = 'O leitor não foi carregado. Atualize a página e tente novamente.';
+        return;
+    }
+
+    scannerEstoqueOverlay.classList.add('show');
+    scannerEstoqueOverlay.setAttribute('aria-hidden', 'false');
+    scannerEstoqueStatus.textContent = 'Iniciando câmera...';
+
+    try {
+        scannerEstoque = new Html5Qrcode('readerEstoque');
+        scannerEstoqueAtivo = true;
+
+        await scannerEstoque.start(
+            { facingMode: 'environment' },
+            { fps: 15, qrbox: { width: 320, height: 150 } },
+            async codigo => {
+                if (!scannerEstoqueAtivo) return;
+                buscaEstoque.value = String(codigo).trim().replace(/\s/g, '');
+                aplicarFiltros();
+                await fecharScannerEstoque();
+                buscaEstoque.focus();
+            },
+            () => {}
+        );
+        scannerEstoqueStatus.textContent = 'Centralize o código de barras dentro da área.';
+    } catch (erro) {
+        console.error('Erro ao abrir leitor de estoque:', erro);
+        scannerEstoqueAtivo = false;
+        scannerEstoqueStatus.textContent = 'Não foi possível acessar a câmera deste dispositivo.';
+    }
+}
+
+abrirScannerEstoqueBtn?.addEventListener('click', abrirScannerEstoque);
+fecharScannerEstoqueBtn?.addEventListener('click', fecharScannerEstoque);
+scannerEstoqueOverlay?.addEventListener('click', evento => {
+    if (evento.target === scannerEstoqueOverlay) fecharScannerEstoque();
+});
 
 
 // =========================
