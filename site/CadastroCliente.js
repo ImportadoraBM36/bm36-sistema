@@ -1173,7 +1173,9 @@ function renderizarClientes() {
 
                 <td class="cliente-codigo-tabela">
 
-                    ${cliente.id}
+                    ${escaparHTML(
+                        cliente.codigo_sistema_antigo || '-'
+                    )}
 
                 </td>
 
