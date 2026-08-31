@@ -344,7 +344,7 @@ pdf.text('PRODUTO', 35, y + 5.2);
         pdf.text('POS.', 158, y + 5.2, { align: 'right' });
         pdf.text('CÓD. FAB.', 181, y + 5.2, { align: 'right' });
         pdf.text('QTD.', 208, y + 5.2, { align: 'right' });
-        PDF.text('UNIT.', 223, y + 5.2, { align: 'right' });
+        pdf.text('UNIT.', 223, y + 5.2, { align: 'right' });
         pdf.text('SUBTOTAL', 238, y + 5.2, { align: 'right' });
 
         pdf.setDrawColor(90, 90, 90);
@@ -454,7 +454,7 @@ pdf.text(linhasNome, 35, y + 5);
             pdf.text(textoSeguro(item.produto_posicao), 158, y + 5, { align: 'right' });
             pdf.text(textoSeguro(item.produto_codigo_fabricante), 181, y + 5, { align: 'right' });
             pdf.text(String(Number(item.quantidade || 0)), 208, y + 5, { align: 'right' });
-        // UNIT removido
+            pdf.text('UNIT.', 223, y + 5.2, { align: 'right' });
     const subtotalItem =
         Number(item.quantidade || 0) *
         Number(item.preco_unitario || 0);
