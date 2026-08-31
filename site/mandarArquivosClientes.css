@@ -201,6 +201,9 @@ body {
 .manual-table input { width: 100%; padding: 8px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: #33435c; font: inherit; font-size: 12px; }
 .manual-table input:hover { background: #f8faff; }
 .manual-table input:focus { outline: 0; border-color: #e83e84; background: #fff; box-shadow: 0 0 0 3px rgba(232, 62, 132, .1); }
+.manual-code-status { display: block; margin: 0 8px 4px; font-size: 10px; line-height: 1.2; }
+.manual-code-status.is-found { color: #16835d; }
+.manual-code-status.is-missing { color: #a35a2b; }
 .manual-entry-actions { align-items: center; margin-top: 14px; }
 .manual-entry-actions > div { display: flex; align-items: center; gap: 12px; white-space: nowrap; }
 

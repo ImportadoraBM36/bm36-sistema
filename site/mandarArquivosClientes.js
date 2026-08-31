@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let analiseAtual = null;
     let importacaoConcluida = false;
     let modoImportacao = 'arquivo';
+    let clientesParaPreenchimento = null;
 
     function tamanhoFormatado(bytes) {
         return bytes < 1024 * 1024
@@ -137,11 +138,83 @@ document.addEventListener('DOMContentLoaded', () => {
             input.addEventListener('input', atualizarEstadoManual);
             input.addEventListener('paste', colarDadosManuais);
 
+            if (campo === 'codigo') {
+                let tempoBusca;
+                input.addEventListener('input', () => {
+                    clearTimeout(tempoBusca);
+                    tempoBusca = setTimeout(() => preencherClienteDaLinha(input), 350);
+                });
+                input.addEventListener('blur', () => preencherClienteDaLinha(input));
+            }
+
             celula.appendChild(input);
             linha.appendChild(celula);
         });
 
         manualRows.appendChild(linha);
+    }
+
+    function definirStatusCodigo(input, mensagem, encontrado) {
+        const celula = input.closest('td');
+        let status = celula.querySelector('.manual-code-status');
+
+        if (!status) {
+            status = document.createElement('small');
+            status.className = 'manual-code-status';
+            celula.appendChild(status);
+        }
+
+        status.textContent = mensagem;
+        status.classList.toggle('is-missing', !encontrado && Boolean(mensagem));
+        status.classList.toggle('is-found', encontrado);
+    }
+
+    async function obterClientesParaPreenchimento() {
+        if (!clientesParaPreenchimento) {
+            clientesParaPreenchimento = fetch(`${API_URL}/clientes`)
+                .then(resposta => resposta.ok ? resposta.json() : [])
+                .catch(() => []);
+        }
+
+        return clientesParaPreenchimento;
+    }
+
+    async function preencherClienteDaLinha(input) {
+        const codigo = input.value.trim();
+
+        if (!codigo) {
+            definirStatusCodigo(input, '', false);
+            return;
+        }
+
+        const clientes = await obterClientesParaPreenchimento();
+        if (input.value.trim() !== codigo) return;
+
+        const cliente = clientes.find(item =>
+            String(item.codigo_sistema_antigo || '').trim() === codigo
+            || String(item.id || '') === codigo
+        );
+
+        if (!cliente) {
+            definirStatusCodigo(input, 'Código não encontrado', false);
+            return;
+        }
+
+        const linha = input.closest('tr');
+        const valores = {
+            nome: cliente.nome,
+            telefone: cliente.telefone,
+            email: cliente.email,
+            ie: cliente.ie
+        };
+
+        Object.entries(valores).forEach(([campo, valor]) => {
+            const destino = linha.querySelector(`input[data-coluna="${campo}"]`);
+            if (destino && valor !== null && valor !== undefined) destino.value = valor;
+        });
+
+        definirStatusCodigo(input, 'Cliente encontrado', true);
+        atualizarEstadoManual();
     }
 
     function garantirLinhasManuais(quantidade) {

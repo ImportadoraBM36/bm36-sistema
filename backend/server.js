@@ -1124,6 +1124,9 @@ app.get(
                     email,
                     data_nascimento,
                     categoria,
+                    ie,
+                    codigo_sistema_antigo,
+                    origem_sistema_antigo,
                     cep,
                     rua,
                     numero,
@@ -1185,6 +1188,9 @@ app.get(
                     email,
                     data_nascimento,
                     categoria,
+                    ie,
+                    codigo_sistema_antigo,
+                    origem_sistema_antigo,
                     cep,
                     rua,
                     numero,
@@ -7506,6 +7512,13 @@ async function iniciarServidor() {
                 ADD COLUMN IF NOT EXISTS corredor TEXT,
                 ADD COLUMN IF NOT EXISTS prateleira TEXT,
                 ADD COLUMN IF NOT EXISTS posicao TEXT
+        `);
+
+        await pool.query(`
+            ALTER TABLE clientes
+                ADD COLUMN IF NOT EXISTS ie TEXT,
+                ADD COLUMN IF NOT EXISTS codigo_sistema_antigo TEXT,
+                ADD COLUMN IF NOT EXISTS origem_sistema_antigo TEXT
         `);
 
         app.listen(

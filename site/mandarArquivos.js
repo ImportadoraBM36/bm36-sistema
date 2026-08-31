@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let analiseAtual = null;
     let importacaoConcluida = false;
     let modoImportacao = 'arquivo';
+    let produtosParaPreenchimento = null;
 
     function tamanhoFormatado(bytes) {
         return bytes < 1024 * 1024
@@ -104,11 +105,85 @@ document.addEventListener('DOMContentLoaded', () => {
             input.addEventListener('input', atualizarEstadoManual);
             input.addEventListener('paste', colarDadosManuais);
 
+            if (campo === 'codigo') {
+                let tempoBusca;
+                input.addEventListener('input', () => {
+                    clearTimeout(tempoBusca);
+                    tempoBusca = setTimeout(() => preencherProdutoDaLinha(input), 350);
+                });
+                input.addEventListener('blur', () => preencherProdutoDaLinha(input));
+            }
+
             celula.appendChild(input);
             linha.appendChild(celula);
         });
 
         manualRows.appendChild(linha);
+    }
+
+    function definirStatusCodigo(input, mensagem, encontrado) {
+        const celula = input.closest('td');
+        let status = celula.querySelector('.manual-code-status');
+
+        if (!status) {
+            status = document.createElement('small');
+            status.className = 'manual-code-status';
+            celula.appendChild(status);
+        }
+
+        status.textContent = mensagem;
+        status.classList.toggle('is-missing', !encontrado && Boolean(mensagem));
+        status.classList.toggle('is-found', encontrado);
+    }
+
+    async function obterProdutosParaPreenchimento() {
+        if (!produtosParaPreenchimento) {
+            produtosParaPreenchimento = fetch(`${API_URL}/produtos`)
+                .then(resposta => resposta.ok ? resposta.json() : [])
+                .catch(() => []);
+        }
+
+        return produtosParaPreenchimento;
+    }
+
+    async function preencherProdutoDaLinha(input) {
+        const codigo = input.value.trim();
+
+        if (!codigo) {
+            definirStatusCodigo(input, '', false);
+            return;
+        }
+
+        const produtos = await obterProdutosParaPreenchimento();
+        if (input.value.trim() !== codigo) return;
+
+        const origem = manualOrigin.value;
+        const produto = produtos.find(item =>
+            String(item.origem || '').toUpperCase() === String(origem).toUpperCase()
+            && [item.codigo, item.codigo_fabricante].some(valor => String(valor || '').trim() === codigo)
+        );
+
+        if (!produto) {
+            definirStatusCodigo(input, 'Código não encontrado', false);
+            return;
+        }
+
+        const linha = input.closest('tr');
+        const valores = {
+            estoque: produto.estoque_atual,
+            corredor: produto.corredor,
+            prateleira: produto.prateleira,
+            posicao: produto.posicao,
+            preco: produto.preco_venda
+        };
+
+        Object.entries(valores).forEach(([campo, valor]) => {
+            const destino = linha.querySelector(`input[data-coluna="${campo}"]`);
+            if (destino && valor !== null && valor !== undefined) destino.value = valor;
+        });
+
+        definirStatusCodigo(input, 'Produto encontrado', true);
+        atualizarEstadoManual();
     }
 
     function garantirLinhasManuais(quantidade) {
