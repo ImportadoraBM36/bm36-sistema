@@ -2447,6 +2447,7 @@ app.get(
 
             c.nome AS cliente_nome,
             c.documento AS cliente_documento,
+            c.codigo_sistema_antigo AS cliente_codigo,
             c.telefone AS cliente_telefone,
             c.email AS cliente_email,
 

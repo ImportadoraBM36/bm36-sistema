@@ -344,8 +344,8 @@ pdf.text('PRODUTO', 35, y + 5.2);
         pdf.text('POS.', 158, y + 5.2, { align: 'right' });
         pdf.text('CÓD. FAB.', 181, y + 5.2, { align: 'right' });
         pdf.text('QTD.', 208, y + 5.2, { align: 'right' });
-        pdf.text('UNIT.', 223, y + 5.2, { align: 'right' });
-        pdf.text('SUBTOTAL', 238, y + 5.2, { align: 'right' });
+        pdf.text('UNIT.', 232, y + 5.2, { align: 'right' });
+        pdf.text('SUBTOTAL', 285, y + 5.2, { align: 'right' });
 
         pdf.setDrawColor(90, 90, 90);
         pdf.setLineWidth(0.25);
@@ -363,9 +363,10 @@ pdf.text('PRODUTO', 35, y + 5.2);
 
         const cliente = pedidoAberto.cliente_nome || 'Não informado';
         const documento = pedidoAberto.cliente_documento;
-        const codigocliente = pedidoAberto.codigo_sistema_antigo
-            ? formatarDocumento(pedidoAberto.cliente_documento)
-            : '';
+        const codigoCliente = pedidoAberto.cliente_codigo
+            || pedidoAberto.codigo_sistema_antigo
+            || pedidoAberto.cliente_id
+            || '';
 
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(9);
@@ -390,16 +391,11 @@ pdf.text('PRODUTO', 35, y + 5.2);
             y
         );
 
-        y += 8;
+        y += 5;
 
-
-
-         pdf.setFontSize(8.5);
-        pdf.setTextColor(95, 99, 117);
-        pdf.text(codigocliente || 'Código não informado', margem, y);
         pdf.text(
-            `Status: ${statusLabel(pedidoAberto.status)}`,
-            165,
+            `Código do cliente: ${textoSeguro(codigoCliente || 'Não informado')}`,
+            margem,
             y
         );
 
@@ -454,14 +450,14 @@ pdf.text(linhasNome, 35, y + 5);
             pdf.text(textoSeguro(item.produto_posicao), 158, y + 5, { align: 'right' });
             pdf.text(textoSeguro(item.produto_codigo_fabricante), 181, y + 5, { align: 'right' });
             pdf.text(String(Number(item.quantidade || 0)), 208, y + 5, { align: 'right' });
-            pdf.text(String(Number(item.preco_unitario || 0)), 223, y + 5.2, { align: 'right' });
+            pdf.text(fmt(item.preco_unitario), 232, y + 5, { align: 'right' });
     const subtotalItem =
         Number(item.quantidade || 0) *
         Number(item.preco_unitario || 0);
 
             pdf.text(
             fmt(subtotalItem),
-            238,
+            285,
             y + 5,
             { align: 'right' }
         );
@@ -1523,8 +1519,6 @@ pdf.text(linhasNome, 35, y + 5);
 
         body.innerHTML =
             '';
-
-
         pedidoAberto.itens
             .forEach(
                 item => {
