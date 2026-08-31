@@ -295,6 +295,10 @@ function renderizarTabela() {
 
             linha.innerHTML = `
                 <td>
+                    ${produto.codigo_fabricante || '-'}
+                </td>
+
+                <td>
                     ${produto.codigo || '-'}
                 </td>
 

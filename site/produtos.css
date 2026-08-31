@@ -431,17 +431,17 @@ button {
 
 .tabela-produtos th:nth-child(1),
 .tabela-produtos td:nth-child(1) {
-    width: 18%;
+    width: 16%;
 }
 
 .tabela-produtos th:nth-child(2),
 .tabela-produtos td:nth-child(2) {
-    width: 24%;
+    width: 15%;
 }
 
 .tabela-produtos th:nth-child(3),
 .tabela-produtos td:nth-child(3) {
-    width: 16%;
+    width: 22%;
 }
 
 .tabela-produtos th:nth-child(4),
