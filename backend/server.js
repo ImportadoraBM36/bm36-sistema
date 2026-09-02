@@ -3135,6 +3135,42 @@ app.put('/api/vendas/:id', async (req, res) => {
         client.release();
     }
 });
+
+async function salvarAlteracoes(vendaId) {
+    try {
+        // Pegue os valores dos inputs do seu modal/tela aqui no frontend
+        const descontoInput = document.getElementById('inputDesconto'); // Aqui no FRONTEND pode usar document!
+        const desconto = descontoInput ? Number(descontoInput.value) : 0;
+
+        const resposta = await fetch(`/api/vendas/${vendaId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}` // ou onde guarda seu token
+            },
+            body: JSON.stringify({
+                itens: itensDoPedido, // seu array de itens atualizado
+                forma_pagamento_id: formaPagamentoId,
+                desconto: desconto,
+                observacao: observacao
+            })
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok || !dados.sucesso) {
+            alert(dados.mensagem || 'Erro ao salvar alterações');
+            return;
+        }
+
+        alert('Alterações salvas com sucesso!');
+        location.reload(); // atualiza a tela para mostrar os dados salvos
+
+    } catch (erro) {
+        console.error('Erro na requisição:', erro);
+        alert(erro.message);
+    }
+}
 // =========================
 // VALIDAR EVENTO
 // =========================
