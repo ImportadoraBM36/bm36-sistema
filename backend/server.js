@@ -3011,7 +3011,7 @@ const {
     evento_id = null
 } = req.body;
 // ============================================================
-// ALTERAR VENDA / PEDIDO (CONTINUAÇÃO E FINALIZAÇÃO)
+// ALTERAR VENDA / PEDIDO
 // ============================================================
 
 app.put('/api/vendas/:id', async (req, res) => {
@@ -3031,7 +3031,7 @@ app.put('/api/vendas/:id', async (req, res) => {
 
         await client.query('BEGIN');
 
-        // Busca a venda existente para bloqueio durante edição
+        // Busca a venda existente
         const resultadoVenda = await client.query(
             `SELECT id, usuario_id, status FROM vendas WHERE id = $1 FOR UPDATE`,
             [vendaId]
@@ -3092,7 +3092,7 @@ app.put('/api/vendas/:id', async (req, res) => {
 
         const totalNovo = Math.max(0, subtotalNovo - Number(desconto));
 
-        // 4. Inserir novos itens e registrar nova saída de estoque
+        // 4. Inserir novos itens e registrar movimentação de estoque
         for (const item of novosItensProcessados) {
             await client.query(
                 `INSERT INTO itens_venda (venda_id, produto_id, quantidade, preco_unitario, subtotal)
@@ -3135,6 +3135,12 @@ app.put('/api/vendas/:id', async (req, res) => {
         client.release();
     }
 });
+
+
+
+
+
+
 
 async function salvarAlteracoes(vendaId) {
     try {
