@@ -3010,7 +3010,131 @@ const {
     itens,
     evento_id = null
 } = req.body;
+// ============================================================
+// ALTERAR VENDA / PEDIDO (CONTINUAÇÃO E FINALIZAÇÃO)
+// ============================================================
 
+app.put('/api/vendas/:id', async (req, res) => {
+    const client = await pool.connect();
+
+    try {
+        const vendaId = Number(req.params.id);
+        const { itens, desconto = 0, evento_id = null } = req.body;
+
+        if (!Number.isInteger(vendaId) || vendaId <= 0) {
+            return res.status(400).json({ sucesso: false, mensagem: 'Pedido inválido.' });
+        }
+
+        if (!Array.isArray(itens) || itens.length === 0) {
+            return res.status(400).json({ sucesso: false, mensagem: 'Informe os itens do pedido.' });
+        }
+
+        await client.query('BEGIN');
+
+        // Busca a venda existente para bloqueio durante edição
+        const resultadoVenda = await client.query(
+            `SELECT id, usuario_id, status FROM vendas WHERE id = $1 FOR UPDATE`,
+            [vendaId]
+        );
+
+        if (resultadoVenda.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ sucesso: false, mensagem: 'Pedido não encontrado.' });
+        }
+
+        const venda = resultadoVenda.rows[0];
+
+        if (String(venda.status).toUpperCase() === 'CANCELADA') {
+            await client.query('ROLLBACK');
+            return res.status(400).json({ sucesso: false, mensagem: 'Não é possível alterar um pedido cancelado.' });
+        }
+
+        // 1. Reverter estoque dos itens antigos
+        const itensAntigos = await client.query(
+            `SELECT produto_id, quantidade FROM itens_venda WHERE venda_id = $1`,
+            [vendaId]
+        );
+
+        for (const item of itensAntigos.rows) {
+            await client.query(
+                `INSERT INTO movimentacoes_estoque (produto_id, usuario_id, tipo, quantidade, motivo)
+                 VALUES ($1, $2, 'AJUSTE_POSITIVO', $3, $4)`,
+                [item.produto_id, venda.usuario_id || 1, item.quantidade, `Ajuste por alteração do pedido #${vendaId}`]
+            );
+        }
+
+        // 2. Limpar itens antigos
+        await client.query(`DELETE FROM itens_venda WHERE venda_id = $1`, [vendaId]);
+
+        // 3. Processar novos itens e recalcular totais
+        let subtotalNovo = 0;
+        const novosItensProcessados = [];
+
+        for (const item of itens) {
+            const produtoId = Number(item.produto_id);
+            const qtd = Number(item.quantidade);
+
+            const prodResult = await client.query(
+                `SELECT id, preco_venda FROM produtos WHERE id = $1`,
+                [produtoId]
+            );
+
+            if (prodResult.rows.length === 0) {
+                throw new Error(`Produto ID ${produtoId} não encontrado.`);
+            }
+
+            const precoUnitario = Number(item.preco_unitario || prodResult.rows[0].preco_venda);
+            const subtotalItem = precoUnitario * qtd;
+            subtotalNovo += subtotalItem;
+
+            novosItensProcessados.push({ produtoId, qtd, precoUnitario, subtotalItem });
+        }
+
+        const totalNovo = Math.max(0, subtotalNovo - Number(desconto));
+
+        // 4. Inserir novos itens e registrar nova saída de estoque
+        for (const item of novosItensProcessados) {
+            await client.query(
+                `INSERT INTO itens_venda (venda_id, produto_id, quantidade, preco_unitario, subtotal)
+                 VALUES ($1, $2, $3, $4, $5)`,
+                [vendaId, item.produtoId, item.qtd, item.precoUnitario, item.subtotalItem]
+            );
+
+            await client.query(
+                `INSERT INTO movimentacoes_estoque (produto_id, usuario_id, tipo, quantidade, motivo)
+                 VALUES ($1, $2, 'VENDA', $3, $4)`,
+                [item.produtoId, venda.usuario_id || 1, item.qtd, `Atualização da venda #${vendaId}`]
+            );
+        }
+
+        // 5. Atualizar registro do pedido
+        const resultadoAtualizacao = await client.query(
+            `UPDATE vendas
+             SET subtotal = $1, desconto = $2, total = $3, evento_id = $4
+             WHERE id = $5
+             RETURNING *`,
+            [subtotalNovo, Number(desconto), totalNovo, evento_id ? Number(evento_id) : null, vendaId]
+        );
+
+        await client.query('COMMIT');
+
+        return res.json({
+            sucesso: true,
+            mensagem: 'Pedido atualizado com sucesso!',
+            venda: resultadoAtualizacao.rows[0]
+        });
+
+    } catch (erro) {
+        await client.query('ROLLBACK');
+        console.error('Erro ao alterar pedido:', erro);
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: erro.message || 'Erro interno ao alterar pedido.'
+        });
+    } finally {
+        client.release();
+    }
+});
 // =========================
 // VALIDAR EVENTO
 // =========================
