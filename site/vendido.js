@@ -424,32 +424,23 @@ if (imprimirPedidoBtn) {
 
 async function carregarPedidos() {
     try {
-        if (salesBody) {
-            salesBody.innerHTML = `
-                <tr>
-                    <td colspan="5">Carregando pedidos...</td>
-                </tr>
-            `;
-        }
+        salesBody.innerHTML =
+        '<tr><td colspan="5">Carregando...</td></tr>';
 
         const resposta = await fetch(`${API_URL}/vendas`);
 
-        if (!resposta.ok) {
-            throw new Error('Erro ao carregar pedidos.');
-        }
+        const texto = await resposta.text();
+        const dados = texto ? JSON.parse(texto) : [];
 
-        pedidos = await resposta.json();
+        if (!resposta.ok) throw new Error(texto);
+
+        pedidos = Array.isArray(dados) ? dados : [];
         aplicarFiltros();
 
     } catch (erro) {
-        console.error(erro);
-        if (salesBody) {
-            salesBody.innerHTML = `
-                <tr>
-                    <td colspan="5">Não foi possível carregar os pedidos.</td>
-                </tr>
-            `;
-        }
+        console.error("ERRO PEDIDOS:", erro);
+        salesBody.innerHTML =
+        `<tr><td colspan="5">${erro.message}</td></tr>`;
     }
 }
 
@@ -1078,17 +1069,16 @@ if (confirmarCancelamentoBtn) {
         try {
             confirmarCancelamentoBtn.disabled = true;
 
-            const resposta = awaitconst token = localStorage.getItem('bm36_token') ||
-              localStorage.getItem('token');
+            const token = localStorage.getItem('bm36_token') || localStorage.getItem('token');
 
-fetch(`${API_URL}/vendas/${pedidoAberto.id}/cancelar`, {
-    method: 'PATCH',
-    headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify({ motivo })
-});
+            const resposta = await fetch(`${API_URL}/vendas/${pedidoAberto.id}/cancelar`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ motivo })
+            });
 
             const resultado = await resposta.json();
             confirmarCancelamentoBtn.disabled = false;
