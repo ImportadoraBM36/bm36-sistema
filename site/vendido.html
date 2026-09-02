@@ -483,6 +483,11 @@
 <div class="new-itens">
     <input type="text" class="new-itemInput" id="adicionarNovoItemAoPedido" placeholder="Digite o nome do produto">
 
+    <div class="autocomplete-container" style="position: relative; display: inline-block;">
+    <input type="text" id="busca-produto" placeholder="Digite o nome do produto..." autocomplete="off">
+    <div id="lista-sugestoes" style="position: absolute; border: 1px solid #ccc; background: #fff; width: 100%; max-height: 150px; overflow-y: auto; display: none; z-index: 1000;"></div>
+</div>
+
 </div>
                 <thead>
 

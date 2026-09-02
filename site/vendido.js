@@ -1674,56 +1674,104 @@ async function adicionarNovoItemAoPedido(produtoSelecionado) {
         return;
     }
 
-    const API_URL = 'https://bm36-sistema-production.up.railway.app/api';
+  const API_URL = 'https://bm36-sistema-production.up.railway.app/api';
+let todosProdutos = [];
 
+// Carrega os produtos da API antecipadamente para agilizar a busca
+async function carregarProdutos() {
     try {
-        // 1. Busca a lista de itens da API (ajuste o endpoint "/produtos" se necessário)
         const resposta = await fetch(`${API_URL}/produtos`);
-        if (!resposta.ok) {
-            throw new Error('Erro ao buscar dados da API.');
+        if (resposta.ok) {
+            todosProdutos = await resposta.json();
         }
-        
-        const listaProdutos = await resposta.json();
-
-        // 2. Filtra os itens da lista pelo nome do produto selecionado
-        const nomeBusca = produtoSelecionado.nome?.toLowerCase() || '';
-        const itensFiltrados = listaProdutos.filter(
-            item => item.nome && item.nome.toLowerCase().includes(nomeBusca)
-        );
-
-        // Se nenhum item for encontrado após o filtro, encerra a execução
-        if (itensFiltrados.length === 0) {
-            console.warn('Nenhum item correspondente encontrado na API.');
-            return;
-        }
-
-        // 3. Exemplo utilizando o primeiro item filtrado (ou você pode iterar sobre eles)
-        const produtoEncontrado = itensFiltrados[0];
-        const produtoId = Number(produtoEncontrado.id || produtoSelecionado.id);
-
-        // 4. Verifica se o item já existe no pedido aberto
-        const itemExistente = pedidoAberto.itens.find(
-            item => Number(item.produto_id) === produtoId
-        );
-
-        if (itemExistente) {
-            // Incrementa a quantidade caso já exista
-            itemExistente.quantidade = (itemExistente.quantidade || 1) + 1;
-        } else {
-            // Adiciona novo item caso não exista
-            pedidoAberto.itens.push({
-                produto_id: produtoId,
-                nome: produtoEncontrado.nome,
-                preco: produtoEncontrado.preco,
-                quantidade: 1
-            });
-        }
-
-        console.log('Pedido atualizado com sucesso:', pedidoAberto);
-
     } catch (erro) {
-        console.error('Erro ao processar a requisição:', erro);
+        console.error('Erro ao carregar produtos:', erro);
     }
+}
+
+// Chame esta função ao carregar a página
+carregarProdutos();
+
+const inputBusca = document.getElementById('busca-produto');
+const divSugestoes = document.getElementById('lista-sugestoes');
+
+// Escuta o evento de digitação no input
+inputBusca.addEventListener('input', (e) => {
+    const textoDigitado = e.target.value.toLowerCase().trim();
+
+    // Se o input estiver vazio, esconde a aba
+    if (textoDigitado === '') {
+        divSugestoes.innerHTML = '';
+        divSugestoes.style.display = 'none';
+        return;
+    }
+
+    // Filtra os itens que começam ou contêm o texto digitado
+    const filtrados = todosProdutos.filter(item => 
+        item.nome && item.nome.toLowerCase().includes(textoDigitado)
+    );
+
+    exibirSugestoes(filtrados);
+});
+
+// Renderiza a aba com os itens encontrados
+function exibirSugestoes(produtos) {
+    divSugestoes.innerHTML = '';
+
+    if (produtos.length === 0) {
+        divSugestoes.style.display = 'none';
+        return;
+    }
+
+    produtos.forEach(produto => {
+        const itemDiv = document.createElement('div');
+        itemDiv.textContent = produto.nome;
+        itemDiv.style.padding = '8px';
+        itemDiv.style.cursor = 'pointer';
+        itemDiv.style.borderBottom = '1px solid #eee';
+
+        // Efeito visual ao passar o mouse
+        itemDiv.onmouseover = () => itemDiv.style.background = '#f0f0f0';
+        itemDiv.onmouseout = () => itemDiv.style.background = '#fff';
+
+        // Ao clicar no item da lista, seleciona ele para o pedido
+        itemDiv.onclick = () => {
+            adicionarNovoItemAoPedido(produto);
+            inputBusca.value = ''; // Limpa o input
+            divSugestoes.style.display = 'none'; // Fecha a aba
+        };
+
+        divSugestoes.appendChild(itemDiv);
+    });
+
+    divSugestoes.style.display = 'block';
+}
+
+// Função modificada para adicionar ao pedido o item clicado
+function adicionarNovoItemAoPedido(produtoSelecionado) {
+    if (!pedidoAberto) {
+        console.warn('Nenhum pedido aberto no momento.');
+        return;
+    }
+
+    const produtoId = Number(produtoSelecionado.id);
+
+    const itemExistente = pedidoAberto.itens.find(
+        item => Number(item.produto_id) === produtoId
+    );
+
+    if (itemExistente) {
+        itemExistente.quantidade = (itemExistente.quantidade || 1) + 1;
+    } else {
+        pedidoAberto.itens.push({
+            produto_id: produtoId,
+            nome: produtoSelecionado.nome,
+            preco: produtoSelecionado.preco,
+            quantidade: 1
+        });
+    }
+
+    console.log('Item adicionado com sucesso:', pedidoAberto);
 }
     // =========================================================
     // PRODUTO JÁ EXISTE NO PEDIDO
@@ -2291,3 +2339,4 @@ async function adicionarNovoItemAoPedido(produtoSelecionado) {
 
     carregarPedidos();
     carregarEventos();
+}
