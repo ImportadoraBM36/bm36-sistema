@@ -355,252 +355,99 @@
 <!-- ============================================================
      MODAL DETALHES / EDIÇÃO
      ============================================================ -->
-<!-- ============================================================
-     MODAL DETALHES / EDIÇÃO
-     ============================================================ -->
-
-<div
-    class="overlay"
-    id="overlay"
->
-
+<div class="overlay" id="overlay">
     <div class="modal modal-grande">
 
-        <!-- =========================
-             CABEÇALHO
-             ========================= -->
-
+        <!-- CABEÇALHO -->
         <div class="modal-head">
-
-            <h2 id="modalTitle">
-                Pedido
-            </h2>
-
-            <button
-                class="modal-close-x"
-                id="closeX"
-                type="button"
-            >
-                ✕
-            </button>
-
+            <h2 id="modalTitle">Pedido</h2>
+            <button class="modal-close-x" id="closeX" type="button">✕</button>
         </div>
 
-
-        <!-- =========================
-             INFORMAÇÕES
-             ========================= -->
-
+        <!-- INFORMAÇÕES -->
         <div class="modal-info">
-
             <div>
-
-                <b>
-                    Cliente:
-                </b>
-
-                <span id="modalCliente">
-                </span>
-
+                <b>Cliente:</b>
+                <span id="modalCliente"></span>
             </div>
-
-
             <div>
-
-                <b>
-                    Vendedor:
-                </b>
-
-                <span id="modalVendedor">
-                </span>
-
+                <b>Vendedor:</b>
+                <span id="modalVendedor"></span>
             </div>
-
-
             <div>
-
-                <b>
-                    Data:
-                </b>
-
-                <span id="modalData">
-                </span>
-
+                <b>Data:</b>
+                <span id="modalData"></span>
             </div>
-
-
             <div>
-
-                <b>
-                    Status:
-                </b>
-
-                <span id="modalStatus">
-                </span>
-
+                <b>Status:</b>
+                <span id="modalStatus"></span>
             </div>
-
-
-            <div
-                id="cancelamentoInfo"
-                class="cancelamento-info"
-            >
-            </div>
-
+            <div id="cancelamentoInfo" class="cancelamento-info"></div>
         </div>
-<!-- =========================
-     EVENTO
-     ========================= -->
 
-<div
-    class="campo-evento-edicao"
-    id="campoEventoEdicao"
-    style="display: none;"
->
-    <label for="eventoPedido">
-        Evento
-    </label>
+        <!-- EVENTO -->
+        <div class="campo-evento-edicao" id="campoEventoEdicao" style="display: none;">
+            <label for="eventoPedido">Evento</label>
+            <select id="eventoPedido">
+                <option value="">Sem evento</option>
+            </select>
+        </div>
 
-    <select id="eventoPedido">
-        <option value="">
-            Sem evento
-        </option>
-    </select>
-</div>
+        <!-- ITENS DO PEDIDO -->
+        <div class="modal-section-title">Itens</div>
 
-        <!-- =========================
-     ITENS DO PEDIDO
-     ========================= -->
-<div class="modal-section-title">
-    Itens
-</div>
+        <div class="new-itens" id="containerBuscaProduto" style="display: none; margin-bottom: 12px;">
+            <div class="autocomplete-container" style="position: relative; width: 100%;">
+                <input type="text" id="busca-produto" class="search-wrap input" placeholder="Digite o nome do produto para adicionar..." autocomplete="off" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--navy-border);">
+                <div id="lista-sugestoes" class="input-pesquisa-editada"></div>
+            </div>
+        </div>
 
-<!-- Campo de busca de produto visível no modo de edição -->
-<div class="new-itens" id="containerBuscaProduto" style="display: none; margin-bottom: 12px;">
-    <div class="autocomplete-container" style="position: relative; width: 100%;">
-        <input type="text" id="busca-produto" class="search-wrap input" placeholder="Digite o nome do produto para adicionar..." autocomplete="off" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--navy-border);">
-        <div id="lista-sugestoes" class="input-pesquisa-editada"></div>
-    </div>
-</div>
+        <div class="table-wrapper">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Qtd.</th>
+                        <th>Unit.</th>
+                        <th>Subtotal</th>
+                        <th id="thAcoes" style="display: none; text-align: center;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="modalItems"></tbody>
+            </table>
+        </div>
 
-<div class="table-wrapper">
-    <table class="items-table">
-        <thead>
-            <tr>
-                <th>Produto</th>
-                <th>Qtd.</th>
-                <th>Unit.</th>
-                <th>Subtotal</th>
-                <th id="thAcoes" style="display: none; text-align: center;">Ações</th>
-            </tr>
-        </thead>
-        <tbody id="modalItems">
-        </tbody>
-    </table>
-</div>
-
-
-        <!-- =========================
-             RESUMO
-             ========================= -->
-
+        <!-- RESUMO E DESCONTO (APENAS UM BLOCO) -->
         <div class="modal-summary">
-
             <div class="row">
-
-                <span>
-                    Subtotal
-                </span>
-
-                <span id="modalSubtotal">
-                    R$ 0,00
-                </span>
-
+                <span>Subtotal</span>
+                <span id="modalSubtotal">R$ 0,00</span>
             </div>
 
-
-            <div class="row">
-
-                <span>
-                    Desconto
-                </span>
-
-                <span id="modalDesconto">
-                    R$ 0,00
-                </span>
-
+            <div class="row" style="align-items: center;">
+                <span>Desconto</span>
+                <div id="containerDesconto">
+                    <span id="modalDesconto">R$ 0,00</span>
+                </div>
             </div>
-
 
             <div class="row total">
-
-                <span>
-                    Total
-                </span>
-
-                <span id="modalTotal">
-                    R$ 0,00
-                </span>
-
+                <span>Total</span>
+                <span id="modalTotal">R$ 0,00</span>
             </div>
-
         </div>
 
-
-        <!-- =========================
-             AÇÕES
-             ========================= -->
-
+        <!-- AÇÕES -->
         <div class="modal-actions">
-
-            <button
-                class="btn btn-secondary"
-                id="closeBtn"
-                type="button"
-            >
-                Fechar
-            </button>
-
-
-            <button
-                class="btn btn-pdf"
-                id="pdfPedidoBtn"
-                type="button"
-            >
-                Gerar / compartilhar PDF
-            </button>
-
-
-            <button
-                class="btn btn-print"
-                id="imprimirPedidoBtn"
-                type="button"
-            >
-                Imprimir
-            </button>
-
-
-            <button
-                class="btn btn-edit"
-                id="editarBtn"
-                type="button"
-            >
-                Editar Pedido
-            </button>
-
-
-            <button
-                class="btn btn-danger"
-                id="cancelarPedidoBtn"
-                type="button"
-            >
-                Cancelar Pedido
-            </button>
-
+            <button class="btn btn-secondary" id="closeBtn" type="button">Fechar</button>
+            <button class="btn btn-pdf" id="pdfPedidoBtn" type="button">Gerar / compartilhar PDF</button>
+            <button class="btn btn-print" id="imprimirPedidoBtn" type="button">Imprimir</button>
+            <button class="btn btn-edit" id="editarBtn" type="button">Editar Pedido</button>
+            <button class="btn btn-danger" id="cancelarPedidoBtn" type="button">Cancelar Pedido</button>
         </div>
 
     </div>
-
 </div>
 <!-- ============================================================
      MODAL CANCELAMENTO
