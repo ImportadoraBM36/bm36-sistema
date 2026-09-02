@@ -3129,14 +3129,14 @@ app.put('/api/vendas/:id', async (req, res) => {
         console.error('Erro ao alterar pedido:', erro);
         return res.status(500).json({
             sucesso: false,
-            mensagem: erro.message || 'Erro interno ao alterar pedido.'
+            mensagem: 'Erro interno ao alterar pedido.',
+            detalhe: erro.message,
+            stack: erro.stack
         });
     } finally {
         client.release();
     }
 });
-
-
 
 
 
