@@ -469,58 +469,57 @@
 </div>
 
         <!-- =========================
-             ITENS
-             ========================= -->
-
-        <div class="modal-section-title">
-            Itens
-        </div>
-
-
-        <div class="table-wrapper">
-
-            <table class="items-table">
-<div class="new-itens">
-    <input type="text" class="new-itemInput" id="adicionarNovoItemAoPedido" placeholder="Digite o nome do produto">
-
-    <div class="autocomplete-container" style="position: relative; display: inline-block;">
-    <input type="text" id="busca-produto" placeholder="Digite o nome do produto..." autocomplete="off">
-    <div id="lista-sugestoes" style="position: absolute; border: 1px solid #ccc; background: #fff; width: 100%; max-height: 150px; overflow-y: auto; display: none; z-index: 1000;"></div>
+     ITENS DO PEDIDO
+     ========================= -->
+<div class="modal-section-title">
+    Itens
 </div>
 
+<!-- Campo de busca de produto visível no modo de edição -->
+<div class="new-itens" id="containerBuscaProduto" style="display: none; margin-bottom: 12px;">
+    <div class="autocomplete-container" style="position: relative; width: 100%;">
+        <input type="text" id="busca-produto" class="search-wrap input" placeholder="Digite o nome do produto para adicionar..." autocomplete="off" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--navy-border);">
+        <div id="lista-sugestoes" class="input-pesquisa-editada"></div>
+    </div>
 </div>
-                <thead>
 
-                    <tr>
+<div class="table-wrapper">
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Qtd.</th>
+                <th>Unit.</th>
+                <th>Subtotal</th>
+                <th id="thAcoes" style="display: none; text-align: center;">Ações</th>
+            </tr>
+        </thead>
+        <tbody id="modalItems">
+        </tbody>
+    </table>
+</div>
 
-                        <th>
-                            Produto
-                        </th>
+<!-- =========================
+     RESUMO E DESCONTO
+     ========================= -->
+<div class="modal-summary">
+    <div class="row">
+        <span>Subtotal</span>
+        <span id="modalSubtotal">R$ 0,00</span>
+    </div>
 
-                        <th>
-                            Qtd.
-                        </th>
-
-                        <th>
-                            Unit.
-                        </th>
-
-                        <th>
-                            Subtotal
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="modalItems">
-                </tbody>
-
-            </table>
-
+    <div class="row" style="align-items: center;">
+        <span>Desconto</span>
+        <div id="containerDesconto">
+            <span id="modalDesconto">R$ 0,00</span>
         </div>
+    </div>
 
+    <div class="row total">
+        <span>Total</span>
+        <span id="modalTotal">R$ 0,00</span>
+    </div>
+</div>
 
         <!-- =========================
              RESUMO

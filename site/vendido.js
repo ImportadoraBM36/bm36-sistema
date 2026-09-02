@@ -22,7 +22,7 @@
         false;
     let eventos =
         [];
-
+let todosProdutos = [];
     // ============================================================
     // ELEMENTOS
     // ============================================================
@@ -121,16 +121,6 @@
         document.getElementById(
             'eventoPedido'
         );
-
-
-        const inputBusca = document.getElementById('busca-produto');
-const divSugestoes = document.getElementById('lista-sugestoes');
-
-if (inputBusca && divSugestoes) {
-    inputBusca.addEventListener('input', (e) => {
-        // sua lógica de busca aqui
-    });
-}
     // ============================================================
     // FORMATADORES
     // ============================================================
@@ -1261,7 +1251,98 @@ pdf.text(linhasNome, 35, y + 5);
     // ============================================================
     // ABRIR PEDIDO
     // ============================================================
+// ============================================================
+// CARREGAR PRODUTOS DO BANCO DE DADOS
+// ============================================================
+async function carregarProdutosBanco() {
+    try {
+        const resposta = await fetch(`${API_URL}/produtos`);
+        if (resposta.ok) {
+            todosProdutos = await resposta.json();
+        }
+    } catch (erro) {
+        console.error('Erro ao carregar produtos do banco:', erro);
+    }
+}
 
+// ============================================================
+// AUTOCOMPLETE DE PRODUTOS NO MODO EDIÇÃO
+// ============================================================
+function inicializarBuscaProduto() {
+    const inputBusca = document.getElementById('busca-produto');
+    const divSugestoes = document.getElementById('lista-sugestoes');
+
+    if (!inputBusca || !divSugestoes) return;
+
+    inputBusca.value = '';
+    divSugestoes.innerHTML = '';
+    divSugestoes.style.display = 'none';
+
+    inputBusca.oninput = (e) => {
+        const termo = e.target.value.toLowerCase().trim();
+
+        if (!termo) {
+            divSugestoes.innerHTML = '';
+            divSugestoes.style.display = 'none';
+            return;
+        }
+
+        const filtrados = todosProdutos.filter(prod =>
+            prod.nome && prod.nome.toLowerCase().includes(termo)
+        );
+
+        exibirSugestoes(filtrados);
+    };
+}
+
+function exibirSugestoes(produtos) {
+    const divSugestoes = document.getElementById('lista-sugestoes');
+    const inputBusca = document.getElementById('busca-produto');
+    divSugestoes.innerHTML = '';
+
+    if (produtos.length === 0) {
+        divSugestoes.style.display = 'none';
+        return;
+    }
+
+    produtos.forEach(produto => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'item-sugestao';
+        itemDiv.textContent = `${produto.nome} - ${fmt(produto.preco)}`;
+
+        itemDiv.onclick = () => {
+            adicionarItemAoPedido(produto);
+            inputBusca.value = '';
+            divSugestoes.style.display = 'none';
+        };
+
+        divSugestoes.appendChild(itemDiv);
+    });
+
+    divSugestoes.style.display = 'block';
+}
+
+function adicionarItemAoPedido(produto) {
+    if (!pedidoAberto) return;
+
+    const produtoId = Number(produto.id);
+    const itemExistente = pedidoAberto.itens.find(
+        i => Number(i.produto_id) === produtoId
+    );
+
+    if (itemExistente) {
+        itemExistente.quantidade = Number(itemExistente.quantidade) + 1;
+    } else {
+        pedidoAberto.itens.push({
+            produto_id: produtoId,
+            produto_nome: produto.nome,
+            preco_unitario: Number(produto.preco),
+            quantidade: 1
+        });
+    }
+
+    renderItensModal();
+}
     async function abrirPedido(id) {
 
         try {
@@ -1318,53 +1399,51 @@ pdf.text(linhasNome, 35, y + 5);
     }
 
 
-    // ============================================================
-    // RENDER MODAL
-    // ============================================================
+   // ============================================================
+// RENDER MODAL
+// ============================================================
+function renderModalPedido() {
+    if (!pedidoAberto) return;
 
-    function renderModalPedido() {
+    document.getElementById('modalTitle').textContent = `Pedido #${pedidoAberto.id}`;
 
-        if (!pedidoAberto) {
-            return;
+    let cliente = pedidoAberto.cliente_nome || '-';
+    if (pedidoAberto.cliente_documento) {
+        cliente += ` - ${formatarDocumento(pedidoAberto.cliente_documento)}`;
+    }
+    document.getElementById('modalCliente').textContent = cliente;
+
+    const modalVendedor = document.getElementById('modalVendedor');
+    if (modalVendedor) {
+        modalVendedor.textContent = pedidoAberto.usuario_nome || 'Não informado';
+    }
+
+    document.getElementById('modalData').textContent = formatarData(pedidoAberto.criado_em);
+    document.getElementById('modalStatus').textContent = statusLabel(pedidoAberto.status);
+
+    const cancelado = normalizarStatus(pedidoAberto.status) === 'cancelada';
+    editarBtn.disabled = cancelado;
+    cancelarPedidoBtn.disabled = cancelado;
+
+    editarBtn.textContent = modoEdicao ? 'Salvar Alterações' : 'Editar Pedido';
+
+    // Exibe ou oculta o container de busca de produtos
+    const containerBusca = document.getElementById('containerBuscaProduto');
+    if (containerBusca) {
+        containerBusca.style.display = modoEdicao ? 'block' : 'none';
+        if (modoEdicao) inicializarBuscaProduto();
+    }
+
+    // Exibe ou oculta a edição de eventos
+    if (campoEventoEdicao && eventoPedido) {
+        campoEventoEdicao.style.display = modoEdicao ? 'flex' : 'none';
+        if (modoEdicao) {
+            eventoPedido.value = pedidoAberto.evento_id ? String(pedidoAberto.evento_id) : '';
         }
+    }
 
-
-        document
-            .getElementById(
-                'modalTitle'
-            )
-            .textContent =
-            `Pedido #${pedidoAberto.id}`;
-
-
-        let cliente =
-            pedidoAberto.cliente_nome
-            ||
-            '-';
-
-
-        if (
-            pedidoAberto
-                .cliente_documento
-        ) {
-
-            cliente +=
-                ` - ${formatarDocumento(
-                    pedidoAberto
-                        .cliente_documento
-                )}`;
-
-        }
-
-
-    document
-        .getElementById(
-            'modalCliente'
-        )
-        .textContent =
-        cliente;
-
-
+    renderItensModal();
+}
     // =========================
     // VENDEDOR
     // =========================
@@ -1512,7 +1591,7 @@ pdf.text(linhasNome, 35, y + 5);
 
         renderItensModal();
 
-    }
+    
 
 
     // ============================================================
@@ -1524,72 +1603,65 @@ pdf.text(linhasNome, 35, y + 5);
 // ============================================================
 
 function renderItensModal() {
-
     const body = document.getElementById('modalItems');
+    const thAcoes = document.getElementById('thAcoes');
 
-    if (!body || !pedidoAberto) {
-        return;
-    }
+    if (!body || !pedidoAberto) return;
 
     body.innerHTML = '';
+    if (thAcoes) thAcoes.style.display = modoEdicao ? 'table-cell' : 'none';
 
     pedidoAberto.itens.forEach(item => {
-
         const tr = document.createElement('tr');
-
         const quantidade = Number(item.quantidade);
         const preco = Number(item.preco_unitario);
 
         tr.innerHTML = `
+            <td>${item.produto_nome || item.nome || 'Produto'}</td>
             <td>
-                ${item.produto_nome || 'Produto não encontrado'}
+                ${modoEdicao 
+                    ? `<input class="edit-qty" type="number" min="1" step="1" data-produto-id="${item.produto_id}" value="${quantidade}">` 
+                    : quantidade}
             </td>
-
-            <td>
-                ${
-                    modoEdicao
-                        ? `
-                            <input
-                                class="edit-qty"
-                                type="number"
-                                min="1"
-                                step="1"
-                                data-produto-id="${item.produto_id}"
-                                value="${quantidade}"
-                            >
-                        `
-                        : quantidade
-                }
-            </td>
-
-            <td>
-                ${fmt(preco)}
-            </td>
-
-            <td>
-                ${fmt(quantidade * preco)}
-            </td>
-
-            <td>
-                ${
-                    modoEdicao
-                        ? `
-                            <button
-                                type="button"
-                                class="btn-remove"
-                                data-produto-id="${item.produto_id}"
-                            >
-                                ❌
-                            </button>
-                        `
-                        : ''
-                }
-            </td>
+            <td>${fmt(preco)}</td>
+            <td>${fmt(quantidade * preco)}</td>
+            ${modoEdicao 
+                ? `<td style="text-align: center;"><button type="button" class="btn-remove" data-produto-id="${item.produto_id}">🗑️</button></td>` 
+                : ''}
         `;
 
         body.appendChild(tr);
     });
 
+    if (modoEdicao) {
+        // Evento de alteração de quantidade
+        body.querySelectorAll('.edit-qty').forEach(input => {
+            input.addEventListener('input', e => {
+                const novoValor = Math.floor(Number(e.target.value));
+                const produtoId = Number(e.target.dataset.produtoId);
+
+                if (novoValor >= 1) {
+                    const item = pedidoAberto.itens.find(i => Number(i.produto_id) === produtoId);
+                    if (item) {
+                        item.quantidade = novoValor;
+                        recalcularResumoModal();
+                    }
+                }
+            });
+        });
+
+        // Evento de remoção do item (Excluir da lista em memória)
+        body.querySelectorAll('.btn-remove').forEach(botao => {
+            botao.addEventListener('click', e => {
+                const produtoId = Number(e.currentTarget.dataset.produtoId);
+                pedidoAberto.itens = pedidoAberto.itens.filter(i => Number(i.produto_id) !== produtoId);
+                renderItensModal();
+            });
+        });
+    }
+
+    recalcularResumoModal();
+}
     // =========================================================
     // ALTERAR QUANTIDADE
     // =========================================================
@@ -1674,7 +1746,7 @@ function renderItensModal() {
     }
 
     recalcularResumoModal();
-}
+
 // ============================================================
 // ADICIONAR NOVO PRODUTO AO PEDIDO
 // ============================================================
@@ -1684,104 +1756,56 @@ async function adicionarNovoItemAoPedido(produtoSelecionado) {
         return;
     }
 
-  const API_URL = 'https://bm36-sistema-production.up.railway.app/api';
-let todosProdutos = [];
+    const API_URL = 'https://bm36-sistema-production.up.railway.app/api';
 
-// Carrega os produtos da API antecipadamente para agilizar a busca
-async function carregarProdutos() {
     try {
+        // 1. Busca a lista de itens da API (ajuste o endpoint "/produtos" se necessário)
         const resposta = await fetch(`${API_URL}/produtos`);
-        if (resposta.ok) {
-            todosProdutos = await resposta.json();
+        if (!resposta.ok) {
+            throw new Error('Erro ao buscar dados da API.');
         }
+        
+        const listaProdutos = await resposta.json();
+
+        // 2. Filtra os itens da lista pelo nome do produto selecionado
+        const nomeBusca = produtoSelecionado.nome?.toLowerCase() || '';
+        const itensFiltrados = listaProdutos.filter(
+            item => item.nome && item.nome.toLowerCase().includes(nomeBusca)
+        );
+
+        // Se nenhum item for encontrado após o filtro, encerra a execução
+        if (itensFiltrados.length === 0) {
+            console.warn('Nenhum item correspondente encontrado na API.');
+            return;
+        }
+
+        // 3. Exemplo utilizando o primeiro item filtrado (ou você pode iterar sobre eles)
+        const produtoEncontrado = itensFiltrados[0];
+        const produtoId = Number(produtoEncontrado.id || produtoSelecionado.id);
+
+        // 4. Verifica se o item já existe no pedido aberto
+        const itemExistente = pedidoAberto.itens.find(
+            item => Number(item.produto_id) === produtoId
+        );
+
+        if (itemExistente) {
+            // Incrementa a quantidade caso já exista
+            itemExistente.quantidade = (itemExistente.quantidade || 1) + 1;
+        } else {
+            // Adiciona novo item caso não exista
+            pedidoAberto.itens.push({
+                produto_id: produtoId,
+                nome: produtoEncontrado.nome,
+                preco: produtoEncontrado.preco,
+                quantidade: 1
+            });
+        }
+
+        console.log('Pedido atualizado com sucesso:', pedidoAberto);
+
     } catch (erro) {
-        console.error('Erro ao carregar produtos:', erro);
+        console.error('Erro ao processar a requisição:', erro); 
     }
-}
-
-// Chame esta função ao carregar a página
-carregarProdutos();
-
-const inputBusca = document.getElementById('busca-produto');
-const divSugestoes = document.getElementById('lista-sugestoes');
-
-// Escuta o evento de digitação no input
-inputBusca.addEventListener('input', (e) => {
-    const textoDigitado = e.target.value.toLowerCase().trim();
-
-    // Se o input estiver vazio, esconde a aba
-    if (textoDigitado === '') {
-        divSugestoes.innerHTML = '';
-        divSugestoes.style.display = 'none';
-        return;
-    }
-
-    // Filtra os itens que começam ou contêm o texto digitado
-    const filtrados = todosProdutos.filter(item => 
-        item.nome && item.nome.toLowerCase().includes(textoDigitado)
-    );
-
-    exibirSugestoes(filtrados);
-});
-
-// Renderiza a aba com os itens encontrados
-function exibirSugestoes(produtos) {
-    divSugestoes.innerHTML = '';
-
-    if (produtos.length === 0) {
-        divSugestoes.style.display = 'none';
-        return;
-    }
-
-    produtos.forEach(produto => {
-        const itemDiv = document.createElement('div');
-        itemDiv.textContent = produto.nome;
-        itemDiv.style.padding = '8px';
-        itemDiv.style.cursor = 'pointer';
-        itemDiv.style.borderBottom = '1px solid #eee';
-
-        // Efeito visual ao passar o mouse
-        itemDiv.onmouseover = () => itemDiv.style.background = '#f0f0f0';
-        itemDiv.onmouseout = () => itemDiv.style.background = '#fff';
-
-        // Ao clicar no item da lista, seleciona ele para o pedido
-        itemDiv.onclick = () => {
-            adicionarNovoItemAoPedido(produto);
-            inputBusca.value = ''; // Limpa o input
-            divSugestoes.style.display = 'none'; // Fecha a aba
-        };
-
-        divSugestoes.appendChild(itemDiv);
-    });
-
-    divSugestoes.style.display = 'block';
-}
-
-// Função modificada para adicionar ao pedido o item clicado
-function adicionarNovoItemAoPedido(produtoSelecionado) {
-    if (!pedidoAberto) {
-        console.warn('Nenhum pedido aberto no momento.');
-        return;
-    }
-
-    const produtoId = Number(produtoSelecionado.id);
-
-    const itemExistente = pedidoAberto.itens.find(
-        item => Number(item.produto_id) === produtoId
-    );
-
-    if (itemExistente) {
-        itemExistente.quantidade = (itemExistente.quantidade || 1) + 1;
-    } else {
-        pedidoAberto.itens.push({
-            produto_id: produtoId,
-            nome: produtoSelecionado.nome,
-            preco: produtoSelecionado.preco,
-            quantidade: 1
-        });
-    }
-
-    console.log('Item adicionado com sucesso:', pedidoAberto);
 }
     // =========================================================
     // PRODUTO JÁ EXISTE NO PEDIDO
@@ -1833,222 +1857,91 @@ function adicionarNovoItemAoPedido(produtoSelecionado) {
     // RECALCULAR RESUMO
     // ============================================================
 
-    function recalcularResumoModal() {
+   function recalcularResumoModal() {
+    const subtotal = pedidoAberto.itens.reduce((soma, item) => {
+        return soma + (Number(item.quantidade) * Number(item.preco_unitario));
+    }, 0);
 
-        const subtotal =
-            pedidoAberto.itens
-                .reduce(
-                    (
-                        soma,
-                        item
-                    ) => {
+    const containerDesconto = document.getElementById('containerDesconto');
 
-                        return (
-                            soma
-                            +
-                            Number(
-                                item.quantidade
-                            )
-                            *
-                            Number(
-                                item.preco_unitario
-                            )
-                        );
+    if (modoEdicao) {
+        containerDesconto.innerHTML = `
+            <input type="number" id="inputDescontoEdicao" class="edit-desconto" min="0" step="0.01" value="${pedidoAberto.desconto || 0}">
+        `;
 
-                    },
-                    0
-                );
+        const inputDesconto = document.getElementById('inputDescontoEdicao');
+        inputDesconto.addEventListener('input', e => {
+            const valorDesconto = parseFloat(e.target.value) || 0;
+            pedidoAberto.desconto = valorDesconto;
 
-
-        const desconto =
-            Number(
-                pedidoAberto.desconto
-                ||
-                0
-            );
-
-
-        document
-            .getElementById(
-                'modalSubtotal'
-            )
-            .textContent =
-            fmt(
-                subtotal
-            );
-
-
-        document
-            .getElementById(
-                'modalDesconto'
-            )
-            .textContent =
-            fmt(
-                desconto
-            );
-
-
-        document
-            .getElementById(
-                'modalTotal'
-            )
-            .textContent =
-            fmt(
-                subtotal -
-                desconto
-            );
-
+            const total = Math.max(0, subtotal - valorDesconto);
+            document.getElementById('modalSubtotal').textContent = fmt(subtotal);
+            document.getElementById('modalTotal').textContent = fmt(total);
+        });
+    } else {
+        containerDesconto.innerHTML = `<span id="modalDesconto">${fmt(pedidoAberto.desconto || 0)}</span>`;
     }
 
+    const desconto = Number(pedidoAberto.desconto || 0);
+    const total = Math.max(0, subtotal - desconto);
 
-    // ============================================================
-    // EDITAR
-    // ============================================================
-
-    editarBtn.addEventListener(
-        'click',
-        async () => {
-
-            if (!pedidoAberto) {
-                return;
-            }
+    document.getElementById('modalSubtotal').textContent = fmt(subtotal);
+    document.getElementById('modalTotal').textContent = fmt(total);
+}
 
 
-            if (!modoEdicao) {
+  // ============================================================
+// SALVAR OU EDITAR PEDIDO
+// ============================================================
+editarBtn.addEventListener('click', async () => {
+    if (!pedidoAberto) return;
 
-                modoEdicao =
-                    true;
+    if (!modoEdicao) {
+        modoEdicao = true;
+        renderModalPedido();
+        return;
+    }
 
+    try {
+        editarBtn.disabled = true;
 
-                renderModalPedido();
+        const dadosAtualizados = {
+            itens: pedidoAberto.itens.map(item => ({
+                produto_id: Number(item.produto_id),
+                quantidade: Number(item.quantidade),
+                preco_unitario: Number(item.preco_unitario)
+            })),
+            desconto: Number(pedidoAberto.desconto || 0),
+            evento_id: eventoPedido && eventoPedido.value ? Number(eventoPedido.value) : null
+        };
 
-                return;
+        const resposta = await fetch(`${API_URL}/vendas/${pedidoAberto.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dadosAtualizados)
+        });
 
-            }
+        const resultado = await resposta.json();
 
-
-            const inputs =
-                document.querySelectorAll(
-                    '.edit-qty'
-                );
-
-
-            const itens =
-                [];
-
-
-            inputs.forEach(
-                input => {
-
-                    itens.push({
-
-                        produto_id:
-                            Number(
-                                input.dataset
-                                    .produtoId
-                            ),
-
-                        quantidade:
-                            Math.max(
-                                1,
-                                Math.floor(
-                                    Number(
-                                        input.value
-                                    )
-                                )
-                            )
-
-                    });
-
-                }
-            );
-
-
-            try {
-
-                editarBtn.disabled =
-                    true;
-
-
-                const resposta =
-                    await fetch(
-                        `${API_URL}/vendas/${pedidoAberto.id}`,
-                        {
-
-                            method:
-                                'PUT',
-
-                            headers: {
-
-                                'Content-Type':
-                                    'application/json'
-
-                            },
-
-                        body:
-        JSON.stringify({
-
-            itens,
-
-            evento_id:
-                eventoPedido.value
-                    ? Number(
-                        eventoPedido.value
-                    )
-                    : null
-
-        })
-
-                        }
-                    );
-
-
-                const resultado =
-                    await resposta.json();
-
-
-                if (!resposta.ok) {
-
-                    alert(
-                        resultado.mensagem
-                        ||
-                        'Não foi possível alterar o pedido.'
-                    );
-
-
-                    editarBtn.disabled =
-                        false;
-
-
-                    return;
-
-                }
-
-
-                await carregarPedidos();
-
-
-                await abrirPedido(
-                    pedidoAberto.id
-                );
-
-
-        } catch (erro) {
-
-                console.error(
-                    erro
-                );
-
-
-                alert(
-                    'Não foi possível alterar o pedido.'
-                );
-
-            }
-
+        if (!resposta.ok) {
+            alert(resultado.mensagem || 'Não foi possível alterar o pedido.');
+            editarBtn.disabled = false;
+            return;
         }
-    );
 
+        modoEdicao = false;
+        await carregarPedidos();
+        await abrirPedido(pedidoAberto.id);
+
+    } catch (erro) {
+        console.error(erro);
+        alert('Não foi possível alterar o pedido.');
+    } finally {
+        editarBtn.disabled = false;
+    }
+});
 
     // ============================================================
     // CANCELAR
@@ -2343,10 +2236,9 @@ function adicionarNovoItemAoPedido(produtoSelecionado) {
     );
 
 
-    // ============================================================
-    // INICIAR
-    // ============================================================
-
-    carregarPedidos();
-    carregarEventos();
-}
+// ============================================================
+// INICIAR
+// ============================================================
+carregarPedidos();
+carregarEventos();
+carregarProdutosBanco(); // ADD AQUI
