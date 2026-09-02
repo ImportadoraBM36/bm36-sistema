@@ -1533,16 +1533,11 @@ pdf.text(linhasNome, 35, y + 5);
                             `produto-${item.produto_id}`
                         );
                     const produtoNome = produto ? produto.getAttribute('data-nome') : 'Produto não encontrado';
-                    const quantidade =
-                        Number(
-                            item.quantidade
-                        );
+
+                    const quantidade = Number(item.quantidade);
 
 
-                    const preco =
-                        Number(
-                            item.preco_unitario
-                        );
+                    const preco = Number(item.preco_unitario);
 
 
                     tr.innerHTML = `
@@ -1580,25 +1575,45 @@ pdf.text(linhasNome, 35, y + 5);
 
 
                         <td>
-                            ${fmt(
-                                quantidade *
-                                preco
-                            )}
+    ${fmt(quantidade * preco)}
                         </td>
                     `;
+                    body.appendChild(tr);});
+             
+    if (modoEdicao) {
+       
+        const inputsQuantidade = body.querySelectorAll('.edit-qty');
 
+        inputsQuantidade.forEach(input => {
+           
+            input.addEventListener('input', (evento) => {
+                const novoValor = Number(evento.target.value);
+                const produtoId = evento.target.getAttribute('data-produto-id');
 
-                    body.appendChild(
-                        tr
-                    );
+             
+                if (novoValor < 1) return;
 
+              
+                const itemModificado = pedidoAberto.itens.find(i => i.produto_id == produtoId);
+                
+                if (itemModificado) {
+             
+                    itemModificado.quantidade = novoValor;
+                    
+                  
+                    recalcularResumoModal();
+                    
+            
+                    const linhaAtual = evento.target.closest('tr');
+                    const colunaSubtotal = linhaAtual.querySelector('td:last-child');
+                    colunaSubtotal.innerHTML = fmt(novoValor * itemModificado.preco_unitario);
                 }
-            );
-
-
-        recalcularResumoModal();
-
+            });
+        });
     }
+
+    recalcularResumoModal();
+}
 
 
     // ============================================================
