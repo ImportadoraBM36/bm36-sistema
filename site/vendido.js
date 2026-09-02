@@ -1658,7 +1658,7 @@ function renderItensModal() {
 
     recalcularResumoModal();
 }
-
+    }
 // =========================================================
 // EVENTO 3: Adicionar um novo item no pedido (Vindo do Banco)
 // =========================================================
