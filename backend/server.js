@@ -2941,38 +2941,48 @@ app.patch('/api/eventos/:id/reativar', async (req, res) => {
 
         const eventoId = Number(req.params.id);
 
-        if (!Number.isInteger(eventoId) || eventoId <= 0) {
-            return res.status(400).json({
-                sucesso: false,
-                mensagem: 'Evento inválido.'
-            });
-        }
+       if (!statusPermitidos.includes(statusFinal)) {
+    return res.status(400).json({
+        sucesso: false,
+        mensagem: 'Status de evento inválido.'
+    });
+}
 
-        const resultado = await pool.query(
-            `
-            UPDATE eventos
-            SET
-                status = 'ATIVO',
-                atualizado_em = NOW()
-            WHERE id = $1
-            RETURNING *
-            `,
-            [eventoId]
-        );
+const resultado = await pool.query(
+    `
+    UPDATE eventos
+    SET
+        nome = $1,
+        descricao = $2,
+        data_inicio = $3,
+        data_fim = $4,
+        status = $5,
+        atualizado_em = NOW()
+    WHERE id = $6
+    RETURNING *
+    `,
+    [
+        String(nome).trim(),
+        descricao ? String(descricao).trim() : null,
+        data_inicio || null,
+        data_fim || null,
+        statusFinal,
+        eventoId
+    ]
+);
 
-        if (resultado.rowCount === 0) {
-            return res.status(404).json({
-                sucesso: false,
-                mensagem: 'Evento não encontrado.'
-            });
-        }
+if (resultado.rows.length === 0) {
+    return res.status(404).json({
+        sucesso: false,
+        mensagem: 'Evento não encontrado.'
+    });
+}
 
-        return res.json({
-            sucesso: true,
-            mensagem: 'Evento reativado com sucesso.',
-            evento: resultado.rows[0]
-        });
-
+return res.json({
+    sucesso: true,
+    mensagem: 'Evento atualizado com sucesso!',
+    evento: resultado.rows[0]
+});
     } catch (erro) {
 
         console.error(
