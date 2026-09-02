@@ -709,9 +709,15 @@ function exibirSugestoes(produtos) {
 function adicionarItemAoPedido(produto) {
     if (!pedidoAberto) return;
 
-    const produtoId = Number(produto.id);
+    const produtoId = Number(produto.id || produto.produto_id);
+
+    if (!produtoId) {
+        alert('Erro ao identificar o produto selecionado.');
+        return;
+    }
+
     const itemExistente = pedidoAberto.itens.find(
-        i => Number(i.produto_id) === produtoId
+        i => Number(i.produto_id || i.id) === produtoId
     );
 
     if (itemExistente) {
@@ -719,8 +725,8 @@ function adicionarItemAoPedido(produto) {
     } else {
         pedidoAberto.itens.push({
             produto_id: produtoId,
-            produto_nome: produto.nome,
-            preco_unitario: Number(produto.preco),
+            produto_nome: produto.nome || produto.produto_nome,
+            preco_unitario: Number(produto.preco || produto.preco_unitario || 0),
             quantidade: 1
         });
     }
@@ -831,19 +837,20 @@ function renderItensModal() {
     pedidoAberto.itens.forEach(item => {
         const tr = document.createElement('tr');
         const quantidade = Number(item.quantidade);
-        const preco = Number(item.preco_unitario);
+        const preco = Number(item.preco_unitario || item.preco || 0);
+        const produtoId = Number(item.produto_id || item.id);
 
         tr.innerHTML = `
             <td>${item.produto_nome || item.nome || 'Produto'}</td>
             <td>
                 ${modoEdicao 
-                    ? `<input class="edit-qty" type="number" min="1" step="1" data-produto-id="${item.produto_id}" value="${quantidade}">` 
+                    ? `<input class="edit-qty" type="number" min="1" step="1" data-produto-id="${produtoId}" value="${quantidade}">` 
                     : quantidade}
             </td>
             <td>${fmt(preco)}</td>
             <td>${fmt(quantidade * preco)}</td>
             ${modoEdicao 
-                ? `<td style="text-align: center;"><button type="button" class="btn-remove" data-produto-id="${item.produto_id}">🗑️</button></td>` 
+                ? `<td style="text-align: center;"><button type="button" class="btn-remove" data-produto-id="${produtoId}">🗑️</button></td>` 
                 : ''}
         `;
 
@@ -857,7 +864,7 @@ function renderItensModal() {
                 const produtoId = Number(e.target.dataset.produtoId);
 
                 if (novoValor >= 1) {
-                    const item = pedidoAberto.itens.find(i => Number(i.produto_id) === produtoId);
+                    const item = pedidoAberto.itens.find(i => Number(i.produto_id || i.id) === produtoId);
                     if (item) {
                         item.quantidade = novoValor;
                         recalcularResumoModal();
@@ -869,7 +876,7 @@ function renderItensModal() {
         body.querySelectorAll('.btn-remove').forEach(botao => {
             botao.addEventListener('click', e => {
                 const produtoId = Number(e.currentTarget.dataset.produtoId);
-                pedidoAberto.itens = pedidoAberto.itens.filter(i => Number(i.produto_id) !== produtoId);
+                pedidoAberto.itens = pedidoAberto.itens.filter(i => Number(i.produto_id || i.id) !== produtoId);
                 renderItensModal();
             });
         });
@@ -885,7 +892,7 @@ function renderItensModal() {
 
 function recalcularResumoModal() {
     const subtotal = pedidoAberto.itens.reduce((soma, item) => {
-        return soma + (Number(item.quantidade) * Number(item.preco_unitario));
+        return soma + (Number(item.quantidade) * Number(item.preco_unitario || item.preco || 0));
     }, 0);
 
     const containerDesconto = document.getElementById('containerDesconto');
@@ -929,24 +936,42 @@ editarBtn.addEventListener('click', async () => {
         return;
     }
 
+    const itensValidos = pedidoAberto.itens.filter(item => {
+        const qtd = Number(item.quantidade);
+        const id = Number(item.produto_id || item.id);
+        return id > 0 && qtd > 0;
+    });
+
+    if (itensValidos.length === 0) {
+        alert('O pedido deve conter pelo menos um produto com quantidade maior que zero.');
+        return;
+    }
+
     try {
         editarBtn.disabled = true;
 
         const dadosAtualizados = {
-            itens: pedidoAberto.itens.map(item => ({
-                produto_id: Number(item.produto_id),
+            itens: itensValidos.map(item => ({
+                produto_id: Number(item.produto_id || item.id),
                 quantidade: Number(item.quantidade),
-                preco_unitario: Number(item.preco_unitario)
+                preco_unitario: Number(item.preco_unitario || item.preco || 0)
             })),
             desconto: Number(pedidoAberto.desconto || 0),
             evento_id: eventoPedido && eventoPedido.value ? Number(eventoPedido.value) : null
         };
 
+        const token = localStorage.getItem('bm36_token');
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const resposta = await fetch(`${API_URL}/vendas/${pedidoAberto.id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: headers,
             body: JSON.stringify(dadosAtualizados)
         });
 
