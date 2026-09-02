@@ -400,18 +400,22 @@ async function gerarPdfPedido(imprimir = false, janelaDeImpressao = null) {
     pdf.save(nomeArquivo);
 }
 
-pdfPedidoBtn.addEventListener('click', () => gerarPdfPedido());
+if (pdfPedidoBtn) {
+    pdfPedidoBtn.addEventListener('click', () => gerarPdfPedido());
+}
 
-imprimirPedidoBtn.addEventListener('click', () => {
-    const janelaImpressao = window.open('', '_blank');
+if (imprimirPedidoBtn) {
+    imprimirPedidoBtn.addEventListener('click', () => {
+        const janelaImpressao = window.open('', '_blank');
 
-    if (!janelaImpressao) {
-        alert('O navegador bloqueou a janela de impressão. Permita pop-ups e tente novamente.');
-        return;
-    }
+        if (!janelaImpressao) {
+            alert('O navegador bloqueou a janela de impressão. Permita pop-ups e tente novamente.');
+            return;
+        }
 
-    gerarPdfPedido(true, janelaImpressao);
-});
+        gerarPdfPedido(true, janelaImpressao);
+    });
+}
 
 
 // ============================================================
@@ -420,11 +424,13 @@ imprimirPedidoBtn.addEventListener('click', () => {
 
 async function carregarPedidos() {
     try {
-        salesBody.innerHTML = `
-            <tr>
-                <td colspan="5">Carregando pedidos...</td>
-            </tr>
-        `;
+        if (salesBody) {
+            salesBody.innerHTML = `
+                <tr>
+                    <td colspan="5">Carregando pedidos...</td>
+                </tr>
+            `;
+        }
 
         const resposta = await fetch(`${API_URL}/vendas`);
 
@@ -437,11 +443,13 @@ async function carregarPedidos() {
 
     } catch (erro) {
         console.error(erro);
-        salesBody.innerHTML = `
-            <tr>
-                <td colspan="5">Não foi possível carregar os pedidos.</td>
-            </tr>
-        `;
+        if (salesBody) {
+            salesBody.innerHTML = `
+                <tr>
+                    <td colspan="5">Não foi possível carregar os pedidos.</td>
+                </tr>
+            `;
+        }
     }
 }
 
@@ -451,7 +459,7 @@ async function carregarPedidos() {
 // ============================================================
 
 function aplicarFiltros() {
-    const termo = searchInput.value.trim().toLowerCase();
+    const termo = searchInput ? searchInput.value.trim().toLowerCase() : '';
     const hoje = new Date();
 
     pedidosFiltrados = pedidos.filter(pedido => {
@@ -502,6 +510,7 @@ function aplicarFiltros() {
 // ============================================================
 
 function renderPedidos() {
+    if (!salesBody) return;
     salesBody.innerHTML = '';
 
     const inicio = (paginaAtual - 1) * itensPorPagina;
@@ -546,6 +555,8 @@ function renderPedidos() {
 // ============================================================
 
 function atualizarPaginacao() {
+    if (!pageNums || !pageInfo) return;
+
     const total = pedidosFiltrados.length;
     pageNums.innerHTML = '';
 
@@ -682,6 +693,8 @@ function inicializarBuscaProduto() {
 function exibirSugestoes(produtos) {
     const divSugestoes = document.getElementById('lista-sugestoes');
     const inputBusca = document.getElementById('busca-produto');
+    
+    if (!divSugestoes) return;
     divSugestoes.innerHTML = '';
 
     if (produtos.length === 0) {
@@ -696,7 +709,7 @@ function exibirSugestoes(produtos) {
 
         itemDiv.onclick = () => {
             adicionarItemAoPedido(produto);
-            inputBusca.value = '';
+            if (inputBusca) inputBusca.value = '';
             divSugestoes.style.display = 'none';
         };
 
@@ -753,8 +766,10 @@ async function abrirPedido(id) {
 
         renderModalPedido();
 
-        overlay.classList.add('show');
-        document.body.style.overflow = 'hidden';
+        if (overlay) {
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
 
     } catch (erro) {
         console.error(erro);
@@ -769,40 +784,50 @@ async function abrirPedido(id) {
 function renderModalPedido() {
     if (!pedidoAberto) return;
 
-    document.getElementById('modalTitle').textContent = `Pedido #${pedidoAberto.id}`;
+    const modalTitle = document.getElementById('modalTitle');
+    if (modalTitle) modalTitle.textContent = `Pedido #${pedidoAberto.id}`;
 
     let cliente = pedidoAberto.cliente_nome || '-';
     if (pedidoAberto.cliente_documento) {
         cliente += ` - ${formatarDocumento(pedidoAberto.cliente_documento)}`;
     }
-    document.getElementById('modalCliente').textContent = cliente;
+    
+    const modalCliente = document.getElementById('modalCliente');
+    if (modalCliente) modalCliente.textContent = cliente;
 
     const modalVendedor = document.getElementById('modalVendedor');
     if (modalVendedor) {
         modalVendedor.textContent = pedidoAberto.usuario_nome || 'Não informado';
     }
 
-    document.getElementById('modalData').textContent = formatarData(pedidoAberto.criado_em);
-    document.getElementById('modalStatus').textContent = statusLabel(pedidoAberto.status);
+    const modalData = document.getElementById('modalData');
+    if (modalData) modalData.textContent = formatarData(pedidoAberto.criado_em);
+
+    const modalStatus = document.getElementById('modalStatus');
+    if (modalStatus) modalStatus.textContent = statusLabel(pedidoAberto.status);
 
     const cancelamentoInfo = document.getElementById('cancelamentoInfo');
     const cancelado = normalizarStatus(pedidoAberto.status) === 'cancelada';
 
-    if (cancelado) {
-        cancelamentoInfo.classList.add('visivel');
-        cancelamentoInfo.innerHTML = `
-            <strong>Pedido cancelado</strong><br>
-            ${pedidoAberto.cancelado_em ? `Em ${formatarData(pedidoAberto.cancelado_em)}<br>` : ''}
-            Motivo: ${pedidoAberto.motivo_cancelamento || 'Não informado'}
-        `;
-    } else {
-        cancelamentoInfo.classList.remove('visivel');
-        cancelamentoInfo.innerHTML = '';
+    if (cancelamentoInfo) {
+        if (cancelado) {
+            cancelamentoInfo.classList.add('visivel');
+            cancelamentoInfo.innerHTML = `
+                <strong>Pedido cancelado</strong><br>
+                ${pedidoAberto.cancelado_em ? `Em ${formatarData(pedidoAberto.cancelado_em)}<br>` : ''}
+                Motivo: ${pedidoAberto.motivo_cancelamento || 'Não informado'}
+            `;
+        } else {
+            cancelamentoInfo.classList.remove('visivel');
+            cancelamentoInfo.innerHTML = '';
+        }
     }
 
-    editarBtn.disabled = cancelado;
-    cancelarPedidoBtn.disabled = cancelado;
-    editarBtn.textContent = modoEdicao ? 'Salvar Alterações' : 'Editar Pedido';
+    if (editarBtn) {
+        editarBtn.disabled = cancelado;
+        editarBtn.textContent = modoEdicao ? 'Salvar Alterações' : 'Editar Pedido';
+    }
+    if (cancelarPedidoBtn) cancelarPedidoBtn.disabled = cancelado;
 
     const containerBusca = document.getElementById('containerBuscaProduto');
     if (containerBusca) {
@@ -891,35 +916,43 @@ function renderItensModal() {
 // ============================================================
 
 function recalcularResumoModal() {
+    if (!pedidoAberto) return;
+
     const subtotal = pedidoAberto.itens.reduce((soma, item) => {
         return soma + (Number(item.quantidade) * Number(item.preco_unitario || item.preco || 0));
     }, 0);
 
     const containerDesconto = document.getElementById('containerDesconto');
+    const modalSubtotal = document.getElementById('modalSubtotal');
+    const modalTotal = document.getElementById('modalTotal');
 
-    if (modoEdicao) {
-        containerDesconto.innerHTML = `
-            <input type="number" id="inputDescontoEdicao" class="edit-desconto" min="0" step="0.01" value="${pedidoAberto.desconto || 0}">
-        `;
+    if (containerDesconto) {
+        if (modoEdicao) {
+            containerDesconto.innerHTML = `
+                <input type="number" id="inputDescontoEdicao" class="edit-desconto" min="0" step="0.01" value="${pedidoAberto.desconto || 0}">
+            `;
 
-        const inputDesconto = document.getElementById('inputDescontoEdicao');
-        inputDesconto.addEventListener('input', e => {
-            const valorDesconto = parseFloat(e.target.value) || 0;
-            pedidoAberto.desconto = valorDesconto;
+            const inputDesconto = document.getElementById('inputDescontoEdicao');
+            if (inputDesconto) {
+                inputDesconto.addEventListener('input', e => {
+                    const valorDesconto = parseFloat(e.target.value) || 0;
+                    pedidoAberto.desconto = valorDesconto;
 
-            const total = Math.max(0, subtotal - valorDesconto);
-            document.getElementById('modalSubtotal').textContent = fmt(subtotal);
-            document.getElementById('modalTotal').textContent = fmt(total);
-        });
-    } else {
-        containerDesconto.innerHTML = `<span id="modalDesconto">${fmt(pedidoAberto.desconto || 0)}</span>`;
+                    const total = Math.max(0, subtotal - valorDesconto);
+                    if (modalSubtotal) modalSubtotal.textContent = fmt(subtotal);
+                    if (modalTotal) modalTotal.textContent = fmt(total);
+                });
+            }
+        } else {
+            containerDesconto.innerHTML = `<span id="modalDesconto">${fmt(pedidoAberto.desconto || 0)}</span>`;
+        }
     }
 
     const desconto = Number(pedidoAberto.desconto || 0);
     const total = Math.max(0, subtotal - desconto);
 
-    document.getElementById('modalSubtotal').textContent = fmt(subtotal);
-    document.getElementById('modalTotal').textContent = fmt(total);
+    if (modalSubtotal) modalSubtotal.textContent = fmt(subtotal);
+    if (modalTotal) modalTotal.textContent = fmt(total);
 }
 
 
@@ -927,151 +960,164 @@ function recalcularResumoModal() {
 // EDITAR OU SALVAR ALTERAÇÕES DO PEDIDO
 // ============================================================
 
-editarBtn.addEventListener('click', async () => {
-    if (!pedidoAberto) return;
+if (editarBtn) {
+    editarBtn.addEventListener('click', async () => {
+        if (!pedidoAberto) return;
 
-    if (!modoEdicao) {
-        modoEdicao = true;
-        renderModalPedido();
-        return;
-    }
-
-    const itensValidos = pedidoAberto.itens.filter(item => {
-        const qtd = Number(item.quantidade);
-        const id = Number(item.produto_id || item.id);
-        return id > 0 && qtd > 0;
-    });
-
-    if (itensValidos.length === 0) {
-        alert('O pedido deve conter pelo menos um produto com quantidade maior que zero.');
-        return;
-    }
-
-    try {
-        editarBtn.disabled = true;
-
-        const dadosAtualizados = {
-            itens: itensValidos.map(item => ({
-                produto_id: Number(item.produto_id || item.id),
-                quantidade: Number(item.quantidade),
-                preco_unitario: Number(item.preco_unitario || item.preco || 0)
-            })),
-            desconto: Number(pedidoAberto.desconto || 0),
-            evento_id: eventoPedido && eventoPedido.value ? Number(eventoPedido.value) : null
-        };
-
-        const token = localStorage.getItem('bm36_token');
-        const headers = {
-            'Content-Type': 'application/json'
-        };
-
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        const resposta = await fetch(`${API_URL}/vendas/${pedidoAberto.id}`, {
-            method: 'PUT',
-            headers: headers,
-            body: JSON.stringify(dadosAtualizados)
-        });
-
-        const resultado = await resposta.json();
-
-        if (!resposta.ok) {
-            alert(resultado.mensagem || 'Não foi possível alterar o pedido.');
-            editarBtn.disabled = false;
+        if (!modoEdicao) {
+            modoEdicao = true;
+            renderModalPedido();
             return;
         }
 
-        modoEdicao = false;
-        await carregarPedidos();
-        await abrirPedido(pedidoAberto.id);
+        const itensValidos = pedidoAberto.itens.filter(item => {
+            const qtd = Number(item.quantidade);
+            const id = Number(item.produto_id || item.id);
+            return id > 0 && qtd > 0;
+        });
 
-    } catch (erro) {
-        console.error(erro);
-        alert('Não foi possível alterar o pedido.');
-    } finally {
-        editarBtn.disabled = false;
-    }
-});
+        if (itensValidos.length === 0) {
+            alert('O pedido deve conter pelo menos um produto com quantidade maior que zero.');
+            return;
+        }
+
+        try {
+            editarBtn.disabled = true;
+
+            const dadosAtualizados = {
+                itens: itensValidos.map(item => ({
+                    produto_id: Number(item.produto_id || item.id),
+                    quantidade: Number(item.quantidade),
+                    preco_unitario: Number(item.preco_unitario || item.preco || 0)
+                })),
+                desconto: Number(pedidoAberto.desconto || 0),
+                evento_id: eventoPedido && eventoPedido.value ? Number(eventoPedido.value) : null
+            };
+
+            const token = localStorage.getItem('bm36_token');
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const resposta = await fetch(`${API_URL}/vendas/${pedidoAberto.id}`, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify(dadosAtualizados)
+            });
+
+            const resultado = await resposta.json();
+
+            if (!resposta.ok) {
+                alert(resultado.mensagem || 'Não foi possível alterar o pedido.');
+                editarBtn.disabled = false;
+                return;
+            }
+
+            modoEdicao = false;
+            await carregarPedidos();
+            await abrirPedido(pedidoAberto.id);
+
+        } catch (erro) {
+            console.error(erro);
+            alert('Não foi possível alterar o pedido.');
+        } finally {
+            editarBtn.disabled = false;
+        }
+    });
+}
 
 
 // ============================================================
 // CANCELAR PEDIDO
 // ============================================================
 
-cancelarPedidoBtn.addEventListener('click', () => {
-    if (!pedidoAberto) return;
+if (cancelarPedidoBtn) {
+    cancelarPedidoBtn.addEventListener('click', () => {
+        if (!pedidoAberto) return;
 
-    motivoCancelamento.value = '';
-    document.getElementById('cancelTitle').textContent = `Cancelar Pedido #${pedidoAberto.id}`;
-    cancelOverlay.classList.add('show');
-});
+        if (motivoCancelamento) motivoCancelamento.value = '';
+        const cancelTitle = document.getElementById('cancelTitle');
+        if (cancelTitle) cancelTitle.textContent = `Cancelar Pedido #${pedidoAberto.id}`;
+        if (cancelOverlay) cancelOverlay.classList.add('show');
+    });
+}
 
-confirmarCancelamentoBtn.addEventListener('click', async () => {
-    const motivo = motivoCancelamento.value.trim();
+if (confirmarCancelamentoBtn) {
+    confirmarCancelamentoBtn.addEventListener('click', async () => {
+        const motivo = motivoCancelamento ? motivoCancelamento.value.trim() : '';
 
-    if (!motivo) {
-        alert('Informe o motivo do cancelamento.');
-        return;
-    }
-
-    try {
-        confirmarCancelamentoBtn.disabled = true;
-
-        const resposta = await fetch(`${API_URL}/vendas/${pedidoAberto.id}/cancelar`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ motivo })
-        });
-
-        const resultado = await resposta.json();
-        confirmarCancelamentoBtn.disabled = false;
-
-        if (!resposta.ok) {
-            alert(resultado.mensagem || 'Não foi possível cancelar o pedido.');
+        if (!motivo) {
+            alert('Informe o motivo do cancelamento.');
             return;
         }
 
-        cancelOverlay.classList.remove('show');
-        overlay.classList.remove('show');
-        document.body.style.overflow = '';
+        try {
+            confirmarCancelamentoBtn.disabled = true;
 
-        await carregarPedidos();
+            const resposta = await fetch(`${API_URL}/vendas/${pedidoAberto.id}/cancelar`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ motivo })
+            });
 
-    } catch (erro) {
-        confirmarCancelamentoBtn.disabled = false;
-        console.error(erro);
-        alert('Erro ao cancelar pedido.');
-    }
-});
+            const resultado = await resposta.json();
+            confirmarCancelamentoBtn.disabled = false;
+
+            if (!resposta.ok) {
+                alert(resultado.mensagem || 'Não foi possível cancelar o pedido.');
+                return;
+            }
+
+            if (cancelOverlay) cancelOverlay.classList.remove('show');
+            if (overlay) overlay.classList.remove('show');
+            document.body.style.overflow = '';
+
+            await carregarPedidos();
+
+        } catch (erro) {
+            confirmarCancelamentoBtn.disabled = false;
+            console.error(erro);
+            alert('Erro ao cancelar pedido.');
+        }
+    });
+}
 
 
 // ============================================================
 // EVENTOS DE NAVEGAÇÃO E FILTROS
 // ============================================================
 
-salesBody.addEventListener('click', evento => {
-    const tr = evento.target.closest('tr[data-id]');
-    if (!tr) return;
+if (salesBody) {
+    salesBody.addEventListener('click', evento => {
+        const tr = evento.target.closest('tr[data-id]');
+        if (!tr) return;
 
-    abrirPedido(Number(tr.dataset.id));
-});
+        abrirPedido(Number(tr.dataset.id));
+    });
+}
 
-filters.addEventListener('click', evento => {
-    const btn = evento.target.closest('.pill');
-    if (!btn) return;
+if (filters) {
+    filters.addEventListener('click', evento => {
+        const btn = evento.target.closest('.pill');
+        if (!btn) return;
 
-    filters.querySelectorAll('.pill').forEach(item => item.classList.remove('active'));
-    btn.classList.add('active');
+        filters.querySelectorAll('.pill').forEach(item => item.classList.remove('active'));
+        btn.classList.add('active');
 
-    filtroAtual = btn.dataset.filter;
-    aplicarFiltros();
-});
+        filtroAtual = btn.dataset.filter;
+        aplicarFiltros();
+    });
+}
 
-searchInput.addEventListener('input', aplicarFiltros);
+if (searchInput) {
+    searchInput.addEventListener('input', aplicarFiltros);
+}
 
 
 // ============================================================
@@ -1079,25 +1125,27 @@ searchInput.addEventListener('input', aplicarFiltros);
 // ============================================================
 
 function fecharPedido() {
-    overlay.classList.remove('show');
+    if (overlay) overlay.classList.remove('show');
     document.body.style.overflow = '';
 }
 
-closeX.addEventListener('click', fecharPedido);
-closeBtn.addEventListener('click', fecharPedido);
+if (closeX) closeX.addEventListener('click', fecharPedido);
+if (closeBtn) closeBtn.addEventListener('click', fecharPedido);
 
-overlay.addEventListener('click', evento => {
-    if (evento.target === overlay) {
-        fecharPedido();
-    }
-});
-
-function fecharCancelamento() {
-    cancelOverlay.classList.remove('show');
+if (overlay) {
+    overlay.addEventListener('click', evento => {
+        if (evento.target === overlay) {
+            fecharPedido();
+        }
+    });
 }
 
-cancelCloseX.addEventListener('click', fecharCancelamento);
-voltarCancelamentoBtn.addEventListener('click', fecharCancelamento);
+function fecharCancelamento() {
+    if (cancelOverlay) cancelOverlay.classList.remove('show');
+}
+
+if (cancelCloseX) cancelCloseX.addEventListener('click', fecharCancelamento);
+if (voltarCancelamentoBtn) voltarCancelamentoBtn.addEventListener('click', fecharCancelamento);
 
 
 // ============================================================
