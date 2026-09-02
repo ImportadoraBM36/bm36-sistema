@@ -761,7 +761,7 @@ async function abrirPedido(id) {
             throw new Error(resultado.mensagem || 'Erro ao buscar pedido.');
         }
 
-        pedidoAberto = resultado.venda;
+        pedidoAberto = resultado.venda || resultado;
         modoEdicao = false;
 
         renderModalPedido();
@@ -988,15 +988,26 @@ if (editarBtn) {
             editarBtn.textContent = 'Salvando...';
 
             // 2. Monta o objeto com os nomes exatos esperados pelo Backend
-            const dadosAtualizados = {
-                itens: itensValidos.map(item => ({
-                    produto_id: Number(item.produto_id || item.id),
-                    quantidade: Number(item.quantidade),
-                    preco_unitario: Number(item.preco_unitario || item.preco || 0)
-                })),
-                desconto: Number(pedidoAberto.desconto || 0),
-                evento_id: eventoPedido && eventoPedido.value ? Number(eventoPedido.value) : null
-            };
+          const subtotal = itensValidos.reduce((soma, item) => {
+    return soma + (item.quantidade * item.preco_unitario);
+}, 0);
+
+const desconto = Number(pedidoAberto.desconto || 0);
+const total = Math.max(0, subtotal - desconto);
+
+const dadosAtualizados = {
+    itens: itensValidos.map(item => ({
+        produto_id: Number(item.produto_id || item.id),
+        quantidade: Number(item.quantidade),
+        preco_unitario: Number(item.preco_unitario || item.preco || 0)
+    })),
+    subtotal,
+    desconto,
+    total,
+    evento_id: eventoPedido?.value
+        ? Number(eventoPedido.value)
+        : null
+};
 
             // 3. Obtém o Token de Autenticação
             const token = localStorage.getItem('bm36_token') || localStorage.getItem('token');
@@ -1067,13 +1078,17 @@ if (confirmarCancelamentoBtn) {
         try {
             confirmarCancelamentoBtn.disabled = true;
 
-            const resposta = await fetch(`${API_URL}/vendas/${pedidoAberto.id}/cancelar`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ motivo })
-            });
+            const resposta = awaitconst token = localStorage.getItem('bm36_token') ||
+              localStorage.getItem('token');
+
+fetch(`${API_URL}/vendas/${pedidoAberto.id}/cancelar`, {
+    method: 'PATCH',
+    headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ motivo })
+});
 
             const resultado = await resposta.json();
             confirmarCancelamentoBtn.disabled = false;
