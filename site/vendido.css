@@ -1127,7 +1127,18 @@ table {
     display:
         block;
 }
+.new-itemInput{
+width: 78px;
+    padding: 7px;
+    border: 2px solid var(--navy-border);
+    border-radius: 7px;
+    background: white;
+    color: var(--ink);
+    text-align: center;
+    font-weight: 700;
+    outline: none;
 
+}
 
 /* ============================================================
    DARK MODE
