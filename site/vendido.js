@@ -1509,106 +1509,70 @@ pdf.text(linhasNome, 35, y + 5);
     // ITENS
     // ============================================================
 
-    function renderItensModal() {
+    // ============================================================
+// ITENS DO PEDIDO
+// ============================================================
 
-        const body =
-            document.getElementById(
-                'modalItems'
-            );
-
-
-        body.innerHTML =
-            '';
-        pedidoAberto.itens
-            .forEach(
-                item => {
-
-                    const tr =
-                        document.createElement(
-                            'tr'
-                        );
-
-                    const produto =
-                        document.getElementById(
-                            `produto-${item.produto_id}`
-                        );
-                    const produtoNome = produto ? produto.getAttribute('data-nome') : 'Produto não encontrado';
-
-                    const quantidade = Number(item.quantidade);
-
-
-                    const preco = Number(item.preco_unitario);
-
-
-                    tr.innerHTML = `
-
-                        <td>
-                            ${item.produto_nome}
-                        </td>
-
-
-                        <td>
-
-                            ${
-                                modoEdicao
-                                    ?
-                                    `
-                                        <input
-                                            class="edit-qty"
-                                            type="number"
-                                            min="1"
-                                            step="1"
-                                            data-produto-id="${item.produto_id}"
-                                            value="${quantidade}"
-                                        >
-                                    `
-                                    :
-                                    quantidade
-                            }
-
-                        </td>
-
-
-                        <td>
-                            ${fmt(preco)}
-                        </td>
-
-
-                        <td>
-    ${fmt(quantidade * preco)}
-                        </td>
-                    `;
-                    body.appendChild(tr);});
-             
-    
 function renderItensModal() {
+
     const body = document.getElementById('modalItems');
-    body.innerHTML = ''; // Limpa a tabela
+
+    if (!body || !pedidoAberto) {
+        return;
+    }
+
+    body.innerHTML = '';
 
     pedidoAberto.itens.forEach(item => {
+
         const tr = document.createElement('tr');
-        
-        const produto = document.getElementById(`produto-${item.produto_id}`);
-        const produtoNome = produto ? produto.getAttribute('data-nome') : 'Produto não encontrado';
-        
+
         const quantidade = Number(item.quantidade);
         const preco = Number(item.preco_unitario);
 
-        // 1. Injetamos o HTML incluindo o botão de lixeira caso esteja em modoEdicao
         tr.innerHTML = `
-            <td>${item.produto_nome || produtoNome}</td>
             <td>
-                ${modoEdicao
-                    ? `<input class="edit-qty" type="number" min="1" step="1" data-produto-id="${item.produto_id}" value="${quantidade}">`
-                    : quantidade
+                ${item.produto_nome || 'Produto não encontrado'}
+            </td>
+
+            <td>
+                ${
+                    modoEdicao
+                        ? `
+                            <input
+                                class="edit-qty"
+                                type="number"
+                                min="1"
+                                step="1"
+                                data-produto-id="${item.produto_id}"
+                                value="${quantidade}"
+                            >
+                        `
+                        : quantidade
                 }
             </td>
-            <td>${fmt(preco)}</td>
-            <td>${fmt(quantidade * preco)}</td>
+
             <td>
-                ${modoEdicao 
-                    ? `<button class="btn-remove" data-produto-id="${item.produto_id}" style="color:red; cursor:pointer;">❌</button>` 
-                    : ''
+                ${fmt(preco)}
+            </td>
+
+            <td>
+                ${fmt(quantidade * preco)}
+            </td>
+
+            <td>
+                ${
+                    modoEdicao
+                        ? `
+                            <button
+                                type="button"
+                                class="btn-remove"
+                                data-produto-id="${item.produto_id}"
+                            >
+                                ❌
+                            </button>
+                        `
+                        : ''
                 }
             </td>
         `;
@@ -1617,77 +1581,150 @@ function renderItensModal() {
     });
 
     // =========================================================
-    // EVENTO 1: Escutar mudanças nos inputs de quantidade
+    // ALTERAR QUANTIDADE
     // =========================================================
+
     if (modoEdicao) {
+
         body.querySelectorAll('.edit-qty').forEach(input => {
-            input.addEventListener('input', (evento) => {
+
+            input.addEventListener('input', evento => {
+
                 const novoValor = Number(evento.target.value);
-                const produtoId = evento.target.getAttribute('data-produto-id');
-                if (novoValor < 1) return;
+                const produtoId = Number(
+                    evento.target.dataset.produtoId
+                );
 
-                const itemModificado = pedidoAberto.itens.find(i => i.produto_id == produtoId);
-                if (itemModificado) {
-                    itemModificado.quantidade = novoValor;
-                    recalcularResumoModal();
-                    
-                    // Sincroniza a nova quantidade com o Banco de Dados
-                    atualizarQuantidadeNoBanco(pedidoAberto.id, produtoId, novoValor);
+                if (!Number.isFinite(novoValor) || novoValor < 1) {
+                    return;
                 }
+
+                const item = pedidoAberto.itens.find(
+                    i => Number(i.produto_id) === produtoId
+                );
+
+                if (item) {
+
+                    item.quantidade = Math.floor(novoValor);
+
+                    recalcularResumoModal();
+                }
+
             });
+
         });
 
         // =========================================================
-        // EVENTO 2: Escutar cliques no botão de Remover ❌
+        // REMOVER PRODUTO
         // =========================================================
+
         body.querySelectorAll('.btn-remove').forEach(botao => {
-            botao.addEventListener('click', (evento) => {
-                const produtoId = evento.target.getAttribute('data-produto-id');
-                
-                // Remove visualmente do array local
-                pedidoAberto.itens = pedidoAberto.itens.filter(i => i.produto_id != produtoId);
-                
-                // Remove do Banco de Dados
-                removerItemDoBanco(pedidoAberto.id, produtoId);
-                
-                // Renderiza a tela novamente com o item deletado
-                renderItensModal(); 
+
+            botao.addEventListener('click', async evento => {
+
+                const produtoId = Number(
+                    evento.currentTarget.dataset.produtoId
+                );
+
+                const item = pedidoAberto.itens.find(
+                    i => Number(i.produto_id) === produtoId
+                );
+
+                if (!item) {
+                    return;
+                }
+
+                const confirmar = confirm(
+                    `Deseja retirar "${item.produto_nome}" do pedido?`
+                );
+
+                if (!confirmar) {
+                    return;
+                }
+
+                // Remove da tela
+                pedidoAberto.itens =
+                    pedidoAberto.itens.filter(
+                        i => Number(i.produto_id) !== produtoId
+                    );
+
+                // Remove do banco
+                await removerItemDoBanco(
+                    pedidoAberto.id,
+                    produtoId
+                );
+
+                // Atualiza a tela
+                renderItensModal();
+
             });
+
         });
+
     }
 
     recalcularResumoModal();
 }
+// ============================================================
+// ADICIONAR NOVO PRODUTO AO PEDIDO
+// ============================================================
+
+async function adicionarNovoItemAoPedido(produtoSelecionado) {
+
+    if (!pedidoAberto) {
+        return;
     }
-// =========================================================
-// EVENTO 3: Adicionar um novo item no pedido (Vindo do Banco)
-// =========================================================
-// Você pode disparar esta função ao clicar em um botão externo "Adicionar Produto"
-function adicionarNovoItemAoPedido(produtoSelecionado) {
-    // Verifica se o item já existe na lista
-    const itemExistente = pedidoAberto.itens.find(i => i.produto_id == produtoSelecionado.id);
+
+    const produtoId = Number(produtoSelecionado.id);
+
+    const itemExistente = pedidoAberto.itens.find(
+        item => Number(item.produto_id) === produtoId
+    );
+
+    // =========================================================
+    // PRODUTO JÁ EXISTE NO PEDIDO
+    // =========================================================
 
     if (itemExistente) {
-        // Se já existe, apenas soma +1 na quantidade
-        itemExistente.quantidade += 1;
-        atualizarQuantidadeNoBanco(pedidoAberto.id, produtoSelecionado.id, itemExistente.quantidade);
-    } else {
-        // Se é novo, cria a estrutura do item
-        const novoItem = {
-            pedido_id: pedidoAberto.id,
-            produto_id: produtoSelecionado.id,
-            produto_name: produtoSelecionado.nome,
-            quantidade: 1,
-            preco_unitario: produtoSelecionado.preco
-        };
-        
-        pedidoAberto.itens.push(novoItem);
-        
-        // Envia para o seu Banco de Dados salvar permanentemente
-        salvarNovoItemNoBanco(novoItem);
+
+        itemExistente.quantidade =
+            Number(itemExistente.quantidade) + 1;
+
+        await atualizarQuantidadeNoBanco(
+            pedidoAberto.id,
+            produtoId,
+            itemExistente.quantidade
+        );
+
     }
 
-    // Atualiza o modal na tela
+    // =========================================================
+    // PRODUTO NOVO
+    // =========================================================
+
+    else {
+
+        const novoItem = {
+
+            pedido_id: pedidoAberto.id,
+
+            produto_id: produtoId,
+
+            produto_nome:
+                produtoSelecionado.nome,
+
+            quantidade: 1,
+
+            preco_unitario:
+                Number(produtoSelecionado.preco)
+
+        };
+
+        pedidoAberto.itens.push(novoItem);
+
+        await salvarNovoItemNoBanco(novoItem);
+    }
+
     renderItensModal();
 }
     // ============================================================
