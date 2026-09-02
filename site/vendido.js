@@ -1670,17 +1670,61 @@ function renderItensModal() {
 // ============================================================
 
 async function adicionarNovoItemAoPedido(produtoSelecionado) {
-
     if (!pedidoAberto) {
         return;
     }
 
-    const produtoId = Number(produtoSelecionado.id);
+    const API_URL = 'https://bm36-sistema-production.up.railway.app/api';
 
-    const itemExistente = pedidoAberto.itens.find(
-        item => Number(item.produto_id) === produtoId
-    );
+    try {
+        // 1. Busca a lista de itens da API (ajuste o endpoint "/produtos" se necessário)
+        const resposta = await fetch(`${API_URL}/produtos`);
+        if (!resposta.ok) {
+            throw new Error('Erro ao buscar dados da API.');
+        }
+        
+        const listaProdutos = await resposta.json();
 
+        // 2. Filtra os itens da lista pelo nome do produto selecionado
+        const nomeBusca = produtoSelecionado.nome?.toLowerCase() || '';
+        const itensFiltrados = listaProdutos.filter(
+            item => item.nome && item.nome.toLowerCase().includes(nomeBusca)
+        );
+
+        // Se nenhum item for encontrado após o filtro, encerra a execução
+        if (itensFiltrados.length === 0) {
+            console.warn('Nenhum item correspondente encontrado na API.');
+            return;
+        }
+
+        // 3. Exemplo utilizando o primeiro item filtrado (ou você pode iterar sobre eles)
+        const produtoEncontrado = itensFiltrados[0];
+        const produtoId = Number(produtoEncontrado.id || produtoSelecionado.id);
+
+        // 4. Verifica se o item já existe no pedido aberto
+        const itemExistente = pedidoAberto.itens.find(
+            item => Number(item.produto_id) === produtoId
+        );
+
+        if (itemExistente) {
+            // Incrementa a quantidade caso já exista
+            itemExistente.quantidade = (itemExistente.quantidade || 1) + 1;
+        } else {
+            // Adiciona novo item caso não exista
+            pedidoAberto.itens.push({
+                produto_id: produtoId,
+                nome: produtoEncontrado.nome,
+                preco: produtoEncontrado.preco,
+                quantidade: 1
+            });
+        }
+
+        console.log('Pedido atualizado com sucesso:', pedidoAberto);
+
+    } catch (erro) {
+        console.error('Erro ao processar a requisição:', erro);
+    }
+}
     // =========================================================
     // PRODUTO JÁ EXISTE NO PEDIDO
     // =========================================================
@@ -1726,7 +1770,7 @@ async function adicionarNovoItemAoPedido(produtoSelecionado) {
     }
 
     renderItensModal();
-}
+
     // ============================================================
     // RECALCULAR RESUMO
     // ============================================================
