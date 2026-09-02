@@ -121,6 +121,16 @@
         document.getElementById(
             'eventoPedido'
         );
+
+
+        const inputBusca = document.getElementById('busca-produto');
+const divSugestoes = document.getElementById('lista-sugestoes');
+
+if (inputBusca && divSugestoes) {
+    inputBusca.addEventListener('input', (e) => {
+        // sua lógica de busca aqui
+    });
+}
     // ============================================================
     // FORMATADORES
     // ============================================================
