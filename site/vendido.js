@@ -1580,34 +1580,78 @@ pdf.text(linhasNome, 35, y + 5);
                     `;
                     body.appendChild(tr);});
              
-    if (modoEdicao) {
-       
-        const inputsQuantidade = body.querySelectorAll('.edit-qty');
+    
+function renderItensModal() {
+    const body = document.getElementById('modalItems');
+    body.innerHTML = ''; // Limpa a tabela
 
-        inputsQuantidade.forEach(input => {
-           
+    pedidoAberto.itens.forEach(item => {
+        const tr = document.createElement('tr');
+        
+        const produto = document.getElementById(`produto-${item.produto_id}`);
+        const produtoNome = produto ? produto.getAttribute('data-nome') : 'Produto não encontrado';
+        
+        const quantidade = Number(item.quantidade);
+        const preco = Number(item.preco_unitario);
+
+        // 1. Injetamos o HTML incluindo o botão de lixeira caso esteja em modoEdicao
+        tr.innerHTML = `
+            <td>${item.produto_nome || produtoNome}</td>
+            <td>
+                ${modoEdicao
+                    ? `<input class="edit-qty" type="number" min="1" step="1" data-produto-id="${item.produto_id}" value="${quantidade}">`
+                    : quantidade
+                }
+            </td>
+            <td>${fmt(preco)}</td>
+            <td>${fmt(quantidade * preco)}</td>
+            <td>
+                ${modoEdicao 
+                    ? `<button class="btn-remove" data-produto-id="${item.produto_id}" style="color:red; cursor:pointer;">❌</button>` 
+                    : ''
+                }
+            </td>
+        `;
+
+        body.appendChild(tr);
+    });
+
+    // =========================================================
+    // EVENTO 1: Escutar mudanças nos inputs de quantidade
+    // =========================================================
+    if (modoEdicao) {
+        body.querySelectorAll('.edit-qty').forEach(input => {
             input.addEventListener('input', (evento) => {
                 const novoValor = Number(evento.target.value);
                 const produtoId = evento.target.getAttribute('data-produto-id');
-
-             
                 if (novoValor < 1) return;
 
-              
                 const itemModificado = pedidoAberto.itens.find(i => i.produto_id == produtoId);
-                
                 if (itemModificado) {
-             
                     itemModificado.quantidade = novoValor;
-                    
-                  
                     recalcularResumoModal();
                     
-            
-                    const linhaAtual = evento.target.closest('tr');
-                    const colunaSubtotal = linhaAtual.querySelector('td:last-child');
-                    colunaSubtotal.innerHTML = fmt(novoValor * itemModificado.preco_unitario);
+                    // Sincroniza a nova quantidade com o Banco de Dados
+                    atualizarQuantidadeNoBanco(pedidoAberto.id, produtoId, novoValor);
                 }
+            });
+        });
+
+        // =========================================================
+        // EVENTO 2: Escutar cliques no botão de Remover ❌
+        // =========================================================
+        body.querySelectorAll('.btn-remove').forEach(botao => {
+            botao.addEventListener('click', (evento) => {
+                const produtoId = evento.target.getAttribute('data-produto-id');
+                
+                // Remove visualmente do array local
+                pedidoAberto.itens = pedidoAberto.itens.filter(i => i.produto_id != produtoId);
+                
+                // Remove do Banco de Dados
+                removerItemDoBanco(pedidoAberto.id, produtoId);
+                
+                // Renderiza a tela novamente com o item deletado
+                renderItensModal(); 
             });
         });
     }
@@ -1615,7 +1659,37 @@ pdf.text(linhasNome, 35, y + 5);
     recalcularResumoModal();
 }
 
+// =========================================================
+// EVENTO 3: Adicionar um novo item no pedido (Vindo do Banco)
+// =========================================================
+// Você pode disparar esta função ao clicar em um botão externo "Adicionar Produto"
+function adicionarNovoItemAoPedido(produtoSelecionado) {
+    // Verifica se o item já existe na lista
+    const itemExistente = pedidoAberto.itens.find(i => i.produto_id == produtoSelecionado.id);
 
+    if (itemExistente) {
+        // Se já existe, apenas soma +1 na quantidade
+        itemExistente.quantidade += 1;
+        atualizarQuantidadeNoBanco(pedidoAberto.id, produtoSelecionado.id, itemExistente.quantidade);
+    } else {
+        // Se é novo, cria a estrutura do item
+        const novoItem = {
+            pedido_id: pedidoAberto.id,
+            produto_id: produtoSelecionado.id,
+            produto_name: produtoSelecionado.nome,
+            quantidade: 1,
+            preco_unitario: produtoSelecionado.preco
+        };
+        
+        pedidoAberto.itens.push(novoItem);
+        
+        // Envia para o seu Banco de Dados salvar permanentemente
+        salvarNovoItemNoBanco(novoItem);
+    }
+
+    // Atualiza o modal na tela
+    renderItensModal();
+}
     // ============================================================
     // RECALCULAR RESUMO
     // ============================================================
