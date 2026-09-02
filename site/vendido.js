@@ -1528,7 +1528,11 @@ pdf.text(linhasNome, 35, y + 5);
                             'tr'
                         );
 
-
+                    const produto =
+                        document.getElementById(
+                            `produto-${item.produto_id}`
+                        );
+                    const produtoNome = produto ? produto.getAttribute('data-nome') : 'Produto não encontrado';
                     const quantidade =
                         Number(
                             item.quantidade
