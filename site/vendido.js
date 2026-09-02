@@ -1000,6 +1000,11 @@ const dadosAtualizados = {
         : null
 };
 
+
+console.log(
+  "DADOS ENVIADOS",
+  JSON.stringify(dadosAtualizados, null, 2)
+);
             // 3. Obtém o Token de Autenticação
             const token = localStorage.getItem('bm36_token') || localStorage.getItem('token');
 
