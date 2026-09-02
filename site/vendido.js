@@ -617,7 +617,7 @@ function atualizarPaginacao() {
 
 async function carregarEventos() {
     try {
-        const token = localStorage.getItem('bm36_token');
+      const token = localStorage.getItem('bm36_token') || localStorage.getItem('token');
         const resposta = await fetch(`${API_URL}/eventos`, {
             headers: { Authorization: `Bearer ${token}` }
         });
@@ -964,12 +964,14 @@ if (editarBtn) {
     editarBtn.addEventListener('click', async () => {
         if (!pedidoAberto) return;
 
+        // Se ainda não está em modo de edição, ativa o modo
         if (!modoEdicao) {
             modoEdicao = true;
             renderModalPedido();
             return;
         }
 
+        // 1. Filtra apenas os itens válidos
         const itensValidos = pedidoAberto.itens.filter(item => {
             const qtd = Number(item.quantidade);
             const id = Number(item.produto_id || item.id);
@@ -983,7 +985,9 @@ if (editarBtn) {
 
         try {
             editarBtn.disabled = true;
+            editarBtn.textContent = 'Salvando...';
 
+            // 2. Monta o objeto com os nomes exatos esperados pelo Backend
             const dadosAtualizados = {
                 itens: itensValidos.map(item => ({
                     produto_id: Number(item.produto_id || item.id),
@@ -994,7 +998,9 @@ if (editarBtn) {
                 evento_id: eventoPedido && eventoPedido.value ? Number(eventoPedido.value) : null
             };
 
-            const token = localStorage.getItem('bm36_token');
+            // 3. Obtém o Token de Autenticação
+            const token = localStorage.getItem('bm36_token') || localStorage.getItem('token');
+
             const headers = {
                 'Content-Type': 'application/json'
             };
@@ -1003,6 +1009,7 @@ if (editarBtn) {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
+            // 4. Envia a requisição PUT para o servidor
             const resposta = await fetch(`${API_URL}/vendas/${pedidoAberto.id}`, {
                 method: 'PUT',
                 headers: headers,
@@ -1011,21 +1018,23 @@ if (editarBtn) {
 
             const resultado = await resposta.json();
 
-            if (!resposta.ok) {
+            if (!resposta.ok || !resultado.sucesso) {
                 alert(resultado.mensagem || 'Não foi possível alterar o pedido.');
-                editarBtn.disabled = false;
                 return;
             }
 
+            // 5. Sucesso: Desativa o modo edição e atualiza a tela
+            alert('Pedido alterado com sucesso!');
             modoEdicao = false;
             await carregarPedidos();
             await abrirPedido(pedidoAberto.id);
 
         } catch (erro) {
-            console.error(erro);
-            alert('Não foi possível alterar o pedido.');
+            console.error('Erro ao salvar alterações:', erro);
+            alert('Erro de conexão ao tentar alterar o pedido.');
         } finally {
             editarBtn.disabled = false;
+            editarBtn.textContent = modoEdicao ? 'Salvar Alterações' : 'Editar Pedido';
         }
     });
 }
@@ -1148,7 +1157,7 @@ if (cancelCloseX) cancelCloseX.addEventListener('click', fecharCancelamento);
 if (voltarCancelamentoBtn) voltarCancelamentoBtn.addEventListener('click', fecharCancelamento);
 
 
-// ============================================================
+// ============================================================q
 // INICIAR
 // ============================================================
 
