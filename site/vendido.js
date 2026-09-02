@@ -1668,131 +1668,18 @@ function renderItensModal() {
 // ============================================================
 // ADICIONAR NOVO PRODUTO AO PEDIDO
 // ============================================================
-const busca =
-    document.getElementById('buscaProduto');
 
-    
 async function adicionarNovoItemAoPedido(produtoSelecionado) {
 
- 
-busca.addEventListener(
-    'input',
-    () => {
-
-        const termo =
-            busca.value
-                .trim()
-                .toLowerCase();
-
-
-        produtosFiltrados =
-            produtos.filter(
-                produto => {
-
-                    const codigo =
-                        String(
-                            produto.codigo || ''
-                        )
-                            .toLowerCase();
-
-
-                    const nome =
-                        String(
-                            produto.nome || ''
-                        )
-                            .toLowerCase();
-
-
-                    const descricao =
-                        String(
-                            produto.descricao || ''
-                        )
-                            .toLowerCase();
-
-
-                    const fabricante =
-                        String(
-                            produto.codigo_fabricante || ''
-                        )
-                            .toLowerCase();
-
-
-                    return (
-                        codigo.includes(termo)
-                        ||
-                        nome.includes(termo)
-                        ||
-                        descricao.includes(termo)
-                        ||
-                        fabricante.includes(termo)
-                    );
-
-                }
-            );
-
-
-        paginaAtual =
-            1;
-
-
-        produtoSelecionado =
-            null;
-
-
-        renderizarTabela();
-
+    if (!pedidoAberto) {
+        return;
     }
-);
 
-    try {
-        scannerProdutos = new Html5Qrcode('readerProdutos', { formatsToSupport: formatos });
-        scannerProdutosAtivo = true;
+    const produtoId = Number(produtoSelecionado.id);
 
-        await scannerProdutos.start(
-            { facingMode: 'environment' },
-            { fps: 15, qrbox: { width: 320, height: 150 } },
-            async codigo => {
-                if (!scannerProdutosAtivo) return;
-
-                busca.value = String(codigo).trim().replace(/\s/g, '');
-                busca.dispatchEvent(new Event('input', { bubbles: true }));
-                await fecharScannerProdutos();
-                busca.focus();
-            },
-            () => {}
-        );
-
-        scannerProdutosStatus.textContent = 'Centralize o código de barras dentro da área.';
-    } catch (erro) {
-        console.error('Erro ao abrir leitor de código:', erro);
-        scannerProdutosAtivo = false;
-        scannerProdutosStatus.textContent = 'Não foi possível acessar a câmera deste dispositivo.';
-    }
-}
-
-abrirScannerProdutosBtn?.addEventListener('click', abrirScannerProdutos);
-fecharScannerProdutosBtn?.addEventListener('click', fecharScannerProdutos);
-
-scannerProdutosOverlay?.addEventListener('click', evento => {
-    if (evento.target === scannerProdutosOverlay) fecharScannerProdutos();
-});
-
-
-
-
-
-
-
-
-    // if (!pedidoAberto) {
-    //     return;
-    // }
-
-    // const produtoId = Number(produtoSelecionado.id);
-
-    // const itemExistente = pedidoAberto.itens.find(
-    //     item => Number(item.produto_id) === produtoId
-    // );
+    const itemExistente = pedidoAberto.itens.find(
+        item => Number(item.produto_id) === produtoId
+    );
 
     // =========================================================
     // PRODUTO JÁ EXISTE NO PEDIDO
@@ -1839,7 +1726,7 @@ scannerProdutosOverlay?.addEventListener('click', evento => {
     }
 
     renderItensModal();
-
+}
     // ============================================================
     // RECALCULAR RESUMO
     // ============================================================
