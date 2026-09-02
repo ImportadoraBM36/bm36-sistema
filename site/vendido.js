@@ -1001,17 +1001,16 @@ const dadosAtualizados = {
 };
 
 
-console.log(
-  "DADOS ENVIADOS",
-  JSON.stringify(dadosAtualizados, null, 2)
-);
             // 3. Obtém o Token de Autenticação
             const token = localStorage.getItem('bm36_token') || localStorage.getItem('token');
 
             const headers = {
                 'Content-Type': 'application/json'
             };
-
+console.log(
+  "DADOS ENVIADOS",
+  JSON.stringify(dadosAtualizados, null, 2)
+            );
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
             }
