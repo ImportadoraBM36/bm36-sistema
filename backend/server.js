@@ -2996,740 +2996,640 @@ return res.json({
         });
     }
 });
-
-// ============================================================
-// ALTERAR VENDA / PEDIDO
-// ============================================================
-
-app.put(
-    '/api/vendas/:id',
-    async (req, res) => {
-
-        const client =
-            await pool.connect();
-
-
-        try {
-
-            const vendaId =
-                Number(
-                    req.params.id
-                );
-
-const {
-    itens,
-    evento_id = null
-} = req.body;
 // ============================================================
 // ALTERAR VENDA / PEDIDO
 // ============================================================
 
 app.put('/api/vendas/:id', async (req, res) => {
-  const { id } = req.params;
-  const { itens, desconto = 0, evento_id = null } = req.body;
 
-  const client = await pool.connect();
+    const client = await pool.connect();
 
-  try {
-    await client.query('BEGIN');
+    try {
 
-    const venda = await client.query(
-      'SELECT * FROM vendas WHERE id = $1',
-      [id]
-    );
+        const vendaId = Number(req.params.id);
 
-    if (venda.rows.length === 0) {
-      throw new Error('Pedido não encontrado');
-    }
-
-    const subtotal = itens.reduce((s, i) =>
-      s + Number(i.quantidade) * Number(i.preco_unitario), 0);
-
-    const total = subtotal - Number(desconto);
-
-    await client.query(
-      `UPDATE vendas
-         SET subtotal = $1,
-             desconto = $2,
-             total = $3,
-             evento_id = $4
-       WHERE id = $5`,
-      [subtotal, desconto, total, evento_id, id]
-    );
-
-    await client.query(
-      'DELETE FROM venda_itens WHERE venda_id = $1',
-      [id]
-    );
-
-    for (const item of itens) {
-      await client.query(
-        `INSERT INTO venda_itens
-          (venda_id, produto_id, quantidade, preco_unitario)
-         VALUES ($1,$2,$3,$4)`,
-        [
-          id,
-          item.produto_id,
-          item.quantidade,
-          item.preco_unitario
-        ]
-      );
-    }
-
-    await client.query('COMMIT');
-
-    res.json({
-      sucesso: true,
-      mensagem: 'Pedido atualizado'
-    });
-
-  } catch (erro) {
-    console.error('ERRO PUT VENDA:', erro);
-    await client.query('ROLLBACK');
-    console.error('ERRO PUT VENDA:', erro);
-    res.status(500).json({
-      sucesso: false,
-      mensagem: erro.message
-    });
-  } finally {
-    client.release();
-  }
-});
-// =========================
-// VALIDAR EVENTO
-// =========================
-
-let eventoIdFinal =
-    null;
+        const {
+            itens,
+            desconto = 0,
+            evento_id = null
+        } = req.body;
 
 
-if (
-    evento_id !== null &&
-    evento_id !== '' &&
-    evento_id !== undefined
-) {
+        // ========================================================
+        // VALIDAR ID
+        // ========================================================
 
-    eventoIdFinal =
-        Number(
-            evento_id
-        );
+        if (!Number.isInteger(vendaId) || vendaId <= 0) {
 
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'Pedido inválido.'
+            });
 
-    if (
-        !Number.isInteger(
-            eventoIdFinal
-        )
-        ||
-        eventoIdFinal <= 0
-    ) {
-
-        throw new Error(
-            'Evento inválido.'
-        );
-
-    }
+        }
 
 
-    const resultadoEvento =
-        await client.query(
+        // ========================================================
+        // VALIDAR ITENS
+        // ========================================================
+
+        if (!Array.isArray(itens) || itens.length === 0) {
+
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'Informe os itens do pedido.'
+            });
+
+        }
+
+
+        // ========================================================
+        // DESCONTO
+        // ========================================================
+
+        const descontoFinal = Number(desconto) || 0;
+
+        if (descontoFinal < 0) {
+
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'Desconto inválido.'
+            });
+
+        }
+
+
+        // ========================================================
+        // INICIAR TRANSAÇÃO
+        // ========================================================
+
+        await client.query('BEGIN');
+
+
+        // ========================================================
+        // BUSCAR VENDA
+        // ========================================================
+
+        const resultadoVenda = await client.query(
             `
-            SELECT id
-
-            FROM eventos
-
+            SELECT
+                id,
+                usuario_id,
+                subtotal,
+                desconto,
+                total,
+                status,
+                evento_id
+            FROM vendas
             WHERE id = $1
-
-            LIMIT 1
+            FOR UPDATE
             `,
-            [
-                eventoIdFinal
-            ]
+            [vendaId]
         );
 
 
-    if (
-        resultadoEvento.rows.length === 0
-    ) {
+        if (resultadoVenda.rows.length === 0) {
 
-        throw new Error(
-            'Evento não encontrado.'
-        );
+            throw new Error('Pedido não encontrado.');
 
-    }
+        }
 
-}
 
-            // =========================
-            // VALIDAR VENDA
-            // =========================
+        const venda = resultadoVenda.rows[0];
+
+
+        // ========================================================
+        // PEDIDO CANCELADO
+        // ========================================================
+
+        if (
+            String(venda.status || '').toUpperCase() === 'CANCELADA'
+        ) {
+
+            throw new Error(
+                'Um pedido cancelado não pode ser alterado.'
+            );
+
+        }
+
+
+        // ========================================================
+        // VALIDAR EVENTO
+        // ========================================================
+
+        let eventoIdFinal = null;
+
+        if (
+            evento_id !== null &&
+            evento_id !== '' &&
+            evento_id !== undefined
+        ) {
+
+            eventoIdFinal = Number(evento_id);
 
             if (
-                !Number.isInteger(
-                    vendaId
-                )
-                ||
-                vendaId <= 0
+                !Number.isInteger(eventoIdFinal) ||
+                eventoIdFinal <= 0
             ) {
 
-                return res
-                    .status(400)
-                    .json({
-
-                        sucesso: false,
-
-                        mensagem:
-                            'Pedido inválido.'
-
-                    });
+                throw new Error('Evento inválido.');
 
             }
 
 
-            if (
-                !Array.isArray(
-                    itens
-                )
-                ||
-                itens.length === 0
-            ) {
-
-                return res
-                    .status(400)
-                    .json({
-
-                        sucesso: false,
-
-                        mensagem:
-                            'Informe os itens do pedido.'
-
-                    });
-
-            }
-
-
-            // =========================
-            // TRANSAÇÃO
-            // =========================
-
-            await client.query(
-                'BEGIN'
+            const resultadoEvento = await client.query(
+                `
+                SELECT id
+                FROM eventos
+                WHERE id = $1
+                LIMIT 1
+                `,
+                [eventoIdFinal]
             );
 
 
-            // =========================
-            // BUSCAR VENDA
-            // =========================
+            if (resultadoEvento.rows.length === 0) {
 
-            const resultadoVenda =
+                throw new Error('Evento não encontrado.');
+
+            }
+
+        }
+
+
+        // ========================================================
+        // BUSCAR ITENS ATUAIS
+        // ========================================================
+
+        const resultadoItensAtuais = await client.query(
+            `
+            SELECT
+                id,
+                produto_id,
+                quantidade,
+                preco_unitario,
+                subtotal
+            FROM itens_venda
+            WHERE venda_id = $1
+            ORDER BY id
+            FOR UPDATE
+            `,
+            [vendaId]
+        );
+
+
+        const itensAtuais = resultadoItensAtuais.rows;
+
+
+        // ========================================================
+        // USUÁRIO
+        // ========================================================
+
+        let usuarioId = venda.usuario_id;
+
+
+        if (!usuarioId) {
+
+            const resultadoUsuario = await client.query(
+                `
+                SELECT id
+                FROM usuarios
+                ORDER BY id
+                LIMIT 1
+                `
+            );
+
+
+            if (resultadoUsuario.rows.length === 0) {
+
+                throw new Error(
+                    'Nenhum usuário encontrado.'
+                );
+
+            }
+
+
+            usuarioId = resultadoUsuario.rows[0].id;
+
+        }
+
+
+        // ========================================================
+        // MAPEAR ITENS RECEBIDOS
+        // ========================================================
+
+        const itensRecebidos = new Map();
+
+
+        for (const item of itens) {
+
+            const produtoId = Number(item.produto_id);
+
+            const quantidade = Number(item.quantidade);
+
+            const precoUnitario = Number(item.preco_unitario);
+
+
+            if (
+                !Number.isInteger(produtoId) ||
+                produtoId <= 0
+            ) {
+
+                throw new Error('Produto inválido.');
+
+            }
+
+
+            if (
+                !Number.isFinite(quantidade) ||
+                quantidade <= 0
+            ) {
+
+                throw new Error(
+                    `Quantidade inválida para o produto ${produtoId}.`
+                );
+
+            }
+
+
+            if (
+                !Number.isFinite(precoUnitario) ||
+                precoUnitario < 0
+            ) {
+
+                throw new Error(
+                    `Preço inválido para o produto ${produtoId}.`
+                );
+
+            }
+
+
+            itensRecebidos.set(
+                produtoId,
+                {
+                    produto_id: produtoId,
+                    quantidade: quantidade,
+                    preco_unitario: precoUnitario
+                }
+            );
+
+        }
+
+
+        // ========================================================
+        // MAPA DOS ITENS ATUAIS
+        // ========================================================
+
+        const itensAtuaisMap = new Map();
+
+
+        for (const itemAtual of itensAtuais) {
+
+            itensAtuaisMap.set(
+                Number(itemAtual.produto_id),
+                itemAtual
+            );
+
+        }
+
+
+        // ========================================================
+        // PROCESSAR ITENS
+        // ========================================================
+
+        let novoSubtotal = 0;
+
+
+        for (const itemNovo of itensRecebidos.values()) {
+
+            const produtoId = Number(itemNovo.produto_id);
+
+            const novaQuantidade = Number(itemNovo.quantidade);
+
+            const precoNovo = Number(itemNovo.preco_unitario);
+
+
+            const itemAtual = itensAtuaisMap.get(produtoId);
+
+
+            // ====================================================
+            // PRODUTO NOVO
+            // ====================================================
+
+            if (!itemAtual) {
+
+                const subtotalItem =
+                    novaQuantidade * precoNovo;
+
+
+                novoSubtotal += subtotalItem;
+
+
+                // ------------------------------------------------
+                // SAÍDA DO ESTOQUE
+                // ------------------------------------------------
+
                 await client.query(
                     `
-                    SELECT
-                        id,
+                    INSERT INTO movimentacoes_estoque (
+                        produto_id,
                         usuario_id,
-                        subtotal,
-                        desconto,
-                        total,
-                        status
-
-                    FROM vendas
-
-                    WHERE id = $1
-
-                    FOR UPDATE
+                        tipo,
+                        quantidade,
+                        motivo
+                    )
+                    VALUES ($1, $2, $3, $4, $5)
                     `,
                     [
-                        vendaId
+                        produtoId,
+                        usuarioId,
+                        'VENDA',
+                        novaQuantidade,
+                        `Alteração do pedido #${vendaId} - novo produto`
                     ]
                 );
 
 
-            if (
-                resultadoVenda.rows.length ===
-                0
-            ) {
+                // ------------------------------------------------
+                // INSERIR ITEM
+                // ------------------------------------------------
 
-                await client.query(
-                    'ROLLBACK'
-                );
-
-
-                return res
-                    .status(404)
-                    .json({
-
-                        sucesso: false,
-
-                        mensagem:
-                            'Pedido não encontrado.'
-
-                    });
-
-            }
-
-
-            const venda =
-                resultadoVenda.rows[0];
-
-
-            // =========================
-            // NÃO EDITAR CANCELADO
-            // =========================
-
-            if (
-                String(
-                    venda.status || ''
-                )
-                    .toUpperCase()
-                ===
-                'CANCELADA'
-            ) {
-
-                await client.query(
-                    'ROLLBACK'
-                );
-
-
-                return res
-                    .status(409)
-                    .json({
-
-                        sucesso: false,
-
-                        mensagem:
-                            'Um pedido cancelado não pode ser alterado.'
-
-                    });
-
-            }
-
-
-            // =========================
-            // ITENS ATUAIS
-            // =========================
-
-            const resultadoItensAtuais =
                 await client.query(
                     `
-                    SELECT
-                        id,
+                    INSERT INTO itens_venda (
+                        venda_id,
                         produto_id,
                         quantidade,
                         preco_unitario,
                         subtotal
-
-                    FROM itens_venda
-
-                    WHERE venda_id = $1
-
-                    ORDER BY id
-
-                    FOR UPDATE
+                    )
+                    VALUES ($1, $2, $3, $4, $5)
                     `,
                     [
-                        vendaId
+                        vendaId,
+                        produtoId,
+                        novaQuantidade,
+                        precoNovo,
+                        subtotalItem
                     ]
                 );
 
 
-            const itensAtuais =
-                resultadoItensAtuais.rows;
-
-
-            // =========================
-            // USUÁRIO
-            // =========================
-
-            let usuarioId =
-                venda.usuario_id;
-
-
-            if (!usuarioId) {
-
-                const resultadoUsuario =
-                    await client.query(
-                        `
-                        SELECT id
-
-                        FROM usuarios
-
-                        ORDER BY id
-
-                        LIMIT 1
-                        `
-                    );
-
-
-                if (
-                    resultadoUsuario.rows.length ===
-                    0
-                ) {
-
-                    throw new Error(
-                        'Nenhum usuário encontrado.'
-                    );
-
-                }
-
-
-                usuarioId =
-                    resultadoUsuario.rows[0].id;
+                continue;
 
             }
 
 
-            // =========================
-            // PROCESSAR ALTERAÇÕES
-            // =========================
+            // ====================================================
+            // PRODUTO JÁ EXISTENTE
+            // ====================================================
 
-            let novoSubtotal =
-                0;
-
-
-            for (
-                const itemNovo
-                of itens
-            ) {
-
-                const produtoId =
-                    Number(
-                        itemNovo.produto_id
-                    );
+            const quantidadeAtual =
+                Number(itemAtual.quantidade);
 
 
-                const novaQuantidade =
-                    Number(
-                        itemNovo.quantidade
-                    );
+            const diferenca =
+                novaQuantidade - quantidadeAtual;
 
 
-                if (
-                    !Number.isInteger(
-                        produtoId
-                    )
-                    ||
-                    produtoId <= 0
-                ) {
+            // ------------------------------------------------
+            // AUMENTOU
+            // ------------------------------------------------
 
-                    throw new Error(
-                        'Produto inválido.'
-                    );
-
-                }
-
-
-                if (
-                    !Number.isFinite(
-                        novaQuantidade
-                    )
-                    ||
-                    novaQuantidade <= 0
-                ) {
-
-                    throw new Error(
-                        'Quantidade inválida.'
-                    );
-
-                }
-
-
-                // =========================
-                // LOCALIZAR ITEM ORIGINAL
-                // =========================
-
-                const itemAtual =
-                    itensAtuais.find(
-                        item =>
-                            Number(
-                                item.produto_id
-                            )
-                            ===
-                            produtoId
-                    );
-
-
-                if (!itemAtual) {
-
-                    throw new Error(
-                        `O produto ${produtoId} não pertence a este pedido.`
-                    );
-
-                }
-
-
-                const quantidadeAtual =
-                    Number(
-                        itemAtual.quantidade
-                    );
-
-
-                const precoUnitario =
-                    Number(
-                        itemAtual.preco_unitario
-                    );
-
-
-                const diferenca =
-                    novaQuantidade
-                    -
-                    quantidadeAtual;
-
-
-                // =========================
-                // AUMENTOU A QUANTIDADE
-                // =========================
-                //
-                // Ex.:
-                //
-                // antes: 10
-                // agora: 15
-                //
-                // tira mais 5 do estoque
-                // =========================
-
-                if (
-                    diferenca > 0
-                ) {
-
-                    await client.query(
-                        `
-                        INSERT INTO movimentacoes_estoque (
-                            produto_id,
-                            usuario_id,
-                            tipo,
-                            quantidade,
-                            motivo
-                        )
-
-                        VALUES (
-                            $1,
-                            $2,
-                            $3,
-                            $4,
-                            $5
-                        )
-                        `,
-                        [
-                            produtoId,
-
-                            usuarioId,
-
-                            'VENDA',
-
-                            diferenca,
-
-                            `Alteração do pedido #${vendaId} - aumento de quantidade`
-                        ]
-                    );
-
-                }
-
-
-                // =========================
-                // DIMINUIU A QUANTIDADE
-                // =========================
-                //
-                // Ex.:
-                //
-                // antes: 15
-                // agora: 10
-                //
-                // devolve 5 ao estoque
-                // =========================
-
-                if (
-                    diferenca < 0
-                ) {
-
-                    await client.query(
-                        `
-                        INSERT INTO movimentacoes_estoque (
-                            produto_id,
-                            usuario_id,
-                            tipo,
-                            quantidade,
-                            motivo
-                        )
-
-                        VALUES (
-                            $1,
-                            $2,
-                            $3,
-                            $4,
-                            $5
-                        )
-                        `,
-                        [
-                            produtoId,
-
-                            usuarioId,
-
-                            'AJUSTE_POSITIVO',
-
-                            Math.abs(
-                                diferenca
-                            ),
-
-                            `Alteração do pedido #${vendaId} - devolução de quantidade`
-                        ]
-                    );
-
-                }
-
-
-                // =========================
-                // NOVO SUBTOTAL DO ITEM
-                // =========================
-
-                const subtotalItem =
-                    precoUnitario
-                    *
-                    novaQuantidade;
-
-
-                novoSubtotal +=
-                    subtotalItem;
-
-
-                // =========================
-                // ATUALIZAR ITEM
-                // =========================
+            if (diferenca > 0) {
 
                 await client.query(
                     `
-                    UPDATE itens_venda
-
-                    SET
-                        quantidade = $1,
-                        subtotal = $2
-
-                    WHERE id = $3
+                    INSERT INTO movimentacoes_estoque (
+                        produto_id,
+                        usuario_id,
+                        tipo,
+                        quantidade,
+                        motivo
+                    )
+                    VALUES ($1, $2, $3, $4, $5)
                     `,
                     [
-                        novaQuantidade,
-
-                        subtotalItem,
-
-                        itemAtual.id
+                        produtoId,
+                        usuarioId,
+                        'VENDA',
+                        diferenca,
+                        `Alteração do pedido #${vendaId} - aumento de quantidade`
                     ]
                 );
 
             }
 
 
-            // =========================
-            // RECALCULAR TOTAL
-            // =========================
+            // ------------------------------------------------
+            // DIMINUIU
+            // ------------------------------------------------
 
-const inputDesconto = document.getElementById('inputDesconto');
-const desconto = inputDesconto ? Number(inputDesconto.value) || 0 : 0;
-
-
-            const novoTotal =
-                Math.max(
-                    0,
-                    novoSubtotal
-                    -
-                    desconto
-                );
-
-
-            // =========================
-            // ATUALIZAR VENDA
-            // =========================
-
-     const resultadoAtualizacao =
-    await client.query(
-        `
-        UPDATE vendas
-
-        SET
-            subtotal = $1,
-            total = $2,
-            evento_id = $3
-
-        WHERE id = $4
-
-        RETURNING *
-        `,
-        [
-            novoSubtotal,
-            novoTotal,
-            eventoIdFinal,
-            vendaId
-        ]
-    );
-
-
-            // =========================
-            // COMMIT
-            // =========================
-
-            await client.query(
-                'COMMIT'
-            );
-
-
-            return res.json({
-
-                sucesso: true,
-
-                mensagem:
-                    'Pedido alterado com sucesso!',
-
-                venda:
-                    resultadoAtualizacao.rows[0]
-
-            });
-
-
-        } catch (erro) {
-
-            try {
+            if (diferenca < 0) {
 
                 await client.query(
-                    'ROLLBACK'
-                );
-
-            } catch (
-                rollbackErro
-            ) {
-
-                console.error(
-                    'Erro no rollback da edição:',
-                    rollbackErro
+                    `
+                    INSERT INTO movimentacoes_estoque (
+                        produto_id,
+                        usuario_id,
+                        tipo,
+                        quantidade,
+                        motivo
+                    )
+                    VALUES ($1, $2, $3, $4, $5)
+                    `,
+                    [
+                        produtoId,
+                        usuarioId,
+                        'AJUSTE_POSITIVO',
+                        Math.abs(diferenca),
+                        `Alteração do pedido #${vendaId} - devolução`
+                    ]
                 );
 
             }
 
 
-            console.error(
-                'Erro ao alterar pedido:',
-                erro
+            // ------------------------------------------------
+            // NOVO SUBTOTAL
+            // ------------------------------------------------
+
+            const subtotalItem =
+                novaQuantidade * precoNovo;
+
+
+            novoSubtotal += subtotalItem;
+
+
+            // ------------------------------------------------
+            // ATUALIZAR ITEM
+            // ------------------------------------------------
+
+            await client.query(
+                `
+                UPDATE itens_venda
+                SET
+                    quantidade = $1,
+                    preco_unitario = $2,
+                    subtotal = $3
+                WHERE id = $4
+                `,
+                [
+                    novaQuantidade,
+                    precoNovo,
+                    subtotalItem,
+                    itemAtual.id
+                ]
             );
 
 
-            return res
-                .status(500)
-                .json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        erro.message
-                        ||
-                        'Erro interno ao alterar pedido.'
-
-                });
-
-
-        } finally {
-
-            client.release();
+            // Item já foi processado
+            itensAtuaisMap.delete(produtoId);
 
         }
 
+
+        // ========================================================
+        // REMOVER ITENS QUE SAÍRAM DO PEDIDO
+        // ========================================================
+
+        for (const itemRemovido of itensAtuaisMap.values()) {
+
+            const produtoId =
+                Number(itemRemovido.produto_id);
+
+            const quantidadeRemovida =
+                Number(itemRemovido.quantidade);
+
+
+            // ------------------------------------------------
+            // DEVOLVER AO ESTOQUE
+            // ------------------------------------------------
+
+            await client.query(
+                `
+                INSERT INTO movimentacoes_estoque (
+                    produto_id,
+                    usuario_id,
+                    tipo,
+                    quantidade,
+                    motivo
+                )
+                VALUES ($1, $2, $3, $4, $5)
+                `,
+                [
+                    produtoId,
+                    usuarioId,
+                    'AJUSTE_POSITIVO',
+                    quantidadeRemovida,
+                    `Alteração do pedido #${vendaId} - produto removido`
+                ]
+            );
+
+
+            // ------------------------------------------------
+            // EXCLUIR ITEM
+            // ------------------------------------------------
+
+            await client.query(
+                `
+                DELETE FROM itens_venda
+                WHERE id = $1
+                `,
+                [itemRemovido.id]
+            );
+
+        }
+
+
+        // ========================================================
+        // CALCULAR TOTAL
+        // ========================================================
+
+        const novoTotal = Math.max(
+            0,
+            novoSubtotal - descontoFinal
+        );
+
+
+        // ========================================================
+        // ATUALIZAR VENDA
+        // ========================================================
+
+        const resultadoAtualizacao = await client.query(
+            `
+            UPDATE vendas
+            SET
+                subtotal = $1,
+                desconto = $2,
+                total = $3,
+                evento_id = $4
+            WHERE id = $5
+            RETURNING *
+            `,
+            [
+                novoSubtotal,
+                descontoFinal,
+                novoTotal,
+                eventoIdFinal,
+                vendaId
+            ]
+        );
+
+
+        // ========================================================
+        // COMMIT
+        // ========================================================
+
+        await client.query('COMMIT');
+
+
+        // ========================================================
+        // RESPOSTA
+        // ========================================================
+
+        return res.json({
+            sucesso: true,
+            mensagem: 'Pedido alterado com sucesso!',
+            venda: resultadoAtualizacao.rows[0]
+        });
+
+
+    } catch (erro) {
+
+        try {
+            await client.query('ROLLBACK');
+        } catch (rollbackErro) {
+            console.error(
+                'Erro no rollback:',
+                rollbackErro
+            );
+        }
+
+
+        console.error(
+            'ERRO AO ALTERAR PEDIDO:',
+            erro
+        );
+
+
+        return res.status(500).json({
+            sucesso: false,
+            mensagem:
+                erro.message ||
+                'Erro interno ao alterar pedido.'
+        });
+
+
+    } finally {
+
+        client.release();
+
     }
-);
+
+});
+
+
 
 // ============================================================
 // LOGIN
