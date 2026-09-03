@@ -2253,21 +2253,24 @@ function renderSummary() {
                 100,
                 Math.max(
                     0,
-                    Number(
+                    lerPercentual(
                         inputDesconto.value
-                    ) || 0
+                    )
                 )
             )
             : 0;
 
 
-    // Valor do desconto geral
+    // Valor do desconto geral em reais
     const valorDescontoGeral =
         subtotal *
-        (descontoGeral / 100);
+        (
+            descontoGeral /
+            100
+        );
 
 
-    // Desconto dos produtos
+    // Desconto individual dos produtos
     const descontoItens =
         cart.reduce(
             (
@@ -2286,14 +2289,15 @@ function renderSummary() {
                                 item.descontoPercentual || 0
                             )
                         )
-                    ) / 100
+                    ) /
+                    100
                 ),
             0
         );
 
 
-    // Soma os descontos
-    const desconto =
+    // Soma dos descontos
+    const valorDescontoTotal =
         Math.min(
             subtotal,
             descontoItens +
@@ -2305,7 +2309,7 @@ function renderSummary() {
         Math.max(
             0,
             subtotal -
-            desconto
+            valorDescontoTotal
         );
 
 
@@ -2340,7 +2344,7 @@ function renderSummary() {
             'sumDesconto'
         )
         .textContent =
-        `${descontoGeral}%`;
+        `${formatarPercentual(descontoGeral)}%`;
 
 
     document
@@ -2353,6 +2357,12 @@ function renderSummary() {
         );
 
 }
+
+
+inputDesconto?.addEventListener(
+    'input',
+    renderSummary
+);
 
 
 inputDesconto?.addEventListener(
@@ -2580,36 +2590,112 @@ finalizarBtn.addEventListener(
 
 async function prepararVenda() {
 
-    const dadosVenda = {
+    const subtotal =
+        cart.reduce(
+            (
+                total,
+                item
+            ) =>
+                total +
+                (
+                    Number(item.price || 0) *
+                    Number(item.qty || 0)
+                ),
+            0
+        );
 
-        cliente_id:
-            clienteSelecionado.id,
 
-        desconto:
-            0,
+    const inputDesconto =
+        document.getElementById(
+            'inputDesconto'
+        );
 
-        itens:
-            cart.map(
-                item => ({
 
-                    produto_id:
-                        item.id,
-
-                    /*
-                        IMPORTANTE:
-
-                        O backend recebe UNIDADES,
-                        e não quantidade de caixas.
-                    */
-
-                    quantidade:
-                        item.qty
-
-                })
+    const descontoPercentual =
+        inputDesconto
+            ? Math.min(
+                100,
+                Math.max(
+                    0,
+                    lerPercentual(
+                        inputDesconto.value
+                    )
+                )
             )
+            : 0;
 
-    };
 
+    const descontoItens =
+        cart.reduce(
+            (
+                total,
+                item
+            ) =>
+                total +
+                (
+                    Number(item.price || 0) *
+                    Number(item.qty || 0) *
+                    Math.min(
+                        100,
+                        Math.max(
+                            0,
+                            Number(
+                                item.descontoPercentual || 0
+                            )
+                        )
+                    ) /
+                    100
+                ),
+            0
+        );
+
+
+    const valorDescontoGeral =
+        subtotal *
+        (
+            descontoPercentual /
+            100
+        );
+
+
+    const valorDesconto =
+        Math.min(
+            subtotal,
+            descontoItens +
+            valorDescontoGeral
+        );
+
+
+    const total =
+        Math.max(
+            0,
+            subtotal -
+            valorDesconto
+        );
+
+
+   const dadosVenda = {
+
+    cliente_id:
+        clienteSelecionado.id,
+
+    desconto:
+        valorDesconto,
+
+    itens:
+        cart.map(
+            item => ({
+
+                produto_id:
+                    item.id,
+
+                quantidade:
+                    item.qty
+
+            })
+        )
+
+};
 
     try {
 
