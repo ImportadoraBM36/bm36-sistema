@@ -3494,7 +3494,7 @@ const precoUnitario =
 
         const novoTotal = Math.max(
             0,
-            novoSubtotal - descontoFinal
+           novoSubtotal - (novoSubtotal * descontoFinal / 100)
         );
 
 
