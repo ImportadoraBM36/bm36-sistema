@@ -2300,9 +2300,9 @@ function renderSummary() {
                         100,
                         Math.max(
                             0,
-                            Number(
-                                item.descontoPercentual || 0
-                            )
+                          lerPercentual(
+    item.descontoPercentual
+)
                         )
                     ) /
                     100
@@ -2312,64 +2312,64 @@ function renderSummary() {
 
 
     // Soma dos descontos
-    const valorDescontoTotal =
-        Math.min(
-            subtotal,
-            descontoItens +
-            valorDescontoGeral
-        );
+ const valorDescontoTotal =
+    Math.min(
+        subtotal,
+        descontoItens +
+        valorDescontoGeral
+    );
 
 
-    const total =
-        Math.max(
-            0,
-            subtotal -
-            valorDescontoTotal
-        );
+const total =
+    Math.max(
+        0,
+        Number(subtotal || 0) -
+        Number(valorDescontoTotal || 0)
+    );
 
 
-    document
-        .getElementById(
-            'sumItens'
-        )
-        .textContent =
-        itens;
+document
+    .getElementById(
+        'sumItens'
+    )
+    .textContent =
+    itens;
 
 
-    document
-        .getElementById(
-            'sumQtd'
-        )
-        .textContent =
-        quantidade;
+document
+    .getElementById(
+        'sumQtd'
+    )
+    .textContent =
+    quantidade;
 
 
-    document
-        .getElementById(
-            'sumSubtotal'
-        )
-        .textContent =
-        fmt(
-            subtotal
-        );
+document
+    .getElementById(
+        'sumSubtotal'
+    )
+    .textContent =
+    fmt(
+        subtotal
+    );
 
 
-    document
-        .getElementById(
-            'sumDesconto'
-        )
-        .textContent =
-        `${formatarPercentual(descontoGeral)}%`;
+document
+    .getElementById(
+        'sumDesconto'
+    )
+    .textContent =
+    `${formatarPercentual(descontoGeral)}%`;
 
 
-    document
-        .getElementById(
-            'sumTotal'
-        )
-        .textContent =
-        fmt(
-            total
-        );
+document
+    .getElementById(
+        'sumTotal'
+    )
+    .textContent =
+    fmt(
+        total
+    );
 
 }
 
