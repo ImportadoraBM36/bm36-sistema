@@ -1942,19 +1942,35 @@ if (
             let subtotalVenda = 0;
 
 
-            for (const item of itens) {
+          for (const item of itens) {
 
-                const produtoId =
-                    Number(item.produto_id);
+    const produtoId = Number(item.produto_id);
 
-                const quantidade =
-                    Number(item.quantidade);
+    const quantidade = Number(item.quantidade);
 
 
-                if (
-                    !Number.isInteger(produtoId) ||
-                    produtoId <= 0
-                ) {
+    const resultadoProduto = await client.query(
+        `
+        SELECT preco_venda
+        FROM produtos
+        WHERE id = $1
+        LIMIT 1
+        `,
+        [produtoId]
+    );
+
+
+    if (resultadoProduto.rows.length === 0) {
+
+        throw new Error(
+            `Produto ${produtoId} não encontrado.`
+        );
+
+    }
+
+
+    const precoUnitario =
+        Number(resultadoProduto.rows[0].preco_venda) || 0; {
 
                     throw new Error(
                         'Produto inválido recebido na venda.'
@@ -3227,7 +3243,24 @@ app.put('/api/vendas/:id', async (req, res) => {
 
             const quantidade = Number(item.quantidade);
 
-            const precoUnitario = Number(item.preco_unitario);
+            const resultadoProduto = await client.query(
+    `   
+    SELECT preco_venda
+    FROM produtos
+    WHERE id = $1
+    LIMIT 1
+    `,
+    [produtoId]
+);
+
+if (resultadoProduto.rows.length === 0) {
+    throw new Error(
+        `Produto ${produtoId} não encontrado.`
+    );
+}
+
+const precoUnitario =
+    Number(resultadoProduto.rows[0].preco_venda) || 0;
 
 
             if (
