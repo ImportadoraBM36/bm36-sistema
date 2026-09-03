@@ -1991,26 +1991,24 @@ for (const item of itens) {
     // =========================
     // BUSCAR PRODUTO
     // =========================
+const resultadoProduto =
+    await client.query(
+        `
+        SELECT
+            id,
+            nome,
+            preco_venda
 
-    const resultadoProduto =
-        await client.query(
-            `
-            SELECT
-                id,
-                nome,
-                preco_venda,
-                estoque
+        FROM produtos
 
-            FROM produtos
+        WHERE id = $1
 
-            WHERE id = $1
-
-            LIMIT 1
-            `,
-            [
-                produtoId
-            ]
-        );
+        LIMIT 1
+        `,
+        [
+            produtoId
+        ]
+    );
 
 
     if (
