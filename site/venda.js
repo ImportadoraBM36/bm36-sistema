@@ -1963,7 +1963,22 @@ function renderCart() {
         }
     );
 
+function lerPercentual(valor) {
+    if (valor === null || valor === undefined) {
+        return 0;
+    }
 
+    const texto = String(valor)
+        .replace(',', '.')
+        .replace('%', '')
+        .trim();
+
+    const numero = Number(texto);
+
+    return Number.isFinite(numero)
+        ? numero
+        : 0;
+}
     renderSummary();
 
 }
