@@ -1991,18 +1991,23 @@ if (resultadoProduto.rows.length === 0) {
 
 
 
-            // =========================
-            // CALCULAR TOTAL
-            // =========================
+           // ========================================================
+// CALCULAR TOTAL
+// DESCONTO É PERCENTUAL (%)
+// ========================================================
 
-            const totalVenda =
-                Math.max(
-                    0,
-                    subtotalVenda -
-                    descontoNumero
-                );
+const descontoPercentual = Math.min(
+    100,
+    Math.max(0, descontoFinal)
+);
 
+const valorDesconto =
+    novoSubtotal * (descontoPercentual / 100);
 
+const novoTotal = Math.max(
+    0,
+    novoSubtotal - valorDesconto
+);
             // =========================
             // CRIAR VENDA
             // =========================
