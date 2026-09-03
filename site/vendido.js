@@ -916,12 +916,14 @@ function renderItensModal() {
 // ============================================================
 // RESUMO E EDIÇÃO DE DESCONTO
 // ============================================================
-
 function recalcularResumoModal() {
     if (!pedidoAberto) return;
 
     const subtotal = pedidoAberto.itens.reduce((soma, item) => {
-        return soma + (Number(item.quantidade) * Number(item.preco_unitario || item.preco || 0));
+        return soma + (
+            Number(item.quantidade) *
+            Number(item.preco_unitario || item.preco || 0)
+        );
     }, 0);
 
     const containerDesconto = document.getElementById('containerDesconto');
@@ -931,33 +933,69 @@ function recalcularResumoModal() {
     if (containerDesconto) {
         if (modoEdicao) {
             containerDesconto.innerHTML = `
-                <input type="number" id="inputDescontoEdicao" class="edit-desconto" min="0" step="0.01" value="${pedidoAberto.desconto || 0}">
+                <input
+                    type="number"
+                    id="inputDescontoEdicao"
+                    class="edit-desconto"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    value="${pedidoAberto.desconto || 0}"
+                >
             `;
 
             const inputDesconto = document.getElementById('inputDescontoEdicao');
+
             if (inputDesconto) {
                 inputDesconto.addEventListener('input', e => {
-                    const valorDesconto = parseFloat(e.target.value) || 0;
+                    const valorDesconto = Math.min(
+                        100,
+                        Math.max(0, parseFloat(e.target.value) || 0)
+                    );
+
                     pedidoAberto.desconto = valorDesconto;
 
-                    const total = Math.max(0, subtotal - valorDesconto);
-                    if (modalSubtotal) modalSubtotal.textContent = fmt(subtotal);
-                    if (modalTotal) modalTotal.textContent = fmt(total);
+                    const total = Math.max(
+                        0,
+                        subtotal - (subtotal * valorDesconto / 100)
+                    );
+
+                    if (modalSubtotal) {
+                        modalSubtotal.textContent = fmt(subtotal);
+                    }
+
+                    if (modalTotal) {
+                        modalTotal.textContent = fmt(total);
+                    }
                 });
             }
         } else {
-            containerDesconto.innerHTML = `<span id="modalDesconto">${fmt(pedidoAberto.desconto || 0)}</span>`;
+            const desconto = Number(pedidoAberto.desconto || 0);
+
+            containerDesconto.innerHTML = `
+                <span id="modalDesconto">${desconto}%</span>
+            `;
         }
     }
 
-    const desconto = Number(pedidoAberto.desconto || 0);
-    const total = Math.max(0, subtotal - desconto);
+    const desconto = Math.min(
+        100,
+        Math.max(0, Number(pedidoAberto.desconto || 0))
+    );
 
-    if (modalSubtotal) modalSubtotal.textContent = fmt(subtotal);
-    if (modalTotal) modalTotal.textContent = fmt(total);
+    const total = Math.max(
+        0,
+        subtotal - (subtotal * desconto / 100)
+    );
+
+    if (modalSubtotal) {
+        modalSubtotal.textContent = fmt(subtotal);
+    }
+
+    if (modalTotal) {
+        modalTotal.textContent = fmt(total);
+    }
 }
-
-
 // ============================================================
 // EDITAR OU SALVAR ALTERAÇÕES DO PEDIDO
 // ============================================================
