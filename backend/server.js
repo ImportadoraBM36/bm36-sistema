@@ -1942,145 +1942,53 @@ if (
             let subtotalVenda = 0;
 
 
-          for (const item of itens) {
+         const produtoId = Number(item.produto_id);
 
-    const produtoId = Number(item.produto_id);
-
-    const quantidade = Number(item.quantidade);
+const quantidade = Number(item.quantidade);
 
 
-    const resultadoProduto = await client.query(
-        `
-        SELECT preco_venda
-        FROM produtos
-        WHERE id = $1
-        LIMIT 1
-        `,
-        [produtoId]
+if (
+    !Number.isInteger(produtoId) ||
+    produtoId <= 0
+) {
+
+    throw new Error('Produto inválido.');
+
+}
+
+
+if (
+    !Number.isFinite(quantidade) ||
+    quantidade <= 0
+) {
+
+    throw new Error(
+        `Quantidade inválida para o produto ${produtoId}.`
     );
 
-
-    if (resultadoProduto.rows.length === 0) {
-
-        throw new Error(
-            `Produto ${produtoId} não encontrado.`
-        );
-
-    }
+}
 
 
-    const precoUnitario =
-        Number(resultadoProduto.rows[0].preco_venda) || 0; {
-
-                    throw new Error(
-                        'Produto inválido recebido na venda.'
-                    );
-
-                }
-
-
-                if (
-                    !Number.isFinite(quantidade) ||
-                    quantidade <= 0
-                ) {
-
-                    throw new Error(
-                        'Quantidade inválida recebida na venda.'
-                    );
-
-                }
+// Buscar o preço diretamente do banco
+const resultadoProduto = await client.query(
+    `
+    SELECT preco_venda
+    FROM produtos
+    WHERE id = $1
+    LIMIT 1
+    `,
+    [produtoId]
+);
 
 
-                // =========================
-                // BUSCAR PRODUTO NO BANCO
-                // =========================
-                //
-                // IMPORTANTE:
-                // não usamos o preço enviado
-                // pelo navegador.
-                // =========================
+if (resultadoProduto.rows.length === 0) {
 
-                const produtoResultado =
-                    await client.query(
-                        `
-                        SELECT
-                            id,
-                            codigo,
-                            nome,
-                            preco_venda,
-                            ativo
+    throw new Error(
+        `Produto ${produtoId} não encontrado.`
+    );
 
-                        FROM produtos
+}
 
-                        WHERE id = $1
-
-                        LIMIT 1
-                        `,
-                        [produtoId]
-                    );
-
-
-                if (
-                    produtoResultado.rows.length === 0
-                ) {
-
-                    throw new Error(
-                        `Produto ${produtoId} não encontrado.`
-                    );
-
-                }
-
-
-                const produto =
-                    produtoResultado.rows[0];
-
-
-                if (!produto.ativo) {
-
-                    throw new Error(
-                        `O produto "${produto.nome}" está inativo.`
-                    );
-
-                }
-
-
-                const precoUnitario =
-                    Number(
-                        produto.preco_venda || 0
-                    );
-
-
-                const subtotalItem =
-                    precoUnitario *
-                    quantidade;
-
-
-                subtotalVenda +=
-                    subtotalItem;
-
-
-                itensProcessados.push({
-
-                    produto_id:
-                        produto.id,
-
-                    codigo:
-                        produto.codigo,
-
-                    nome:
-                        produto.nome,
-
-                    quantidade,
-
-                    preco_unitario:
-                        precoUnitario,
-
-                    subtotal:
-                        subtotalItem
-
-                });
-
-            }
 
 
             // =========================
