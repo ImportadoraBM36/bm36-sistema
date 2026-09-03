@@ -938,7 +938,7 @@ function recalcularResumoModal() {
             if (inputDesconto) {
                 inputDesconto.addEventListener('input', e => {
                     const valorDesconto = parseFloat(e.target.value) || 0;
-                    pedidoAberto.desconto = valorDesconto;
+                    pedidoAberto.desconto = (pedidoAberto.desconto*100)/valorDesconto;
 
                     const total = Math.max(0, subtotal - valorDesconto);
                     if (modalSubtotal) modalSubtotal.textContent = fmt(subtotal);
