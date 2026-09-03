@@ -648,6 +648,7 @@ async function carregarProdutosBanco() {
         const resposta = await fetch(`${API_URL}/produtos`);
         if (resposta.ok) {
             todosProdutos = await resposta.json();
+            console.log('PRODUTOS DO BANCO:', todosProdutos);
         }
     } catch (erro) {
         console.error('Erro ao carregar produtos do banco:', erro);
@@ -696,7 +697,12 @@ function exibirSugestoes(produtos) {
     produtos.forEach(produto => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'item-sugestao';
-        itemDiv.textContent = `${produto.nome} - ${fmt(produto.preco)}`;
+        itemDiv.textContent = `${produto.nome} - ${fmt(
+    produto.preco_venda ||
+    produto.preco ||
+    produto.preco_unitario ||
+    0
+)}`;
 
         itemDiv.onclick = () => {
             adicionarItemAoPedido(produto);
