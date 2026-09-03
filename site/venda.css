@@ -662,7 +662,7 @@ table {
 
     font-size: 14px;
 
-    padding:
+    padding:    
         8px
         0;
 
@@ -1850,6 +1850,9 @@ table {
     color: #64748b;
 }
 
+
+
+
 /* =========================
    RESPONSIVO MODAL
    ========================= */
@@ -1871,6 +1874,32 @@ table {
         width: 100%;
     }
 
+}
+
+
+
+/* Remove as setinhas do campo de desconto */
+.edit-desconto::-webkit-inner-spin-button,
+.edit-desconto::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+
+.desconto-input-container {
+    display: flex;
+    align-items: center;
+}
+
+.desconto-input-container .edit-desconto {
+    width: 100%;
+}
+
+.desconto-simbolo {
+    margin-left: -30px;
+    font-weight: bold;
+    pointer-events: none;
 }
 /* =========================
    RESPONSIVO
