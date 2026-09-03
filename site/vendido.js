@@ -1002,7 +1002,15 @@ const desconto = Math.min(
 const total = Math.max(
     0,
     subtotal - (subtotal * desconto / 100)
+
+    
 );
+
+console.log('SUBTOTAL:', subtotal);
+console.log('DESCONTO %:', desconto);
+console.log('TOTAL CALCULADO:', total);
+
+
 const dadosAtualizados = {
     itens: itensValidos.map(item => ({
         produto_id: Number(item.produto_id || item.id),
