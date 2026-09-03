@@ -1207,6 +1207,29 @@ width: 78px;
 .edit-desconto:focus {
     border-color: var(--pink);
 }
+/* Remove as setinhas do campo de desconto */
+.edit-desconto::-webkit-inner-spin-button,
+.edit-desconto::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+
+.desconto-input-container {
+    display: flex;
+    align-items: center;
+}
+
+.desconto-input-container .edit-desconto {
+    width: 100%;
+}
+
+.desconto-simbolo {
+    margin-left: -30px;
+    font-weight: bold;
+    pointer-events: none;
+}
 /* ============================================================
    DARK MODE
    ============================================================ */
