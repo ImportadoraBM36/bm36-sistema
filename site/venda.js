@@ -1471,24 +1471,6 @@ const modalQuantidadeEstoque =
 const inputQuantidadeProduto =
     document.getElementById('inputQuantidadeProduto');
 
-const inputDescontoProduto =
-    document.getElementById('inputDescontoProduto');
-
-function lerPercentual(valor) {
-    return Math.min(
-        100,
-        Math.max(
-            0,
-            Number(String(valor || '').replace('%', '').replace(',', '.')) || 0
-        )
-    );
-}
-
-function formatarPercentual(valor) {
-    return String(Math.round(lerPercentual(valor) * 100) / 100)
-        .replace('.', ',');
-}
-
 const btnFecharModalQuantidade =
     document.getElementById('btnFecharModalQuantidade');
 
@@ -1539,7 +1521,6 @@ function abrirModalQuantidade(produto) {
     );
 
     inputQuantidadeProduto.value = 1;
-    inputDescontoProduto.value = 0;
 
     modalQuantidade.classList.add('aberto');
     modalQuantidade.setAttribute('aria-hidden', 'false');
@@ -1578,16 +1559,13 @@ function confirmarAdicionarProduto() {
 
     const produto = produtoParaAdicionar;
 
-    const descontoPercentual = lerPercentual(inputDescontoProduto.value);
-
     fecharModalQuantidade();
 
     if (produto) {
 
         adicionarProdutoAoCarrinho(
             produto,
-            quantidade,
-            descontoPercentual
+            quantidade
         );
 
     }
@@ -1712,8 +1690,7 @@ productsBody.addEventListener(
 
 function adicionarProdutoAoCarrinho(
     produto,
-    quantidade = 1,
-    descontoPercentual = 0
+    quantidade = 1
 ) {
 
     const existente =
@@ -1733,14 +1710,7 @@ function adicionarProdutoAoCarrinho(
         existente
     ) {
 
-        const subtotalAnterior = Number(existente.price || 0) * existente.qty;
-        const descontoAnterior = subtotalAnterior * (Number(existente.descontoPercentual || 0) / 100);
-        const subtotalAdicionado = Number(produto.price || 0) * quantidade;
-        const descontoAdicionado = subtotalAdicionado * (descontoPercentual / 100);
-
         existente.qty += quantidade;
-        existente.descontoPercentual = (descontoAnterior + descontoAdicionado)
-            / (subtotalAnterior + subtotalAdicionado || 1) * 100;
 
 
     } else {
@@ -1750,9 +1720,7 @@ function adicionarProdutoAoCarrinho(
             ...produto,
 
             qty:
-                quantidade,
-
-            descontoPercentual: lerPercentual(descontoPercentual)
+                quantidade
 
         });
 
@@ -1834,12 +1802,6 @@ function renderCart() {
             const subtotal =
                 item.price *
                 item.qty;
-
-            const descontoPercentual = lerPercentual(item.descontoPercentual);
-
-            const desconto = subtotal * (descontoPercentual / 100);
-
-            item.descontoPercentual = descontoPercentual;
 
 
             const caixas =
@@ -1973,21 +1935,9 @@ function renderCart() {
 
 
                 <td>
-                    <span class="input-percentual input-percentual-carrinho">
-                    <input
-                        class="item-discount-input"
-                        type="text"
-                        inputmode="decimal"
-                        value="${formatarPercentual(descontoPercentual)}"
-                        data-id="${item.id}"
-                        aria-label="Desconto percentual para ${item.name}"
-                    >
-                    <span aria-hidden="true">%</span>
-                    </span>
-                </td>
-
-                <td>
-                    ${fmt(subtotal - desconto)}
+                    ${fmt(
+                        subtotal
+                    )}
                 </td>
 
 
@@ -2172,24 +2122,6 @@ itemsBody.addEventListener(
     }
 );
 
-itemsBody.addEventListener(
-    'change',
-    evento => {
-
-        const input = evento.target.closest('.item-discount-input');
-
-        if (!input) return;
-
-        const item = cart.find(produto => Number(produto.id) === Number(input.dataset.id));
-
-        if (!item) return;
-
-        item.descontoPercentual = lerPercentual(input.value);
-        renderCart();
-
-    }
-);
-
 
 // ============================================================
 // QUANTIDADE DIGITADA
@@ -2275,7 +2207,6 @@ itemsBody.addEventListener(
 // ============================================================
 // RESUMO
 // ============================================================
-
 function renderSummary() {
 
     const itens =
@@ -2308,19 +2239,75 @@ function renderSummary() {
             0
         );
 
-    const descontoItens = cart.reduce(
-        (total, item) => total + (
-            Number(item.price || 0) * Number(item.qty || 0)
-            * Math.min(100, Math.max(0, Number(item.descontoPercentual || 0))) / 100
-        ),
-        0
-    );
+
+    // Desconto geral em porcentagem
+    const inputDesconto =
+        document.getElementById(
+            'inputDesconto'
+        );
 
 
-    // Em vez de "const desconto = 0;", pegue o valor do input do HTML:
-const inputDesconto = document.getElementById('inputDesconto');
-    const descontoGeral = inputDesconto ? Number(inputDesconto.value) || 0 : 0;
-    const desconto = Math.min(subtotal, descontoItens + Math.max(0, descontoGeral));
+    const descontoGeral =
+        inputDesconto
+            ? Math.min(
+                100,
+                Math.max(
+                    0,
+                    Number(
+                        inputDesconto.value
+                    ) || 0
+                )
+            )
+            : 0;
+
+
+    // Valor do desconto geral
+    const valorDescontoGeral =
+        subtotal *
+        (descontoGeral / 100);
+
+
+    // Desconto dos produtos
+    const descontoItens =
+        cart.reduce(
+            (
+                total,
+                item
+            ) =>
+                total +
+                (
+                    Number(item.price || 0) *
+                    Number(item.qty || 0) *
+                    Math.min(
+                        100,
+                        Math.max(
+                            0,
+                            Number(
+                                item.descontoPercentual || 0
+                            )
+                        )
+                    ) / 100
+                ),
+            0
+        );
+
+
+    // Soma os descontos
+    const desconto =
+        Math.min(
+            subtotal,
+            descontoItens +
+            valorDescontoGeral
+        );
+
+
+    const total =
+        Math.max(
+            0,
+            subtotal -
+            desconto
+        );
+
 
     document
         .getElementById(
@@ -2353,9 +2340,7 @@ const inputDesconto = document.getElementById('inputDesconto');
             'sumDesconto'
         )
         .textContent =
-        fmt(
-            desconto
-        );
+        `${descontoGeral}%`;
 
 
     document
@@ -2364,13 +2349,20 @@ const inputDesconto = document.getElementById('inputDesconto');
         )
         .textContent =
         fmt(
-            subtotal -
-            desconto
+            total
         );
 
 }
 
-inputDesconto?.addEventListener('input', renderSummary);
+
+inputDesconto?.addEventListener(
+    'input',
+    renderSummary
+);
+
+
+
+
 
 
 // ============================================================
@@ -2594,14 +2586,7 @@ async function prepararVenda() {
             clienteSelecionado.id,
 
         desconto:
-            Math.min(
-                cart.reduce((total, item) => total + Number(item.price || 0) * Number(item.qty || 0), 0),
-                cart.reduce((total, item) => total + (
-                    Number(item.price || 0) * Number(item.qty || 0)
-                    * Math.min(100, Math.max(0, Number(item.descontoPercentual || 0))) / 100
-                ), 0)
-                    + Math.max(0, Number(inputDesconto?.value) || 0)
-            ),
+            0,
 
         itens:
             cart.map(
