@@ -1963,6 +1963,11 @@ function renderCart() {
         }
     );
 
+
+    renderSummary();
+
+}
+
 function lerPercentual(valor) {
     if (valor === null || valor === undefined) {
         return 0;
@@ -1979,11 +1984,6 @@ function lerPercentual(valor) {
         ? numero
         : 0;
 }
-    renderSummary();
-
-}
-
-
 // ============================================================
 // CONTROLE POR CAIXAS
 // ============================================================
