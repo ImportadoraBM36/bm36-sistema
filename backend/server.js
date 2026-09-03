@@ -1934,81 +1934,194 @@ if (
 
 }
             // =========================
-            // PREPARAR ITENS
-            // =========================
+      // =========================
+// PREPARAR ITENS
+// =========================
 
-            const itensProcessados = [];
+const itensProcessados = [];
 
-            let subtotalVenda = 0;
-
-
-         const produtoId = Number(item.produto_id);
-
-const quantidade = Number(item.quantidade);
+let subtotalVenda = 0;
 
 
-if (
-    !Number.isInteger(produtoId) ||
-    produtoId <= 0
-) {
+// ============================================================
+// PROCESSAR CADA ITEM RECEBIDO
+// ============================================================
 
-    throw new Error('Produto inválido.');
+for (const item of itens) {
+
+    const produtoId =
+        Number(item.produto_id);
+
+    const quantidade =
+        Number(item.quantidade);
+
+
+    // =========================
+    // VALIDAR PRODUTO
+    // =========================
+
+    if (
+        !Number.isInteger(produtoId) ||
+        produtoId <= 0
+    ) {
+
+        throw new Error(
+            'Produto inválido.'
+        );
+
+    }
+
+
+    // =========================
+    // VALIDAR QUANTIDADE
+    // =========================
+
+    if (
+        !Number.isFinite(quantidade) ||
+        quantidade <= 0
+    ) {
+
+        throw new Error(
+            `Quantidade inválida para o produto ${produtoId}.`
+        );
+
+    }
+
+
+    // =========================
+    // BUSCAR PRODUTO
+    // =========================
+
+    const resultadoProduto =
+        await client.query(
+            `
+            SELECT
+                id,
+                nome,
+                preco_venda,
+                estoque
+
+            FROM produtos
+
+            WHERE id = $1
+
+            LIMIT 1
+            `,
+            [
+                produtoId
+            ]
+        );
+
+
+    if (
+        resultadoProduto.rows.length === 0
+    ) {
+
+        throw new Error(
+            `Produto ${produtoId} não encontrado.`
+        );
+
+    }
+
+
+    const produto =
+        resultadoProduto.rows[0];
+
+
+    // =========================
+    // PEGAR PREÇO DO BANCO
+    // =========================
+
+    const precoUnitario =
+        Number(
+            produto.preco_venda
+        );
+
+
+    if (
+        !Number.isFinite(precoUnitario) ||
+        precoUnitario < 0
+    ) {
+
+        throw new Error(
+            `Preço inválido para o produto ${produtoId}.`
+        );
+
+    }
+
+
+    // =========================
+    // CALCULAR SUBTOTAL DO ITEM
+    // =========================
+
+    const subtotalItem =
+        precoUnitario *
+        quantidade;
+
+
+    subtotalVenda +=
+        subtotalItem;
+
+
+    // =========================
+    // GUARDAR ITEM PROCESSADO
+    // =========================
+
+    itensProcessados.push({
+
+        produto_id:
+            produtoId,
+
+        produto_nome:
+            produto.nome,
+
+        quantidade:
+            quantidade,
+
+        preco_unitario:
+            precoUnitario,
+
+        subtotal:
+            subtotalItem
+
+    });
 
 }
 
 
-if (
-    !Number.isFinite(quantidade) ||
-    quantidade <= 0
-) {
 
-    throw new Error(
-        `Quantidade inválida para o produto ${produtoId}.`
+
+// ============================================================
+// CALCULAR DESCONTO E TOTAL
+// ============================================================
+
+const descontoPercentual =
+    Math.min(
+        100,
+        Math.max(
+            0,
+            descontoNumero
+        )
     );
 
-}
-
-
-// Buscar o preço diretamente do banco
-const resultadoProduto = await client.query(
-    `
-    SELECT preco_venda
-    FROM produtos
-    WHERE id = $1
-    LIMIT 1
-    `,
-    [produtoId]
-);
-
-
-if (resultadoProduto.rows.length === 0) {
-
-    throw new Error(
-        `Produto ${produtoId} não encontrado.`
-    );
-
-}
-
-
-
-           // ========================================================
-// CALCULAR TOTAL
-// DESCONTO É PERCENTUAL (%)
-// ========================================================
-
-const descontoPercentual = Math.min(
-    100,
-    Math.max(0, descontoFinal)
-);
 
 const valorDesconto =
-    novoSubtotal * (descontoPercentual / 100);
+    subtotalVenda *
+    (
+        descontoPercentual /
+        100
+    );
 
-const novoTotal = Math.max(
-    0,
-    novoSubtotal - valorDesconto
-);
-            // =========================
+
+const totalVenda =
+    Math.max(
+        0,
+        subtotalVenda -
+        valorDesconto
+    );
+
+
+
             // CRIAR VENDA
             // =========================
 
