@@ -994,9 +994,15 @@ if (editarBtn) {
     return soma + (item.quantidade * item.preco_unitario);
 }, 0);
 
-const desconto = Number(pedidoAberto.desconto || 0);
-const total = Math.max(0, (subtotal*100)/desconto);
+const desconto = Math.min(
+    100,
+    Math.max(0, Number(pedidoAberto.desconto || 0))
+);
 
+const total = Math.max(
+    0,
+    subtotal - (subtotal * desconto / 100)
+);
 const dadosAtualizados = {
     itens: itensValidos.map(item => ({
         produto_id: Number(item.produto_id || item.id),
