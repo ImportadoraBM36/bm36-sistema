@@ -730,7 +730,12 @@ function adicionarItemAoPedido(produto) {
         pedidoAberto.itens.push({
             produto_id: produtoId,
             produto_nome: produto.nome || produto.produto_nome,
-            preco_unitario: Number(produto.preco || produto.preco_unitario || 0),
+            preco_unitario: Number(
+    produto.preco_venda ||
+    produto.preco ||
+    produto.preco_unitario ||
+    0
+),
             quantidade: 1
         });
     }
