@@ -526,7 +526,7 @@ function renderPedidos() {
             <td>#${pedido.id}</td>
             <td class="name">${pedido.cliente_nome || '-'}</td>
             <td>${formatarData(pedido.criado_em)}</td>
-            <td class="val">${fmt(pedido.total)}</td>
+            <td class="val">${fmt(modalTotal)}</td>
             <td>
                 <span class="badge ${status}">
                     ${statusLabel(status)}
