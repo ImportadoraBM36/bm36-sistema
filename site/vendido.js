@@ -324,9 +324,11 @@ async function gerarPdfPedido(imprimir = false, janelaDeImpressao = null) {
     });
 
     const subtotal = Number(pedidoAberto.subtotal || 0);
-    const desconto = Number(pedidoAberto.desconto || 0);
-    const total = Number(pedidoAberto.total || subtotal - desconto);
-
+const desconto = Number(pedidoAberto.desconto || 0);
+const total = Number(
+    pedidoAberto.total ||
+    subtotal - (subtotal * desconto / 100)
+);
     if (y + 38 > 192) {
         pdf.addPage();
         adicionarCabecalho();
@@ -343,9 +345,15 @@ async function gerarPdfPedido(imprimir = false, janelaDeImpressao = null) {
         y += destaque ? 8 : 6;
     };
 
-    adicionarTotal('Subtotal', subtotal);
-    adicionarTotal('Desconto', desconto);
-    adicionarTotal('TOTAL', total, true);
+   adicionarTotal('Subtotal', subtotal);
+
+pdf.setFont('helvetica', 'normal');
+pdf.setFontSize(9);
+pdf.text('Desconto', 232, y, { align: 'right' });
+pdf.text(`${desconto}%`, 285, y, { align: 'right' });
+y += 6;
+
+adicionarTotal('TOTAL', total, true);
 
     pdf.setTextColor(95, 99, 117);
     pdf.setFont('helvetica', 'normal');
@@ -933,15 +941,18 @@ function recalcularResumoModal() {
     if (containerDesconto) {
         if (modoEdicao) {
             containerDesconto.innerHTML = `
-                <input
-                    type="number"
-                    id="inputDescontoEdicao"
-                    class="edit-desconto"
-                    min="0"
-                    max="100"
-                    step="0.01"
-                    value="${pedidoAberto.desconto || 0}"
-                >
+             <div class="desconto-input-container">
+    <input
+        type="number"
+        id="inputDescontoEdicao"
+        class="edit-desconto"
+        min="0"
+        max="100"
+        step="0.01"
+        value="${pedidoAberto.desconto || 0}"
+    >
+    <span class="desconto-simbolo">%</span>
+</div>
             `;
 
             const inputDesconto = document.getElementById('inputDescontoEdicao');
