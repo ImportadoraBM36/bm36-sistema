@@ -1200,7 +1200,7 @@ width: 78px;
     padding: 5px 8px;
     border: 2px solid var(--navy-border);
     border-radius: 6px;
-    text-align: right;
+    
     font-weight: 700;
     outline: none;
 }

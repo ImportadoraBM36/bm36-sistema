@@ -1851,7 +1851,42 @@ table {
 }
 
 
+/* Input do desconto na edição */
+.edit-desconto {
+    width: 100px;
+    padding: 5px 8px;
+    border: 2px solid var(--navy-border);
+    border-radius: 6px;
+    
+    font-weight: 700;
+    outline: none;
+}
+.edit-desconto:focus {
+    border-color: var(--pink);
+}
+/* Remove as setinhas do campo de desconto */
+.edit-desconto::-webkit-inner-spin-button,
+.edit-desconto::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
 
+
+
+.desconto-input-container {
+    display: flex;
+    align-items: center;
+}
+
+.desconto-input-container .edit-desconto {
+    width: 100%;
+}
+
+.desconto-simbolo {
+    margin-left: -30px;
+    font-weight: bold;
+    pointer-events: none;
+}
 
 /* =========================
    RESPONSIVO MODAL
@@ -1878,29 +1913,6 @@ table {
 
 
 
-/* Remove as setinhas do campo de desconto */
-.edit-desconto::-webkit-inner-spin-button,
-.edit-desconto::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-
-
-.desconto-input-container {
-    display: flex;
-    align-items: center;
-}
-
-.desconto-input-container .edit-desconto {
-    width: 100%;
-}
-
-.desconto-simbolo {
-    margin-left: -30px;
-    font-weight: bold;
-    pointer-events: none;
-}
 /* =========================
    RESPONSIVO
    ========================= */
