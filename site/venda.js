@@ -2353,14 +2353,12 @@ document
         subtotal
     );
 
-
 document
     .getElementById(
         'sumDesconto'
     )
     .textContent =
-    `${formatarPercentual(descontoGeral)}%`;
-
+    `${descontoGeral}%`;
 
 document
     .getElementById(
