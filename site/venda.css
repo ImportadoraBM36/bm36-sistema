@@ -1919,6 +1919,14 @@ table {
 }
 
 
+.formaPagamento{
+
+display: flex;
+gap: 10px;
+
+
+}
+
 
 .formaPagamentoSelect{
 
