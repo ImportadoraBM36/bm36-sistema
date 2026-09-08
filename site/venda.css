@@ -1931,9 +1931,10 @@ table {
   /* Cria o espaçamento horizontal entre o texto e o menu */
   gap: 15px; 
   
-  background-color: #24245c; 
+  background-color: #24245c00; 
   padding: 20px;
   font-family: sans-serif;
+  color: white;
 }
 
 
