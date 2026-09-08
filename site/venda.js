@@ -41,38 +41,23 @@ let cart =
 // ================================================================
 // FORMA DE PAGAMENTO
 // ================================================================
+// ... dentro da function prepararVenda() ...
 
-// Aguarda o clique no botão "Finalizar Venda"
-document.querySelector('.btn-finalizar').addEventListener('click', async () => {
-    
-    // Captura o valor selecionado (ex: "dinheiro", "cartao", etc.)
-    const formaPagamento = document.getElementById('formaPagamentoSelect').value;
-    
-    // Junta com os outros dados da venda (exemplo)
-    const dadosVenda = {
-        total: 150.00, // substitua pelo seu cálculo de total
-        forma_pagamento: formaPagamento
-    };
+// Captura a forma de pagamento selecionada na tela
+const formaPagamentoSelect = document.getElementById('formaPagamentoSelect');
+const formaPagamento = formaPagamentoSelect ? formaPagamentoSelect.value : 'Dinheiro';
 
-    try {
-        // Envia os dados para a sua API / Servidor backend
-        const response = await fetch('https://bm36-sistema-production.up.railway.app/api', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(dadosVenda)
-        });
+const dadosVenda = {
+    cliente_id: clienteSelecionado.id,
+    desconto: valorDesconto,
+    forma_pagamento: formaPagamento, // <-- Adicionado aqui para o banco receber corretamente
+    itens: cart.map(item => ({
+        produto_id: item.id,
+        quantidade: item.qty
+    }))
+};
 
-        if (response.ok) {
-            alert('Venda salva com sucesso!');
-        } else {
-            alert('Erro ao salvar a venda.');
-        }
-    } catch (error) {
-        console.error('Erro na requisição:', error);
-    }
-});
+// ... o restante da função fetch continua igual ...
 
 
 // ============================================================
