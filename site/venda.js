@@ -38,6 +38,46 @@ let listaProdutosCompacta =
 let cart =
     [];
 
+// ================================================================
+// FORMA DE PAGAMENTO
+// ================================================================
+
+// Aguarda o clique no botão "Finalizar Venda"
+document.querySelector('.btn-finalizar').addEventListener('click', async () => {
+    
+    // Captura o valor selecionado (ex: "dinheiro", "cartao", etc.)
+    const formaPagamento = document.getElementById('formaPagamentoSelect').value;
+    
+    // Junta com os outros dados da venda (exemplo)
+    const dadosVenda = {
+        total: 150.00, // substitua pelo seu cálculo de total
+        forma_pagamento: formaPagamento
+    };
+
+    try {
+        // Envia os dados para a sua API / Servidor backend
+        const response = await fetch('https://bm36-sistema-production.up.railway.app/api', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dadosVenda)
+        });
+
+        if (response.ok) {
+            alert('Venda salva com sucesso!');
+        } else {
+            alert('Erro ao salvar a venda.');
+        }
+    } catch (error) {
+        console.error('Erro na requisição:', error);
+    }
+});
+
+
+
+
+
 
 // ============================================================
 // ELEMENTOS
