@@ -2122,46 +2122,45 @@ const totalVenda =
 
             // CRIAR VENDA
             // =========================
+const vendaResultado =
+    await client.query(
+        `
+        INSERT INTO vendas (
+            cliente_id,
+            usuario_id,
+            evento_id,
+            subtotal,
+            desconto,
+            total,
+            forma_pagamento,
+            status
+        )
+        VALUES (
+            $1,
+            $2,
+            $3,
+            $4,
+            $5,
+            $6,
+            $7,
+            $8
+        )
+        RETURNING *
+        `,
+        [
+            cliente.id,
+            usuarioId,
+            eventoIdVenda,
+            subtotalVenda,
+            descontoNumero,
+            totalVenda,
+            forma_pagamento || 'dinheiro',
+            'FINALIZADA'
+        ]
+    );
 
-            const vendaResultado =
-                await client.query(
-                    `
-                  INSERT INTO vendas (
-    cliente_id,
-    usuario_id,
-    evento_id,
-    subtotal,
-    desconto,
-    total,
-    status
-)
-
-VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6,
-    $7
-)
-
-RETURNING *
-                    `,
-               [
-    cliente.id,
-    usuarioId,
-    eventoIdVenda, 
-    subtotalVenda,
-    descontoNumero,
-    totalVenda,
-    'FINALIZADA'
-]
-                );
-
-
-            const venda =
-                vendaResultado.rows[0];
+const venda =
+    vendaResultado.rows[0];
 
 
             // =========================
