@@ -2695,7 +2695,7 @@ async function prepararVenda() {
         desconto:
             valorDesconto,
 
-        forma_pagamento:
+        formaPagamento:
             formaPagamento,
 
         itens:
