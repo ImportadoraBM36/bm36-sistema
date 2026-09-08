@@ -38,27 +38,6 @@ let listaProdutosCompacta =
 let cart =
     [];
 
-// ================================================================
-// FORMA DE PAGAMENTO
-// ================================================================
-// ... dentro da function prepararVenda() ...
-
-// Captura a forma de pagamento selecionada na tela
-const formaPagamentoSelect = document.getElementById('formaPagamentoSelect');
-const formaPagamento = formaPagamentoSelect ? formaPagamentoSelect.value : 'Dinheiro';
-
-const dadosVenda = {
-    cliente_id: clienteSelecionado.id,
-    desconto: valorDesconto,
-    forma_pagamento: formaPagamento, // <-- Adicionado aqui para o banco receber corretamente
-    itens: cart.map(item => ({
-        produto_id: item.id,
-        quantidade: item.qty
-    }))
-};
-
-// ... o restante da função fetch continua igual ...
-
 
 // ============================================================
 // ELEMENTOS
@@ -2624,6 +2603,14 @@ finalizarBtn.addEventListener(
 
 async function prepararVenda() {
 
+    const formaPagamentoSelect =
+        document.getElementById('formaPagamentoSelect');
+
+    const formaPagamento =
+        formaPagamentoSelect
+            ? formaPagamentoSelect.value
+            : 'Dinheiro';
+
     const subtotal =
         cart.reduce(
             (
@@ -2638,12 +2625,10 @@ async function prepararVenda() {
             0
         );
 
-
     const inputDesconto =
         document.getElementById(
             'inputDesconto'
         );
-
 
     const descontoPercentual =
         inputDesconto
@@ -2657,7 +2642,6 @@ async function prepararVenda() {
                 )
             )
             : 0;
-
 
     const descontoItens =
         cart.reduce(
@@ -2683,14 +2667,12 @@ async function prepararVenda() {
             0
         );
 
-
     const valorDescontoGeral =
         subtotal *
         (
             descontoPercentual /
             100
         );
-
 
     const valorDesconto =
         Math.min(
@@ -2699,7 +2681,6 @@ async function prepararVenda() {
             valorDescontoGeral
         );
 
-
     const total =
         Math.max(
             0,
@@ -2707,29 +2688,28 @@ async function prepararVenda() {
             valorDesconto
         );
 
+    const dadosVenda = {
+        cliente_id:
+            clienteSelecionado.id,
 
-   const dadosVenda = {
+        desconto:
+            valorDesconto,
 
-    cliente_id:
-        clienteSelecionado.id,
+        forma_pagamento:
+            formaPagamento,
 
-    desconto:
-        valorDesconto,
+        itens:
+            cart.map(
+                item => ({
+                    produto_id:
+                        item.id,
 
-    itens:
-        cart.map(
-            item => ({
+                    quantidade:
+                        item.qty
+                })
+            )
+    };
 
-                produto_id:
-                    item.id,
-
-                quantidade:
-                    item.qty
-
-            })
-        )
-
-};
 
     try {
 
