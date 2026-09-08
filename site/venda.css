@@ -1914,7 +1914,7 @@ table {
         column;
 
     gap: 5px;
-
+color: white;
 
 }
 
@@ -1931,7 +1931,7 @@ table {
   /* Cria o espaçamento horizontal entre o texto e o menu */
   gap: 15px; 
   
-  background-color: #24245c00; 
+  background-color: transparent; 
   padding: 20px;
   font-family: sans-serif;
   color: white;
