@@ -1966,8 +1966,8 @@ color: white;
 
 }
 /* Estilização da caixa principal do select */
-.resumo-venda select, 
-.resumo-venda select option {
+select, 
+select option {
   /* Define a cor de fundo escura (ajuste a cor se preferir outro tom) */
   background-color: #1a1a40; 
   
@@ -1976,7 +1976,7 @@ color: white;
 }
 
 /* Ajustes visuais específicos para o select principal */
-.resumo-venda select {
+select {
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 6px;
   padding: 6px 10px;
