@@ -1673,11 +1673,12 @@ app.post(
 
         try {
 
-            const {
-                cliente_id,
-                desconto = 0,
-                itens
-            } = req.body;
+          const {
+    cliente_id,
+    desconto = 0,
+    formaPagamento,
+    itens
+} = req.body;
 
 
             // =========================

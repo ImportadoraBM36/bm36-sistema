@@ -2695,8 +2695,8 @@ async function prepararVenda() {
         desconto:
             valorDesconto,
 
-        formaPagamento:
-            formaPagamento,
+      forma_pagamento:
+    formaPagamento,
 
         itens:
             cart.map(
