@@ -1260,7 +1260,7 @@ function configurarAtalho(
 
 configurarAtalho(
     'btnNovoPedido',
-    './pedidos.html'
+    './vendas.html'
 );
 
 
