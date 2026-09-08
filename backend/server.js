@@ -2132,7 +2132,7 @@ const vendaResultado =
             subtotal,
             desconto,
             total,
-            forma_pagamento,
+            formaPagamento ,
             status
         )
         VALUES (
@@ -2154,7 +2154,7 @@ const vendaResultado =
             subtotalVenda,
             descontoNumero,
             totalVenda,
-            forma_pagamento || 'dinheiro',
+            formaPagamento  || 'dinheiro',
             'FINALIZADA'
         ]
     );
