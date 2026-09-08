@@ -1919,49 +1919,21 @@ table {
 }
 
 
-/* O contêiner usa flex em coluna para empilhar o texto e o menu */
 .formaPagamento  {
   display: flex;
-  flex-direction: column;
-  gap: 8px; /* Espaço entre o texto e o campo de seleção */
-  background-color: #24245c; /* Cor de fundo roxa aproximada da imagem */
+  
+  /* Faz os elementos ficarem lado a lado na mesma linha */
+  flex-direction: row; 
+  
+  /* Centraliza verticalmente o texto com o menu de opções */
+  align-items: center; 
+  
+  /* Cria o espaçamento horizontal entre o texto e o menu */
+  gap: 15px; 
+  
+  background-color: #24245c; 
   padding: 20px;
   font-family: sans-serif;
-}
-
-/* Estilização do texto (Label) */
-.formaPagamento  label {
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-/* Estilização do menu de opções (Select) */
-.formaPagamento  select {
-  background-color: transparent;
-  color: rgba(255, 255, 255, 0.7); /* Texto mais suave como na imagem */
-  border: 1px solid rgba(255, 255, 255, 0.4); /* Borda fina arredondada */
-  border-radius: 8px;
-  padding: 10px 15px;
-  font-size: 14px;
-  cursor: pointer;
-  outline: none;
-  width: 150px; /* Define uma largura padrão para o menu */
-  
-  /* Remove a seta padrão do navegador para customizações futuras se desejar */
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  
-  /* Adiciona a setinha preta para baixo à direita */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-}
-
-/* Efeito visual quando o usuário clica no campo */
-.formaPagamento  select:focus {
-  border-color: white;
 }
 
 
