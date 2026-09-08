@@ -1888,6 +1888,36 @@ table {
     pointer-events: none;
 }
 
+
+
+.forma-pagamento-select{
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .07
+        );
+
+    border-radius: 10px;
+
+    padding:
+        12px;
+
+    margin-bottom:
+        14px;
+
+    display: flex;
+
+    flex-direction:
+        column;
+
+    gap: 5px;
+
+
+}
+
 /* =========================
    RESPONSIVO MODAL
    ========================= */
