@@ -1965,6 +1965,24 @@ color: white;
   color: white;
 
 }
+/* Estilização da caixa principal do select */
+.resumo-venda select, 
+.resumo-venda select option {
+  /* Define a cor de fundo escura (ajuste a cor se preferir outro tom) */
+  background-color: #1a1a40; 
+  
+  /* Deixa o texto branco para dar contraste */
+  color: #ffffff; 
+}
+
+/* Ajustes visuais específicos para o select principal */
+.resumo-venda select {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  outline: none;
+}
 
 /* =========================
    RESPONSIVO MODAL
