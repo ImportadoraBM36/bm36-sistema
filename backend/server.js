@@ -1676,7 +1676,7 @@ app.post(
           const {
     cliente_id,
     desconto = 0,
-    formaPagamento,
+    formaPagamento   ,
     itens
 } = req.body;
 
@@ -2133,7 +2133,7 @@ const vendaResultado =
             subtotal,
             desconto,
             total,
-            formaPagamento ,
+           "formaPagamento",
             status
         )
         VALUES (
@@ -2155,8 +2155,8 @@ const vendaResultado =
             subtotalVenda,
             descontoNumero,
             totalVenda,
-            formaPagamento  || 'dinheiro',
-            'FINALIZADA'
+          formaPagamento || 'dinheiro',
+    'FINALIZADA'
         ]
     );
 
