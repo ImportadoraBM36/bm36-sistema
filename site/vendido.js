@@ -813,6 +813,30 @@ function renderModalPedido() {
     const modalData = document.getElementById('modalData');
     if (modalData) modalData.textContent = formatarData(pedidoAberto.criado_em);
 
+const modalFormaPagamento =
+    document.getElementById('modalFormaPagamento');
+
+if (modalFormaPagamento) {
+
+    const formasPagamento = {
+        dinheiro: 'Dinheiro',
+        pix: 'PIX',
+        boleto: 'Boleto',
+        debito: 'Cartão de débito',
+        credito: 'Cartão de crédito'
+    };
+
+    const forma =
+        String(
+            pedidoAberto.formaPagamento || ''
+        ).toLowerCase();
+
+    modalFormaPagamento.textContent =
+        formasPagamento[forma] ||
+        'Não informado';
+}
+
+
     const modalStatus = document.getElementById('modalStatus');
     if (modalStatus) modalStatus.textContent = statusLabel(pedidoAberto.status);
 
