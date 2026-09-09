@@ -2258,39 +2258,42 @@ const venda =
                 mensagem:
                     'Venda finalizada com sucesso!',
 
-                venda: {
+              venda: {
 
-                    id:
-                        venda.id,
+    id:
+        venda.id,
 
-                    cliente_id:
-                        venda.cliente_id,
+    cliente_id:
+        venda.cliente_id,
 
-                    cliente_nome:
-                        cliente.nome,
+    cliente_nome:
+        cliente.nome,
 
-                    usuario_id:
-                        venda.usuario_id,
+    usuario_id:
+        venda.usuario_id,
 
-                    subtotal:
-                        Number(venda.subtotal),
+    subtotal:
+        Number(venda.subtotal),
 
-                    desconto:
-                        Number(venda.desconto),
+    desconto:
+        Number(venda.desconto),
 
-                    total:
-                        Number(venda.total),
+    total:
+        Number(venda.total),
 
-                    status:
-                        venda.status,
+    formaPagamento:
+        venda.formaPagamento,
 
-                    criado_em:
-                        venda.criado_em,
+    status:
+        venda.status,
 
-                    itens:
-                        itensProcessados
+    criado_em:
+        venda.criado_em,
 
-                }
+    itens:
+        itensProcessados
+
+}
 
             });
 
@@ -2375,6 +2378,7 @@ app.get(
                         v.desconto,
                         v.total,
 
+v."formaPagamento" AS "formaPagamento",
                         v.status,
                         v.criado_em,
 
@@ -2404,6 +2408,8 @@ app.get(
                     u.nome,
                     v.subtotal,
                     v.desconto,
+
+v."formaPagamento" AS "formaPagamento",
                     v.total,
                     v.status,
                     v.criado_em
@@ -2499,6 +2505,7 @@ app.get(
             v.desconto,
             v.total,
 
+v."formaPagamento" AS "formaPagamento",
             v.status,
             v.criado_em
 
@@ -6821,6 +6828,8 @@ app.get(
                         v.subtotal,
                         v.desconto,
                         v.total,
+
+v."formaPagamento" AS "formaPagamento",
                         v.status,
                         v.criado_em
 
