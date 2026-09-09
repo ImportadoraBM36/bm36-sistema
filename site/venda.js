@@ -2687,7 +2687,57 @@ async function prepararVenda() {
             subtotal -
             valorDesconto
         );
+// ============================================================
+// VALIDAR FORMA DE PAGAMENTO
+// ============================================================
 
+const formasPagamento = {
+    dinheiro: 'Dinheiro',
+    pix: 'PIX',
+    boleto: 'Boleto',
+    debito: 'Cartão de débito',
+    credito: 'Cartão de crédito'
+};
+
+
+if (!formaPagamento) {
+
+    abrirModalAviso({
+
+        titulo:
+            'Forma de pagamento',
+
+        mensagem:
+            'Selecione uma forma de pagamento antes de finalizar a venda.',
+
+        textoConfirmar:
+            'OK',
+
+        mostrarCancelar:
+            false
+
+    });
+
+    return;
+}
+
+
+// ============================================================
+// CONFIRMAR FORMA DE PAGAMENTO
+// ============================================================
+
+const confirmouPagamento =
+    confirm(
+        `A forma de pagamento selecionada foi: ${formasPagamento[formaPagamento]}.\n\n` +
+        `Deseja confirmar essa forma de pagamento?`
+    );
+
+
+if (!confirmouPagamento) {
+
+    return;
+
+}
    const dadosVenda = {
 
     cliente_id:
