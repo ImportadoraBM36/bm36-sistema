@@ -2688,27 +2688,28 @@ async function prepararVenda() {
             valorDesconto
         );
 
-    const dadosVenda = {
-        cliente_id:
-            clienteSelecionado.id,
+   const dadosVenda = {
 
-        desconto:
-            valorDesconto,
+    cliente_id:
+        clienteSelecionado.id,
 
-      forma_pagamento:
-    formaPagamento,
+    desconto:
+        valorDesconto,
 
-        itens:
-            cart.map(
-                item => ({
-                    produto_id:
-                        item.id,
+    formaPagamento:
+        formaPagamento,
 
-                    quantidade:
-                        item.qty
-                })
-            )
-    };
+    itens:
+        cart.map(
+            item => ({
+                produto_id:
+                    item.id,
+
+                quantidade:
+                    item.qty
+            })
+        )
+};
 
 
     try {
