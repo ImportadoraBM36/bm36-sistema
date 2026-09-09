@@ -2378,7 +2378,7 @@ app.get(
                         v.desconto,
                         v.total,
 
-v."formaPagamento" AS "formaPagamento",
+ v."formaPagamento" AS "formaPagamento",
                         v.status,
                         v.criado_em,
 
@@ -2409,7 +2409,7 @@ v."formaPagamento" AS "formaPagamento",
                     v.subtotal,
                     v.desconto,
 
-v."formaPagamento" AS "formaPagamento",
+v."formaPagamento",
                     v.total,
                     v.status,
                     v.criado_em
@@ -2505,7 +2505,7 @@ app.get(
             v.desconto,
             v.total,
 
-v."formaPagamento" AS "formaPagamento",
+ v."formaPagamento" AS "formaPagamento",
             v.status,
             v.criado_em
 
@@ -6829,7 +6829,7 @@ app.get(
                         v.desconto,
                         v.total,
 
-v."formaPagamento" AS "formaPagamento",
+ v."formaPagamento" AS "formaPagamento",
                         v.status,
                         v.criado_em
 
