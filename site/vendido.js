@@ -772,6 +772,8 @@ async function abrirPedido(id) {
         }
 
         pedidoAberto = resultado.venda || resultado;
+        console.log('DADOS DO PEDIDO:', pedidoAberto);
+console.log('FORMA DE PAGAMENTO:', pedidoAberto.formaPagamento);
         modoEdicao = false;
 
         renderModalPedido();
