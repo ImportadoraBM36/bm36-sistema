@@ -281,7 +281,7 @@ pdf.text(
 
     pdf.text(
         'SUB TOTAL',
-        27,
+        25,
         yTotais
     );
 
