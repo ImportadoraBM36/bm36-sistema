@@ -242,8 +242,8 @@ pdf.text(
 // ==========================================================
 
 pdf.setFont('helvetica', 'bold');
-pdf.setFontSize(12);
-pdf.text('Evento: ' + (pedido.evento || 'Não informado'), right, 50)
+pdf.setFontSize(9);
+pdf.text('Evento: ' + (pedido.evento || 'Não informado'), 130, 50)
 
 
 
