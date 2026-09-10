@@ -26,7 +26,7 @@ async function gerarPdfPedido(
     const { jsPDF } = window.jspdf;
 
     const pdf = new jsPDF({
-        orientation: 'landscape',
+        orientation: 'portrait',
         unit: 'mm',
         format: 'a4'
     });
@@ -123,29 +123,29 @@ function adicionarCabecalho() {
 
  pdf.setFont('normal');
    pdf.setFontSize(7);
-pdf.text('COMPL: SALA 1405/1406, BAIRRO: CENTRO', 35, 24);
+pdf.text('COMPL: SALA 1405/1406, BAIRRO: CENTRO', 35, 23);
 
 
 pdf.setFont('normal');
    pdf.setFontSize(7);
-pdf.text('SÃO PAULO - SP - CEP: 01026-001', 35, 28);
+pdf.text('SÃO PAULO - SP - CEP: 01026-001', 35, 27);
 
 
     pdf.setFont('normal');
    pdf.setFontSize(7);
-pdf.text('FONE: (11) 3315-8669, CELULAR: (11) 94108-5905', 35, 32);
+pdf.text('FONE: (11) 3315-8669, CELULAR: (11) 94108-5905', 35, 31);
     
     pdf.setFont('normal');
    pdf.setFontSize(7);
-pdf.text('EMAIL: contato@bm36importadora.com.br', 35, 36);
+pdf.text('EMAIL: contato@bm36importadora.com.br', 35, 35);
     
        pdf.setFont('normal');
    pdf.setFontSize(7);
-pdf.text('SITE: www.bm36importadora.com.br', 35, 40);
+pdf.text('SITE: www.bm36importadora.com.br', 35, 39);
 
  pdf.setFont('normal');
    pdf.setFontSize(7);
-pdf.text('REDES SOCIAIS: facebook.com/bm36IMPORTADORA | @bm36_importadora', 35, 44);
+pdf.text('REDES SOCIAIS: facebook.com/bm36IMPORTADORA | @bm36_importadora', 35, 43);
 
 
     // ======================================================================
