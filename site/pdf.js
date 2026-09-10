@@ -183,7 +183,7 @@ pdf.text('REDES SOCIAIS: facebook.com/bm36IMPORTADORA | @bm36_importadora', 35, 
   
 pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(20);
-    pdf.text('codigo do pedido ' + pedido.id, right, 10);
+    pdf.text('' + pedido.id, right, 10);
 
     
 pdf.setFont('helvetica', 'normal');
@@ -243,7 +243,7 @@ pdf.text('contato: ' + pedido.cliente_telefone, 5, 62);
     // CABEÇALHO DA TABELA
     // ============================================================
 
-    function adicionarCabecalhoTabela(y) {
+    function adicionarCabecalhoTabela(y = 70) {
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(7);
 
