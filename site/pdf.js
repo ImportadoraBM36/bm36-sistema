@@ -94,15 +94,11 @@ const logo = './imagem/logo.png';
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(16);
 
-       pdf.addImage(logo, 'PNG', margem, 5, 30, 10);
+       pdf.addImage(logo, 'PNG', margem, 5, 20, 20);
 
         pdf.setFontSize(9);
 
-        pdf.text(
-            'COMPROVANTE DE PEDIDO',
-            margem,
-            19
-        );
+      
 
         pdf.setFontSize(10);
 
