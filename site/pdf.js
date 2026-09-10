@@ -44,7 +44,7 @@ const right = 180;
 
 
     adicionarCabecalho();
-    let y = 53;
+    let y = 70;
 
     const cliente =
         pedido.cliente_nome ||
