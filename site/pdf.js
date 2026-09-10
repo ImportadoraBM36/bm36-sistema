@@ -60,6 +60,8 @@ const right = 180;
         '';
 
 const vendedor = pedido.usuario_nome;
+const formapagamento = pedido.forma_pagamento;
+const evento = pedido.evento_nome;
     // ============================================================
     // FORMATADORES DO PDF
     // ============================================================
@@ -243,7 +245,7 @@ pdf.text(
 
 pdf.setFont('helvetica', 'bold');
 pdf.setFontSize(9);
-pdf.text('Evento: ' + (pedido.evento || 'Não informado'), 130, 50)
+pdf.text('Evento: ' + (evento || 'Não informado'), 130, 50)
 
 
 pdf.setFont('helvetica', 'bold');
@@ -252,7 +254,7 @@ pdf.text('Vendedor: ' + (vendedor || 'Não informado'), 130, 54)
 
 pdf.setFont('helvetica', 'bold');
 pdf.setFontSize(9);
-pdf.text('forma de pagamento: ' + (pedido.formapagamento || 'Não informado') , 130, 58)
+pdf.text('forma de pagamento: ' + (formapagamento || 'Não informado') , 130, 58)
 
 
 
