@@ -162,13 +162,13 @@ pdf.text('REDES SOCIAIS: facebook.com/bm36IMPORTADORA | @bm36_importadora', 35, 
   
 pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(20);
-    pdf.text('55.1', 250, 10);
+    pdf.text('55.1', 70, 10);
 
     
 pdf.setFont('helvetica');
 pdf.setFontSize(7); 
 pdf.text(
-    `Emitido em ${formatarDataPdf(new Date())}`, 250, 30,
+    `Emitido em ${formatarDataPdf(new Date())}`, 70, 30,
 )
 
    // ======================================================================
@@ -187,10 +187,8 @@ pdf.text(
     pdf.setTextColor(28, 27, 46);
 }
 
-
-
    // ======================================================================
-    // fim da parte do codigo de barras e data de emição
+    // informações do cliente e do pedido
     // ======================================================================
 pdf.setFont('helvetica', 'bold');
 pdf.setFontSize(7);
@@ -199,12 +197,8 @@ pdf.setFont('helvetica', 'bold');
 pdf.setFontSize(7);
 
 pdf.text('Nome do Cliente: ' + clientes, 5, 60);
-
-
-
-
        // ======================================================================
-    // fim da parte do codigo de barras e data de emição
+    // fim da parte de informações do cliente e do pedido
     // ======================================================================
 
 
@@ -332,22 +326,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 60);
     // DADOS DO CLIENTE
     // ============================================================
 
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(9);
 
-    pdf.text(
-        'CLIENTE',
-        margem,
-        y
-    );
-
-    pdf.text(
-        'DATA DO PEDIDO',
-        165,
-        y
-    );
-
-    y += 5;
 
     pdf.setFont('helvetica');
     pdf.setFontSize(10);
