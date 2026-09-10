@@ -248,7 +248,7 @@ pdf.text('Evento: ' + (pedido.evento || 'Não informado'), 130, 50)
 
 pdf.setFont('helvetica', 'bold');
 pdf.setFontSize(9);
-pdf.text('Vendedor: ' + (pedido.vendedor || 'Não informado'), 130, 54)
+pdf.text('Vendedor: ' + (vendedor || 'Não informado'), 130, 54)
 
 pdf.setFont('helvetica', 'bold');
 pdf.setFontSize(9);
