@@ -120,33 +120,33 @@ function adicionarCabecalho() {
         35,
         15
     );
-   pdf.setFont('normal');
+   pdf.setFont('helvetica');
    pdf.setFontSize(7);
    pdf.text('AV SENADOR QUEIROZ, N°605', 35, 20);
 
- pdf.setFont('normal');
+ pdf.setFont('helvetica');
    pdf.setFontSize(7);
 pdf.text('COMPL: SALA 1405/1406, BAIRRO: CENTRO', 35, 23);
 
 
-pdf.setFont('normal');
+pdf.setFont('helvetica');
    pdf.setFontSize(7);
 pdf.text('SÃO PAULO - SP - CEP: 01026-001', 35, 27);
 
 
-    pdf.setFont('normal');
+    pdf.setFont('helvetica');
    pdf.setFontSize(7);
 pdf.text('FONE: (11) 3315-8669, CELULAR: (11) 94108-5905', 35, 31);
     
-    pdf.setFont('normal');
+    pdf.setFont('helvetica');
    pdf.setFontSize(7);
 pdf.text('EMAIL: contato@bm36importadora.com.br', 35, 35);
     
-       pdf.setFont('normal');
+       pdf.setFont('helvetica');
    pdf.setFontSize(7);
 pdf.text('SITE: www.bm36importadora.com.br', 35, 39);
 
- pdf.setFont('normal');
+ pdf.setFont('helvetica');
    pdf.setFontSize(7);
 pdf.text('REDES SOCIAIS: facebook.com/bm36IMPORTADORA | @bm36_importadora', 35, 43);
 
@@ -193,10 +193,11 @@ pdf.text(
     // fim da parte do codigo de barras e data de emição
     // ======================================================================
 pdf.setFont('helvetica', 'bold');
-pdf.setFontSize(20);
+pdf.setFontSize(7);
 pdf.text('CÓDIGO DO PEDIDO:' + pedido.id, 5, 50);
 pdf.setFont('helvetica', 'bold');
-pdf.setFontSize(20);
+pdf.setFontSize(7);
+
 pdf.text('Nome do Cliente: ' + clientes, 5, 60);
 
 
@@ -348,7 +349,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 60);
 
     y += 5;
 
-    pdf.setFont('helvetica', 'normal');
+    pdf.setFont('helvetica');
     pdf.setFontSize(10);
 
     pdf.text(
@@ -393,7 +394,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 60);
     y += 11;
 
     pdf.setTextColor(28, 27, 46);
-    pdf.setFont('helvetica', 'normal');
+    pdf.setFont('helvetica');
 
     pdf.text(
         `Vendedor: ${textoSeguro(
@@ -464,7 +465,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 60);
             y + alturaLinha
         );
 
-        pdf.setFont('helvetica', 'normal');
+        pdf.setFont('helvetica');
         pdf.setFontSize(7.5);
 
         pdf.text(
@@ -603,7 +604,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 60);
             'helvetica',
             destaque
                 ? 'bold'
-                : 'normal'
+                : 'helvetica'
         );
 
         pdf.setFontSize(
@@ -642,7 +643,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 60);
 
     pdf.setFont(
         'helvetica',
-        'normal'
+        'helvetica'
     );
 
     pdf.setFontSize(9);
@@ -685,7 +686,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 60);
 
     pdf.setFont(
         'helvetica',
-        'normal'
+        'helvetica'
     );
 
     pdf.setFontSize(8);
