@@ -170,7 +170,7 @@ pdf.setFont('helvetica', 'bold');
 pdf.setFont('helvetica', 'normal');
 pdf.setFontSize(7); 
 pdf.text(
-    `Emitido em ${formatarDataPdf(new Date())}`, right, 30,
+    `Emitido em ${formatarDataPdf(new Date())}`, 170, 30,
 )
 
    // ======================================================================
@@ -199,6 +199,14 @@ pdf.setFont('helvetica', 'bold');
 pdf.setFontSize(7);
 
 pdf.text('Nome do Cliente: ' + clientes, 5, 52);
+
+    
+    pdf.text(
+        `Código do cliente: ${textoSeguro(
+            codigoCliente || 'Não informado'
+        )}`,
+    5,53
+    );
        // ======================================================================
     // fim da parte de informações do cliente e do pedido
     // ======================================================================
@@ -356,14 +364,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
         y
     );
 
-    
-    pdf.text(
-        `Código do cliente: ${textoSeguro(
-            codigoCliente || 'Não informado'
-        )}`,
-        margem,
-        y
-    );
+
 
     y += 11;
 
