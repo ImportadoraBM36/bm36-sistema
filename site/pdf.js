@@ -168,13 +168,6 @@ pdf.text(
     `Emitido em ${formatarDataPdf(new Date())}`, 250, 30,
 )
 
-
-
-
-
-
-
-
    // ======================================================================
     // fim da parte do codigo de barras e data de emição
     // ======================================================================
@@ -190,6 +183,30 @@ pdf.text(
 
     pdf.setTextColor(28, 27, 46);
 }
+
+
+
+   // ======================================================================
+    // fim da parte do codigo de barras e data de emição
+    // ======================================================================
+pdf.setFont('helvetica', 'bold');
+pdf.setFontSize(20);
+pdf.text('CÓDIGO DO PEDIDO:' + pedido.id, 5, 50);
+pdf.setFont('helvetica', 'bold');
+pdf.setFontSize(20);
+pdf.text('Nome do Cliente: ' + cliente, 5, 60);
+
+
+
+
+
+       // ======================================================================
+    // fim da parte do codigo de barras e data de emição
+    // ======================================================================
+
+
+
+
 
     // ============================================================
     // CABEÇALHO DA TABELA
