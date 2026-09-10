@@ -388,7 +388,7 @@ pdf.text('Evento: ' + (pedido.evento || 'Não informado'), 130, 50)
     // CABEÇALHO DOS PRODUTOS
     // ============================================================
 
-    let yTabela = 88;
+    let yTabela = 95;
 
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(7);
