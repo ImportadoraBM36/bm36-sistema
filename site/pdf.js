@@ -264,7 +264,7 @@ pdf.text('Evento: ' + (pedido.evento || 'Não informado'), 130, 50)
     // TOTAIS DO PEDIDO
     // ============================================================
 
-    let yTotais = 70;
+    let yTotais = 82;
 
     const subtotal =
         Number(
