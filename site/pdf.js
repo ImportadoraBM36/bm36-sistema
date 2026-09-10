@@ -39,6 +39,8 @@ const logo = './imagem/logo.png';
 
 
 const clientes = pedido.cliente_nome || 'Não informado';
+
+const right = 180;
     // ============================================================
     // FORMATADORES DO PDF
     // ============================================================
