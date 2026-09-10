@@ -228,16 +228,16 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
     pdf.text(
         textoSeguro(cliente),
         margem,
-        y
+        54
     );
 
     pdf.text(
         formatarDataPdf(pedido.criado_em),
         165,
-        y
+        56
     );
 
-    y += 5;
+    
 
     pdf.setFontSize(8.5);
     pdf.setTextColor(95, 99, 117);
@@ -245,7 +245,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
     pdf.text(
         documento || 'Documento não informado',
         margem,
-        y
+        60
     );
 
     
@@ -254,10 +254,10 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
             codigoCliente || 'Não informado'
         )}`,
         margem,
-        y
+        58
     );
 
-    y += 11;
+  
 
     pdf.setTextColor(28, 27, 46);
     pdf.setFont('helvetica', 'normal');
