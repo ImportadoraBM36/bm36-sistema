@@ -39,8 +39,9 @@ const logo = './imagem/logo.png';
 
 
 const clientes = pedido.cliente_nome || 'Não informado';
-
+const nomeArquivo = `pedido-${pedido.id}.pdf`;
 const right = 180;
+
     // ============================================================
     // FORMATADORES DO PDF
     // ============================================================
@@ -122,33 +123,33 @@ function adicionarCabecalho() {
         35,
         15
     );
-   pdf.setFont('helvetica');
+   pdf.setFont('helvetica', 'normal');
    pdf.setFontSize(7);
    pdf.text('AV SENADOR QUEIROZ, N°605', 35, 20);
 
- pdf.setFont('helvetica');
+ pdf.setFont('helvetica', 'normal');
    pdf.setFontSize(7);
 pdf.text('COMPL: SALA 1405/1406, BAIRRO: CENTRO', 35, 23);
 
 
-pdf.setFont('helvetica');
+pdf.setFont('helvetica', 'normal');
    pdf.setFontSize(7);
 pdf.text('SÃO PAULO - SP - CEP: 01026-001', 35, 27);
 
 
-    pdf.setFont('helvetica');
+    pdf.setFont('helvetica', 'normal');
    pdf.setFontSize(7);
 pdf.text('FONE: (11) 3315-8669, CELULAR: (11) 94108-5905', 35, 31);
     
-    pdf.setFont('helvetica');
+    pdf.setFont('helvetica', 'normal');
    pdf.setFontSize(7);
 pdf.text('EMAIL: contato@bm36importadora.com.br', 35, 35);
     
-       pdf.setFont('helvetica');
+       pdf.setFont('helvetica', 'normal');
    pdf.setFontSize(7);
 pdf.text('SITE: www.bm36importadora.com.br', 35, 39);
 
- pdf.setFont('helvetica');
+ pdf.setFont('helvetica', 'normal');
    pdf.setFontSize(7);
 pdf.text('REDES SOCIAIS: facebook.com/bm36IMPORTADORA | @bm36_importadora', 35, 43);
 
@@ -167,7 +168,7 @@ pdf.setFont('helvetica', 'bold');
     pdf.text('55.1', right, 10);
 
     
-pdf.setFont('helvetica');
+pdf.setFont('helvetica', 'normal');
 pdf.setFontSize(7); 
 pdf.text(
     `Emitido em ${formatarDataPdf(new Date())}`, right, 30,
@@ -202,6 +203,9 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
        // ======================================================================
     // fim da parte de informações do cliente e do pedido
     // ======================================================================
+
+pdf.save(nomeArquivo);
+
 }
 
 
@@ -330,7 +334,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
 
 
 
-//     pdf.setFont('helvetica');
+//     pdf.setFont('helvetica', 'normal');
 //     pdf.setFontSize(10);
 
 //     pdf.text(
@@ -368,7 +372,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
 //     y += 11;
 
 //     pdf.setTextColor(28, 27, 46);
-//     pdf.setFont('helvetica');
+//     pdf.setFont('helvetica', 'normal');
 
 //     pdf.text(
 //         `Vendedor: ${textoSeguro(
@@ -439,7 +443,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
 //             y + alturaLinha
 //         );
 
-//         pdf.setFont('helvetica');
+//         pdf.setFont('helvetica', 'normal');
 //         pdf.setFontSize(7.5);
 
 //         pdf.text(
