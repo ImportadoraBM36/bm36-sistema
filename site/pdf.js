@@ -232,7 +232,6 @@ pdf.text(
     62
 );
 
-pdf.save(`pedido-${pedido.id}.pdf`);
        // ======================================================================
     // fim da parte de informações do cliente e do pedido
     // ======================================================================
@@ -241,102 +240,417 @@ pdf.save(`pedido-${pedido.id}.pdf`);
 
 
 
+     // ============================================================
+    // TOTAIS DO PEDIDO
     // ============================================================
-    // CABEÇALHO DA TABELA
+
+    let yTotais = 70;
+
+    const subtotal =
+        Number(
+            pedido.subtotal ||
+            pedido.sub_total ||
+            0
+        );
+
+    const desconto =
+        Number(
+            pedido.desconto ||
+            0
+        );
+
+    const total =
+        Number(
+            pedido.total ||
+            0
+        );
+
+    const totalIpi =
+        Number(
+            pedido.total_ipi ||
+            pedido.ipi ||
+            0
+        );
+
+ // ============================================================
+    // TÍTULO DOS TOTAIS
     // ============================================================
-     adicionarCabecalho();
-    function adicionarCabecalhoTabela(y = 70) {
-        pdf.setFont('helvetica', 'bold');
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(7);
+
+    pdf.text(
+        'SUB TOTAL',
+        32,
+        yTotais
+    );
+
+    pdf.text(
+        'TOTAL DE IPI',
+        78,
+        yTotais
+    );
+
+    pdf.text(
+        'VALOR DE DESCONTO',
+        125,
+        yTotais
+    );
+
+    pdf.text(
+        'TOTAL DO PEDIDO',
+        175,
+        yTotais
+    );
+
+    // ============================================================
+    // VALORES DOS TOTAIS
+    // ============================================================
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(9);
+
+    pdf.text(
+        fmtPdf(subtotal),
+        32,
+        yTotais + 7,
+        {
+            align: 'center'
+        }
+    );
+
+    pdf.text(
+        fmtPdf(totalIpi),
+        78,
+        yTotais + 7,
+        {
+            align: 'center'
+        }
+    );
+
+    pdf.text(
+        fmtPdf(desconto),
+        125,
+        yTotais + 7,
+        {
+            align: 'center'
+        }
+    );
+
+    pdf.text(
+        fmtPdf(total),
+        175,
+        yTotais + 7,
+        {
+            align: 'center'
+        }
+    );
+
+
+
+
+        // ============================================================
+    // LINHA ABAIXO DOS TOTAIS
+    // ============================================================
+
+    pdf.setDrawColor(90, 90, 90);
+    pdf.setLineWidth(0.25);
+
+    pdf.line(
+        10,
+        yTotais + 10,
+        200,
+        yTotais + 10
+    );
+
+
+
+     // ============================================================
+    // CABEÇALHO DOS PRODUTOS
+    // ============================================================
+
+    let yTabela = 88;
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(7);
+
+    pdf.text(
+        'CÓDIGO',
+        12,
+        yTabela
+    );
+
+    pdf.text(
+        'DESCRIÇÃO',
+        35,
+        yTabela
+    );
+
+    pdf.text(
+        'VLR UNIT. LÍQUIDO',
+        100,
+        yTabela
+    );
+
+    pdf.text(
+        'QUANTI',
+        140,
+        yTabela
+    );
+
+    pdf.text(
+        'VALOR TOTAL',
+        160,
+        yTabela
+    );
+
+    pdf.text(
+        'PREVISÃO',
+        190,
+        yTabela
+    );
+
+
+
+      // ============================================================
+    // LINHA DO CABEÇALHO
+    // ============================================================
+
+    pdf.setDrawColor(90, 90, 90);
+    pdf.setLineWidth(0.25);
+
+    pdf.line(
+        10,
+        yTabela + 3,
+        200,
+        yTabela + 3
+    );
+
+
+
+    // ============================================================
+    // PRODUTOS
+    // ============================================================
+
+    let yProduto = yTabela + 9;
+
+    const itens =
+        Array.isArray(pedido.itens)
+            ? pedido.itens
+            : [];
+
+
+    itens.forEach(item => {
+
+        const codigo =
+            textoSeguro(
+                item.produto_codigo ||
+                item.codigo ||
+                ''
+            );
+
+        const descricao =
+            textoSeguro(
+                item.produto_nome ||
+                item.nome ||
+                'Produto'
+            );
+
+        const quantidade =
+            Number(
+                item.quantidade ||
+                item.qtd ||
+                0
+            );
+
+        const valorUnitario =
+            Number(
+                item.preco_unitario ||
+                item.valor_unitario ||
+                item.preco ||
+                0
+            );
+
+        const valorTotal =
+            Number(
+                item.subtotal ||
+                item.valor_total ||
+                (valorUnitario * quantidade)
+            );
+
+        const previsao =
+            textoSeguro(
+                item.previsao ||
+                ''
+            );
+
+
+        // --------------------------------------------------------
+        // DESCRIÇÃO
+        // --------------------------------------------------------
+
+
+
+          const linhasDescricao =
+            pdf.splitTextToSize(
+                descricao,
+                60
+            );
+
+
+        pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(7);
 
-        pdf.text(
-            'CÓDIGO',
-            margem + 3,
-            y + 5.2
-        );
+
+
+        // --------------------------------------------------------
+        // CÓDIGO
+        // --------------------------------------------------------
 
         pdf.text(
-            'PRODUTO',
+            codigo,
+            12,
+            yProduto
+        );
+
+
+
+          // --------------------------------------------------------
+        // DESCRIÇÃO
+        // --------------------------------------------------------
+
+        pdf.text(
+            linhasDescricao,
             35,
-            y + 5.2
+            yProduto
         );
 
-        pdf.text(
-            'CORR.',
-            121,
-            y + 5.2,
-            {
-                align: 'right'
-            }
-        );
+ // --------------------------------------------------------
+        // VALOR UNITÁRIO
+        // --------------------------------------------------------
 
         pdf.text(
-            'PRAT.',
+            fmtPdf(valorUnitario),
+            100,
+            yProduto
+        );
+
+
+        // --------------------------------------------------------
+        // QUANTIDADE
+        // --------------------------------------------------------
+
+        pdf.text(
+            String(quantidade),
             140,
-            y + 5.2,
-            {
-                align: 'right'
-            }
+            yProduto
         );
+
+
+        // --------------------------------------------------------
+        // VALOR TOTAL
+        // --------------------------------------------------------
 
         pdf.text(
-            'POS.',
-            158,
-            y + 5.2,
-            {
-                align: 'right'
-            }
+            fmtPdf(valorTotal),
+            160,
+            yProduto
         );
+
+
+        // --------------------------------------------------------
+        // PREVISÃO
+        // --------------------------------------------------------
 
         pdf.text(
-            'CÓD. FAB.',
-            181,
-            y + 5.2,
-            {
-                align: 'right'
-            }
+            previsao,
+            190,
+            yProduto
         );
 
-        pdf.text(
-            'QTD.',
-            208,
-            y + 5.2,
-            {
-                align: 'right'
-            }
-        );
 
-        pdf.text(
-            'UNIT.',
-            232,
-            y + 5.2,
-            {
-                align: 'right'
-            }
-        );
+        // --------------------------------------------------------
+        // LINHA DO PRODUTO
+        // --------------------------------------------------------
 
-        pdf.text(
-            'SUBTOTAL',
-            285,
-            y + 5.2,
-            {
-                align: 'right'
-            }
+        pdf.setDrawColor(
+            220,
+            220,
+            220
         );
-
-        pdf.setDrawColor(90, 90, 90);
-        pdf.setLineWidth(0.25);
 
         pdf.line(
-            margem,
-            y + 7,
-            margem + largura,
-            y + 7
+            10,
+            yProduto + 3,
+            200,
+            yProduto + 3
         );
 
-        return y + 8;
-    }
 
+        // --------------------------------------------------------
+        // PRÓXIMO PRODUTO
+        // --------------------------------------------------------
+
+        yProduto += Math.max(
+            7,
+            linhasDescricao.length * 4
+        );
+
+ // --------------------------------------------------------
+        // NOVA PÁGINA
+        // --------------------------------------------------------
+
+        if (yProduto > 270) {
+
+            pdf.addPage();
+
+            adicionarCabecalho();
+
+            yProduto = 55;
+        }
+
+    });
+
+
+    // ============================================================
+    // FINAL DO PDF
+    // ============================================================
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(7);
+
+    pdf.setTextColor(
+        80,
+        80,
+        80
+    );
+
+    pdf.text(
+        'Documento gerado pelo sistema BM36.',
+        10,
+        285
+    );
+
+
+    // ============================================================
+    // SALVAR / IMPRIMIR
+    // ============================================================
+
+    if (imprimir && janelaDeImpressao) {
+
+        const pdfUrl =
+            pdf.output('bloburl');
+
+        janelaDeImpressao.location.href =
+            pdfUrl;
+
+    } else {
+
+        pdf.save(
+            `pedido-${pedido.id}.pdf`
+        );
+
+    }
     // ============================================================
     // INÍCIO DO PDF
     // ============================================================
@@ -347,7 +661,6 @@ pdf.save(`pedido-${pedido.id}.pdf`);
     // ITENS
     // ============================================================
 
-    const itens =
         Array.isArray(pedido.itens)
             ? pedido.itens
             : [];
@@ -503,111 +816,7 @@ pdf.save(`pedido-${pedido.id}.pdf`);
     // TOTAIS
     // ============================================================
 
-    const subtotal =
-        Number(pedido.subtotal || 0);
-
-    const desconto =
-        Number(pedido.desconto || 0);
-
-    const total =
-        Number(
-            pedido.total ||
-            subtotal -
-            (
-                subtotal *
-                desconto /
-                100
-            )
-        );
-
-    if (y + 38 > 192) {
-        pdf.addPage();
-
-        adicionarCabecalho();
-
-        y = 45;
-    }
-
-    y += 8;
-
-    function adicionarTotal(
-        titulo,
-        valor,
-        destaque = false
-    ) {
-        pdf.setFont(
-            'helvetica',
-            destaque
-                ? 'bold'
-                : 'helvetica'
-        );
-
-        pdf.setFontSize(
-            destaque
-                ? 12
-                : 9
-        );
-
-        pdf.text(
-            titulo,
-            232,
-            y,
-            {
-                align: 'right'
-            }
-        );
-
-        pdf.text(
-            fmtPdf(valor),
-            285,
-            y,
-            {
-                align: 'right'
-            }
-        );
-
-        y += destaque
-            ? 8
-            : 6;
-    }
-
-    adicionarTotal(
-        'Subtotal',
-        subtotal
-    );
-
-    pdf.setFont(
-        'helvetica',
-        'helvetica'
-    );
-
-    pdf.setFontSize(9);
-
-    pdf.text(
-        'Desconto',
-        232,
-        y,
-        {
-            align: 'right'
-        }
-    );
-
-    pdf.text(
-        `${desconto}%`,
-        285,
-        y,
-        {
-            align: 'right'
-        }
-    );
-
-    y += 6;
-
-    adicionarTotal(
-        'TOTAL',
-        total,
-        true
-    );
+    
 
     // ============================================================
     // RODAPÉ
