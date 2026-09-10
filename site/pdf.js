@@ -246,10 +246,13 @@ pdf.setFontSize(9);
 pdf.text('Evento: ' + (pedido.evento || 'Não informado'), 130, 50)
 
 
+pdf.setFont('helvetica', 'bold');
+pdf.setFontSize(9);
+pdf.text('Vendedor: ' + (pedido.vendedor || 'Não informado'), 130, 54)
 
-
-
-
+pdf.setFont('helvetica', 'bold');
+pdf.setFontSize(9);
+pdf.text('forma de pagamento: ' + (pedido.forma_pagamento || 'Não informado') , 130, 58)
 
 
 
@@ -388,7 +391,7 @@ pdf.text('Evento: ' + (pedido.evento || 'Não informado'), 130, 50)
     // CABEÇALHO DOS PRODUTOS
     // ============================================================
 
-    let yTabela = 95;
+    let yTabela = 97;
 
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(7);
