@@ -152,34 +152,35 @@ pdf.text('REDES SOCIAIS: facebook.com/bm36IMPORTADORA | @bm36_importadora', 35, 
     // fim do informações da empresa
     // ======================================================================
   
+     // ======================================================================
+    // parte do codigo de barras e data de emição
+    // ======================================================================
   
   
-  
-    // Número do pedido
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(9);
+pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(20);
+    pdf.text('55.1', 250, 10);
+
     
-    pdf.text(
-        `PEDIDO #${pedido.id}`,
-        larguraPagina - margem,
-        13,
-        {
-            align: 'right'
-        }
-    );
+pdf.setFont('helvetica');
+pdf.setFontSize(7); 
+pdf.text(
+    `Emitido em ${formatarDataPdf(new Date())}`, 250, 30,
+)
 
-    // Data de emissão
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(8);
 
-    pdf.text(
-        `Emitido em ${formatarDataPdf(new Date())}`,
-        larguraPagina - margem,
-        19,
-        {
-            align: 'right'
-        }
-    );
+
+
+
+
+
+
+   // ======================================================================
+    // fim da parte do codigo de barras e data de emição
+    // ======================================================================
+   
+        
+     
 
     // Linha abaixo do cabeçalho
     pdf.setDrawColor(90, 90, 90);
