@@ -228,13 +228,13 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
     pdf.text(
         textoSeguro(cliente),
         margem,
-        54
+        56
     );
 
     pdf.text(
         formatarDataPdf(pedido.criado_em),
         165,
-        56
+        60
     );
 
     
@@ -245,7 +245,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
     pdf.text(
         documento || 'Documento não informado',
         margem,
-        60
+        64
     );
 
     
@@ -254,7 +254,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
             codigoCliente || 'Não informado'
         )}`,
         margem,
-        58
+        69
     );
 
   
@@ -267,10 +267,10 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
             pedido.usuario_nome || 'Não informado'
         )}`,
         margem,
-        y
+        74
     );
 
-    y += 10;
+   
 
     y = adicionarCabecalhoTabela(y);
 
