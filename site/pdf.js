@@ -31,11 +31,14 @@ async function gerarPdfPedido(
         format: 'a4'
     });
 
-const larguraPagina = 297;
+const larguraPagina = 210;
 const margem = 10;
 const largura = larguraPagina - (margem * 2);
 
 const logo = './imagem/logo.png';
+
+
+const clientes = pedido.cliente_nome || 'Não informado';
     // ============================================================
     // FORMATADORES DO PDF
     // ============================================================
@@ -194,8 +197,7 @@ pdf.setFontSize(20);
 pdf.text('CÓDIGO DO PEDIDO:' + pedido.id, 5, 50);
 pdf.setFont('helvetica', 'bold');
 pdf.setFontSize(20);
-pdf.text('Nome do Cliente: ' + cliente, 5, 60);
-
+pdf.text('Nome do Cliente: ' + clientes, 5, 60);
 
 
 
