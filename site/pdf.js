@@ -41,6 +41,25 @@ const logo = './imagem/logo.png';
 const clientes = pedido.cliente_nome || 'Não informado';
 
 const right = 180;
+
+
+    adicionarCabecalho();
+    let y = 53;
+
+    const cliente =
+        pedido.cliente_nome ||
+        'Não informado';
+
+    const documento =
+        pedido.cliente_documento;
+
+    const codigoCliente =
+        pedido.cliente_codigo ||
+        pedido.codigo_sistema_antigo ||
+        pedido.cliente_id ||
+        '';
+
+
     // ============================================================
     // FORMATADORES DO PDF
     // ============================================================
@@ -200,13 +219,61 @@ pdf.setFontSize(7);
 
 pdf.text('Nome do Cliente: ' + clientes, 5, 52);
 
+
+
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(10);
+
+    pdf.text(
+        textoSeguro(cliente),
+        margem,
+        y
+    );
+
+    pdf.text(
+        formatarDataPdf(pedido.criado_em),
+        165,
+        y
+    );
+
+    y += 5;
+
+    pdf.setFontSize(8.5);
+    pdf.setTextColor(95, 99, 117);
+
+    pdf.text(
+        documento || 'Documento não informado',
+        margem,
+        y
+    );
+
     
     pdf.text(
         `Código do cliente: ${textoSeguro(
             codigoCliente || 'Não informado'
         )}`,
-    5,53
+        margem,
+        y
     );
+
+    y += 11;
+
+    pdf.setTextColor(28, 27, 46);
+    pdf.setFont('helvetica', 'normal');
+
+    pdf.text(
+        `Vendedor: ${textoSeguro(
+            pedido.usuario_nome || 'Não informado'
+        )}`,
+        margem,
+        y
+    );
+
+    y += 10;
+
+    y = adicionarCabecalhoTabela(y);
+
        // ======================================================================
     // fim da parte de informações do cliente e do pedido
     // ======================================================================
@@ -316,72 +383,6 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
     // ============================================================
 
     adicionarCabecalho();
-
-    let y = 42;
-
-    const cliente =
-        pedido.cliente_nome ||
-        'Não informado';
-
-    const documento =
-        pedido.cliente_documento;
-
-    const codigoCliente =
-        pedido.cliente_codigo ||
-        pedido.codigo_sistema_antigo ||
-        pedido.cliente_id ||
-        '';
-
-    // ============================================================
-    // DADOS DO CLIENTE
-    // ============================================================
-
-
-
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(10);
-
-    pdf.text(
-        textoSeguro(cliente),
-        margem,
-        y
-    );
-
-    pdf.text(
-        formatarDataPdf(pedido.criado_em),
-        165,
-        y
-    );
-
-    y += 5;
-
-    pdf.setFontSize(8.5);
-    pdf.setTextColor(95, 99, 117);
-
-    pdf.text(
-        documento || 'Documento não informado',
-        margem,
-        y
-    );
-
-
-
-    y += 11;
-
-    pdf.setTextColor(28, 27, 46);
-    pdf.setFont('helvetica', 'normal');
-
-    pdf.text(
-        `Vendedor: ${textoSeguro(
-            pedido.usuario_nome || 'Não informado'
-        )}`,
-        margem,
-        y
-    );
-
-    y += 10;
-
-    y = adicionarCabecalhoTabela(y);
 
     // ============================================================
     // ITENS
