@@ -287,19 +287,19 @@ pdf.text(
 
     pdf.text(
         'TOTAL DE IPI',
-        78,
+        71,
         yTotais
     );
 
     pdf.text(
         'VALOR DE DESCONTO',
-        125,
+        118,
         yTotais
     );
 
     pdf.text(
         'TOTAL DO PEDIDO',
-        175,
+        168,
         yTotais
     );
 
