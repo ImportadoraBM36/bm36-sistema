@@ -92,7 +92,7 @@ const logo = './imagem/logo.png';
         pdf.setTextColor(20, 20, 20);
 
         pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(16);
+        pdf.setFontSize(40);
 
        pdf.addImage(logo, 'PNG', margem, 5, 20, 20);
 
