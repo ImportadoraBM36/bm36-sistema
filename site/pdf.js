@@ -92,16 +92,26 @@ const logo = './imagem/logo.png';
         pdf.setTextColor(20, 20, 20);
 
         pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(40);
+        pdf.setFontSize(16);
 
        pdf.addImage(logo, 'PNG', margem, 5, 20, 20);
 
         pdf.setFontSize(9);
 
-      
+      pdf.text(
+            'BM36 CIE LTDA',
+            pdf.setFont('helvetica', 'bold'),
+            35,
+            pdf.setFontSize(9),
+      pdf.text('C.N.P.J.:', 
+        pdf.setFont('helvetica,bold'),
+        pdf.text('00.000.000/0000-00'
+            .setFont('helvetica'), 35, 10)      
 
-        pdf.setFontSize(10);
 
+
+        )
+      )
         pdf.text(
             `PEDIDO #${pedido.id}`,
             larguraPagina - margem,
