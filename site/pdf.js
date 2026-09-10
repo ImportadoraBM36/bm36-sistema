@@ -185,12 +185,7 @@ pdf.text('REDES SOCIAIS: facebook.com/bm36IMPORTADORA | @bm36_importadora', 35, 
     pdf.setDrawColor(90, 90, 90);
     pdf.setLineWidth(0.25);
 
-    pdf.line(
-        margem,
-        24,
-        larguraPagina - margem,
-        24
-    );
+    pdf.line(2,45 , larguraPagina - 2, 45);
 
     pdf.setTextColor(28, 27, 46);
 }
