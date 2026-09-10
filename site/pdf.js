@@ -31,10 +31,11 @@ async function gerarPdfPedido(
         format: 'a4'
     });
 
-    const larguraPagina = 297;
-    const margem = 10;
-    const largura = larguraPagina - (margem * 2);
+const larguraPagina = 297;
+const margem = 10;
+const largura = larguraPagina - (margem * 2);
 
+const logo = './imagem/logo.png';
     // ============================================================
     // FORMATADORES DO PDF
     // ============================================================
@@ -93,11 +94,7 @@ async function gerarPdfPedido(
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(16);
 
-        pdf.text(
-            'BM36 | WC',
-            margem,
-            13
-        );
+       pdf.addImage(logo, 'PNG', margem, 5, 30, 10);
 
         pdf.setFontSize(9);
 
