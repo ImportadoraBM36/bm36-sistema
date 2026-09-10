@@ -61,7 +61,7 @@ const right = 180;
 
 const vendedor = pedido.usuario_nome;
 const formapagamento = pedido.formaPagamento;
-const evento = pedido.evento_nome;
+const evento = pedido.evento;
     // ============================================================
     // FORMATADORES DO PDF
     // ============================================================
