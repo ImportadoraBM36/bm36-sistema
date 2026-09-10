@@ -56,12 +56,12 @@ const right = 180;
     const codigoCliente =
         pedido.cliente_codigo ||
         pedido.codigo_sistema_antigo ||
-        pedido.cliente_id ||
         '';
 
 const vendedor = pedido.usuario_nome;
 const formapagamento = pedido.formaPagamento;
-const evento = pedido.evento_id;
+const evento = pedido.evento_name;
+
     // ============================================================
     // FORMATADORES DO PDF
     // ============================================================
