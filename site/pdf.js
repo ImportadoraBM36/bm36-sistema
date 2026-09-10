@@ -221,57 +221,6 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 52);
 
 
 
-
-    // pdf.setFont('helvetica', 'normal');
-    // pdf.setFontSize(10);
-
-    // pdf.text(
-    //     textoSeguro(cliente),
-    //     165,
-    //     60
-    // );
-
-    // pdf.text(
-    //     formatarDataPdf(pedido.criado_em),
-    //     165,
-    //     70
-    // );
-
-    
-
-    // pdf.setFontSize(8.5);
-    // pdf.setTextColor(95, 99, 117);
-
-    // pdf.text(
-    //     documento || 'Documento não informado',
-    //     165,
-    //     80
-    // );
-
-    
-    // pdf.text(
-    //     `Código do cliente: ${textoSeguro(
-    //         codigoCliente || 'Não informado'
-    //     )}`,
-    //     165,
-    //     69
-    // );
-
-  
-
-    // pdf.setTextColor(28, 27, 46);
-    // pdf.setFont('helvetica', 'normal');
-
-    // pdf.text(
-    //     `Vendedor: ${textoSeguro(
-    //         pedido.usuario_nome || 'Não informado'
-    //     )}`,
-    //     165,
-    //     100
-    // );
-
-   
-
   
 
        // ======================================================================
