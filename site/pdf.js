@@ -162,13 +162,13 @@ pdf.text('REDES SOCIAIS: facebook.com/bm36IMPORTADORA | @bm36_importadora', 35, 
   
 pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(20);
-    pdf.text('55.1', 70, 10);
+    pdf.text('55.1', right, 10);
 
     
 pdf.setFont('helvetica');
 pdf.setFontSize(7); 
 pdf.text(
-    `Emitido em ${formatarDataPdf(new Date())}`, 70, 30,
+    `Emitido em ${formatarDataPdf(new Date())}`, right, 30,
 )
 
    // ======================================================================
@@ -196,7 +196,7 @@ pdf.text('CÓDIGO DO PEDIDO:' + pedido.id, 5, 50);
 pdf.setFont('helvetica', 'bold');
 pdf.setFontSize(7);
 
-pdf.text('Nome do Cliente: ' + clientes, 5, 60);
+pdf.text('Nome do Cliente: ' + clientes, 5, 52);
        // ======================================================================
     // fim da parte de informações do cliente e do pedido
     // ======================================================================
@@ -354,14 +354,7 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 60);
         y
     );
 
-    pdf.text(
-        `Status: ${statusLabelPdf(pedido.status)}`,
-        165,
-        y
-    );
-
-    y += 5;
-
+    
     pdf.text(
         `Código do cliente: ${textoSeguro(
             codigoCliente || 'Não informado'
