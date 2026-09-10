@@ -87,63 +87,80 @@ const logo = './imagem/logo.png';
     // ============================================================
     // CABEÇALHO
     // ============================================================
+function adicionarCabecalho() {
+    pdf.setTextColor(20, 20, 20);
 
-    function adicionarCabecalho() {
-        pdf.setTextColor(20, 20, 20);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(16);
 
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(16);
+    pdf.addImage(logo, 'PNG', margem, 5, 20, 20);
 
-       pdf.addImage(logo, 'PNG', margem, 5, 20, 20);
+    // Nome da empresa
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(9);
 
-        pdf.setFontSize(9);
-
-        pdf.setFont('helvetica', 'bold'),
+    pdf.text(
+        'BM36 CIE LTDA',
         35,
-        pdf.setFontSize(9),
-      pdf.text(
-            'BM36 CIE LTDA',)
-            pdf.setFont('helvetica,bold'),
-      pdf.text('C.N.P.J.:',) 
-        pdf.text('00.000.000/0000-00')
-            pdf.setFont('helvetica'), 35, 10      
+        10
+    );
 
+    // CNPJ
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(8);
 
+    pdf.text(
+        'C.N.P.J.: 00.000.000/0000-00',
+        35,
+        15
+    );
 
-    
-        pdf.text(
-            `PEDIDO #${pedido.id}`,
-            larguraPagina - margem,
-            13,
-            {
-                align: 'right'
-            }
-        );
+    // Inscrição Estadual
+    pdf.text(
+        'I.E.: 000000000000',
+        35,
+        19
+    );
 
-        pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(8);
+    // Número do pedido
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(9);
 
-        pdf.text(
-            `Emitido em ${formatarDataPdf(new Date())}`,
-            larguraPagina - margem,
-            19,
-            {
-                align: 'right'
-            }
-        );
+    pdf.text(
+        `PEDIDO #${pedido.id}`,
+        larguraPagina - margem,
+        13,
+        {
+            align: 'right'
+        }
+    );
 
-        pdf.setDrawColor(90, 90, 90);
-        pdf.setLineWidth(0.25);
+    // Data de emissão
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(8);
 
-        pdf.line(
-            margem,
-            24,
-            larguraPagina - margem,
-            24
-        );
+    pdf.text(
+        `Emitido em ${formatarDataPdf(new Date())}`,
+        larguraPagina - margem,
+        19,
+        {
+            align: 'right'
+        }
+    );
 
-        pdf.setTextColor(28, 27, 46);
-    }
+    // Linha abaixo do cabeçalho
+    pdf.setDrawColor(90, 90, 90);
+    pdf.setLineWidth(0.25);
+
+    pdf.line(
+        margem,
+        24,
+        larguraPagina - margem,
+        24
+    );
+
+    pdf.setTextColor(28, 27, 46);
+}
 
     // ============================================================
     // CABEÇALHO DA TABELA
