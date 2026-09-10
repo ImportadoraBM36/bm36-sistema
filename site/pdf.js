@@ -657,17 +657,6 @@ pdf.text(
     // ITENS
     // ============================================================
 
-        Array.isArray(pedido.itens)
-            ? pedido.itens
-            : [];
-
-    itens.forEach(item => {
-        const nome =
-            textoSeguro(
-                item.produto_nome ||
-                item.nome ||
-                'Produto'
-            );
 
         const codigo =
             textoSeguro(
@@ -806,7 +795,7 @@ pdf.text(
         );
 
         y += alturaLinha;
-    });
+    };
 
     // ============================================================
     // TOTAIS
@@ -1037,4 +1026,4 @@ pdf.text(
     // ============================================================
 
     pdf.save(nomeArquivo);
-}
+s
