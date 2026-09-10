@@ -95,7 +95,10 @@ function adicionarCabecalho() {
 
     pdf.addImage(logo, 'PNG', margem, 5, 20, 20);
 
-    // Nome da empresa
+    // =============================================================
+    // informaçoes da empresa
+    // =============================================================
+
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(9);
 
@@ -106,26 +109,56 @@ function adicionarCabecalho() {
     );
 
     // CNPJ
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(8);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(10);
 
     pdf.text(
-        'C.N.P.J.: 00.000.000/0000-00',
+        'C.N.P.J.: 00.000.000/0000-00 - I.E.: 140085675118',
         35,
         15
     );
+   pdf.setFont('normal');
+   pdf.setFontSize(7);
+   pdf.text('AV SENADOR QUEIROZ, N°605', 35, 20);
 
-    // Inscrição Estadual
-    pdf.text(
-        'I.E.: 000000000000',
-        35,
-        19
-    );
+ pdf.setFont('normal');
+   pdf.setFontSize(7);
+pdf.text('COMPL: SALA 1405/1406, BAIRRO: CENTRO', 35, 20);
 
+
+pdf.setFont('normal');
+   pdf.setFontSize(7);
+pdf.text('SÃO PAULO - SP - CEP: 01026-001', 35, 20);
+
+
+    pdf.setFont('normal');
+   pdf.setFontSize(7);
+pdf.text('FONE: (11) 3315-8669, CELULAR: (11) 94108-5905', 35, 20);
+    
+    pdf.setFont('normal');
+   pdf.setFontSize(7);
+pdf.text('EMAIL: contato@bm36importadora.com.br', 35, 20);
+    
+       pdf.setFont('normal');
+   pdf.setFontSize(7);
+pdf.text('SITE: www.bm36importadora.com.br', 35, 20);
+
+ pdf.setFont('normal');
+   pdf.setFontSize(7);
+pdf.text('REDES SOCIAIS: facebook.com/bm36IMPORTADORA | @bm36_importadora', 35, 20);
+
+
+    // ======================================================================
+    // fim do informações da empresa
+    // ======================================================================
+  
+  
+  
+  
     // Número do pedido
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(9);
-
+    
     pdf.text(
         `PEDIDO #${pedido.id}`,
         larguraPagina - margem,
