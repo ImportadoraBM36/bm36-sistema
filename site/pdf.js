@@ -211,9 +211,12 @@ pdf.text(
    // ======================================================================
     // informações do cliente e do pedido
     // ======================================================================
+adicionarCabecalho();
+
+// informações do cliente
 pdf.setFont('helvetica', 'bold');
 pdf.setFontSize(9);
-pdf.text('Código do cliente:' + codigoCliente, 5, 50);
+pdf.text('Código do cliente: ' + codigoCliente, 5, 50);
 
 pdf.setFont('helvetica', 'bold');
 pdf.setFontSize(9);
@@ -221,16 +224,15 @@ pdf.text('Nome do Cliente: ' + clientes, 5, 54);
 
 pdf.setFont('helvetica', 'normal');
 pdf.setFontSize(7);
-pdf.text('CNPJ/CPF: ' + documento, 5, 58);
+pdf.text('CNPJ/CPF: ' + (documento || 'Não informado'), 5, 58);
 
-pdf.setFont('helvetica', 'normal');
-pdf.setFontSize(7);
-pdf.text('contato: ' + pedido.cliente_telefone, 5, 62);
+pdf.text(
+    'Contato: ' + (pedido.cliente_telefone || 'Não informado'),
+    5,
+    62
+);
 
-
-
-  
-
+pdf.save(`pedido-${pedido.id}.pdf`);
        // ======================================================================
     // fim da parte de informações do cliente e do pedido
     // ======================================================================
@@ -242,7 +244,7 @@ pdf.text('contato: ' + pedido.cliente_telefone, 5, 62);
     // ============================================================
     // CABEÇALHO DA TABELA
     // ============================================================
-
+     adicionarCabecalho();
     function adicionarCabecalhoTabela(y = 70) {
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(7);
