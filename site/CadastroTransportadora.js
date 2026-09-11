@@ -1,14 +1,25 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    // Botões das abas
-    const abaLista = document.querySelector('[data-tab="lista"]');
-    const abaNova = document.querySelector('[data-tab="nova"]');
+    // ==============================
+    // BOTÕES DAS ABAS
+    // ==============================
 
-    // Seções que serão trocadas
-    const secaoLista = document.getElementById("tabTransportadorasCadastradas");
-    const secaoNova = document.getElementById("tabNovaTransportadora");
+    const abaLista = document.getElementById("tabListaTransportadoras");
+    const abaNova = document.getElementById("tabNovaTransportadora");
 
-    // Clique em "Transportadoras cadastradas"
+
+    // ==============================
+    // SEÇÕES DAS ABAS
+    // ==============================
+
+    const secaoLista = document.getElementById("secaoListaTransportadoras");
+    const secaoNova = document.getElementById("secaoNovaTransportadora");
+
+
+    // ==============================
+    // TRANSPORTADORAS CADASTRADAS
+    // ==============================
+
     abaLista.addEventListener("click", () => {
 
         secaoLista.style.display = "block";
@@ -16,9 +27,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         abaLista.classList.add("active");
         abaNova.classList.remove("active");
+
     });
 
-    // Clique em "+ Nova transportadora"
+
+    // ==============================
+    // NOVA TRANSPORTADORA
+    // ==============================
+
     abaNova.addEventListener("click", () => {
 
         secaoLista.style.display = "none";
@@ -26,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         abaLista.classList.remove("active");
         abaNova.classList.add("active");
+
     });
 
 });
