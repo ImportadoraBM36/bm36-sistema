@@ -302,7 +302,8 @@ pdf.text(
     // TÍTULO DOS TOTAIS
     // ============================================================
 
-    pdf.setFont('helvetica', 'bold');
+    pdf.setFont(
+        'bold');
     pdf.setFontSize(7);
 
     pdf.text(
@@ -697,46 +698,39 @@ pdf.text(
     y += 8;
 
     function adicionarTotal(
+    titulo,
+    valor,
+    destaque = false
+) {
+    pdf.setFont(
+        'helvetica',
+        destaque ? 'bold' : 'normal'
+    );
+
+    pdf.setFontSize(
+        destaque ? 12 : 9
+    );
+
+    pdf.text(
         titulo,
-        valor,
-        destaque = false
-    ) {
-        pdf.setFont(
-            'helvetica',
-            destaque
-                ? 'bold'
-                : 'helvetica'
-        );
+        170,
+        y,
+        {
+            align: 'right'
+        }
+    );
 
-        pdf.setFontSize(
-            destaque
-                ? 12
-                : 9
-        );
+    pdf.text(
+        fmtPdf(valor),
+        200,
+        y,
+        {
+            align: 'right'
+        }
+    );
 
-        pdf.text(
-            titulo,
-            232,
-            y,
-            {
-                align: 'right'
-            }
-        );
-
-        pdf.text(
-            fmtPdf(valor),
-            285,
-            y,
-            {
-                align: 'right'
-            }
-        );
-
-        y += destaque
-            ? 8
-            : 6;
-    }
-
+    y += destaque ? 8 : 6;
+}
     adicionarTotal(
         'Subtotal',
         subtotal
@@ -744,14 +738,14 @@ pdf.text(
 
     pdf.setFont(
         'helvetica',
-        'helvetica'
+        'normal'
     );
 
     pdf.setFontSize(9);
 
     pdf.text(
         'Desconto',
-        232,
+        170,
         y,
         {
             align: 'right'
