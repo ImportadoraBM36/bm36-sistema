@@ -703,7 +703,7 @@ pdf.text(
     destaque = false
 ) {
     pdf.setFont(
-        
+    
         destaque ? 'helvetica' : 'normal'
     );
 
@@ -713,7 +713,7 @@ pdf.text(
 
     pdf.text(
         titulo,
-        170,
+        232,
         y,
         {
             align: 'right'
@@ -722,7 +722,7 @@ pdf.text(
 
     pdf.text(
         fmtPdf(valor),
-        200,
+        285,
         y,
         {
             align: 'right'
@@ -731,6 +731,9 @@ pdf.text(
 
     y += destaque ? 8 : 6;
 }
+
+
+
     adicionarTotal(
         'Subtotal',
         subtotal
