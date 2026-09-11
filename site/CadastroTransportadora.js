@@ -44,5 +44,19 @@ document.addEventListener("DOMContentLoaded", () => {
         abaNova.classList.add("active");
 
     });
+document.addEventListener("DOMContentLoaded", () => {
 
+    const abaNova = document.getElementById("tabNovaTransportadora");
+    const secaoFormulario = document.getElementById("secaoFormularioTransportadora");
+
+    abaNova.addEventListener("click", () => {
+
+        console.log("Cliquei em Nova Transportadora");
+        console.log("Formulário:", secaoFormulario);
+
+        secaoFormulario.style.display = "block";
+
+    });
+
+});
 });
