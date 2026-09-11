@@ -1,4 +1,3 @@
-
 async function gerarPdfPedido(
     pedido,
     imprimir = false,
@@ -663,6 +662,126 @@ async function gerarPdfPedido(
     });
 
     // ============================================================
+    // OBSERVAÇÕES DO PEDIDO (texto editável) + DECLARAÇÃO + ASSINATURA
+    // ============================================================
+
+    const textoObservacoesPadrao =
+        'AS 3 PRIMEIRAS COMPRAS O PAGAMENTO É À VISTA ANTECIPADO\n' +
+        'PEDIDOS Á PRAZO, SUJEITO A CONSULTA E LIBERAÇÃO FINANCEIRA\n' +
+        'POR FAVOR INDICAR 5 FORNECEDORES QUE JÁ COMPRA Á PRAZO (MÍNIMO DE 1 ANO)';
+
+    const textoObservacoes =
+        pedido.observacoes_pedido ||
+        textoObservacoesPadrao;
+
+    const linhasObservacoes =
+        textoObservacoes
+            .split('\n')
+            .flatMap(linha =>
+                pdf.splitTextToSize(linha, 188)
+            );
+
+    // --------------------------------------------------------
+    // ALTURA NECESSÁRIA PARA O BLOCO INTEIRO
+    // (observações + declaração + nome/assinatura)
+    // --------------------------------------------------------
+
+    const alturaBlocoFinal =
+        36 + linhasObservacoes.length * 3.6;
+
+    if (yProduto + alturaBlocoFinal > 285) {
+
+        pdf.addPage();
+
+        adicionarCabecalho();
+
+        yProduto = 55;
+    }
+
+    let yObservacoes = yProduto + 6;
+
+    pdf.setDrawColor(90, 90, 90);
+    pdf.setLineWidth(0.25);
+
+    pdf.line(
+        10,
+        yObservacoes - 3,
+        200,
+        yObservacoes - 3
+    );
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(7);
+    pdf.setTextColor(28, 27, 46);
+
+    pdf.text(
+        linhasObservacoes,
+        10,
+        yObservacoes
+    );
+
+    let yDeclaracao =
+        yObservacoes +
+        (linhasObservacoes.length * 3.6) +
+        6;
+
+    // --------------------------------------------------------
+    // CAIXA "DECLARO ESTAR CIENTE..."
+    // --------------------------------------------------------
+
+    pdf.rect(
+        10,
+        yDeclaracao,
+        190,
+        8
+    );
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(7.5);
+
+    pdf.text(
+        'DECLARO ESTAR CIENTE SOBRE AS INFORMAÇÕES MENCIONADAS NESTE PEDIDO DE VENDA',
+        12,
+        yDeclaracao + 5.5
+    );
+
+    // --------------------------------------------------------
+    // NOME POR EXTENSO / ASSINATURA
+    // --------------------------------------------------------
+
+    const yAssinatura = yDeclaracao + 8;
+    const alturaAssinatura = 16;
+
+    pdf.rect(
+        10,
+        yAssinatura,
+        95,
+        alturaAssinatura
+    );
+
+    pdf.rect(
+        105,
+        yAssinatura,
+        95,
+        alturaAssinatura
+    );
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(7);
+
+    pdf.text(
+        'NOME POR EXTENSO:',
+        12,
+        yAssinatura + 5
+    );
+
+    pdf.text(
+        'ASSINATURA:',
+        107,
+        yAssinatura + 5
+    );
+
+    // ============================================================
     // RODAPÉ
     // ============================================================
 
@@ -810,4 +929,3 @@ async function gerarPdfPedido(
         nomeArquivo
     );
 }
-
