@@ -1,3 +1,4 @@
+
 async function gerarPdfPedido(
     pedido,
     imprimir = false,
@@ -31,20 +32,22 @@ async function gerarPdfPedido(
         format: 'a4'
     });
 
-const larguraPagina = 210;
-const margem = 10;
-const largura = larguraPagina - (margem * 2);
+    // ============================================================
+    // CONFIGURAÇÕES
+    // ============================================================
 
-const logo = './imagem/logo.png';
+    const larguraPagina = 210;
+    const margem = 10;
+    const logo = './imagem/logo.png';
+    const right = 180;
 
+    // ============================================================
+    // DADOS DO PEDIDO
+    // ============================================================
 
-const clientes = pedido.cliente_nome || 'Não informado';
-
-const right = 180;
-
-
-    adicionarCabecalho();
-    let y = 70;
+    const clientes =
+        pedido.cliente_nome ||
+        'Não informado';
 
     const cliente =
         pedido.cliente_nome ||
@@ -58,10 +61,20 @@ const right = 180;
         pedido.codigo_sistema_antigo ||
         '';
 
-const vendedor = pedido.usuario_nome;
-const formapagamento = pedido.formaPagamento;
-const evento = pedido.evento_nome;
-console.log('PEDIDO:', pedido);
+    const vendedor =
+        pedido.usuario_nome ||
+        'Não informado';
+
+    const formapagamento =
+        pedido.formaPagamento ||
+        'Não informado';
+
+    const evento =
+        pedido.evento_nome ||
+        'Não informado';
+
+    console.log('PEDIDO:', pedido);
+
     // ============================================================
     // FORMATADORES DO PDF
     // ============================================================
@@ -89,22 +102,6 @@ console.log('PEDIDO:', pedido);
         });
     }
 
-    function statusLabelPdf(status) {
-        const s = String(status || '')
-            .trim()
-            .toLowerCase();
-
-        if (s === 'cancelada') {
-            return 'CANCELADO';
-        }
-
-        if (s === 'pendente') {
-            return 'PENDENTE';
-        }
-
-        return 'FINALIZADO';
-    }
-
     function textoSeguro(valor) {
         return String(valor || '-')
             .replace(/[\r\n]+/g, ' ');
@@ -113,157 +110,199 @@ console.log('PEDIDO:', pedido);
     // ============================================================
     // CABEÇALHO
     // ============================================================
-function adicionarCabecalho() {
-    pdf.setTextColor(20, 20, 20);
 
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(16);
+    function adicionarCabecalho() {
 
-    pdf.addImage(logo, 'PNG', margem, 5, 20, 20);
+        pdf.setTextColor(20, 20, 20);
 
-    // =============================================================
-    // informaçoes da empresa
-    // =============================================================
+        // --------------------------------------------------------
+        // LOGO
+        // --------------------------------------------------------
+
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(16);
+
+        pdf.addImage(
+            logo,
+            'PNG',
+            margem,
+            5,
+            20,
+            20
+        );
+
+        // --------------------------------------------------------
+        // INFORMAÇÕES DA EMPRESA
+        // --------------------------------------------------------
+
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(9);
+
+        pdf.text(
+            'BM36 CIE LTDA',
+            35,
+            10
+        );
+
+        // CNPJ
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(10);
+
+        pdf.text(
+            'C.N.P.J.: 00.000.000/0000-00 - I.E.: 140085675118',
+            35,
+            15
+        );
+
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(7);
+
+        pdf.text(
+            'AV SENADOR QUEIROZ, N°605',
+            35,
+            20
+        );
+
+        pdf.text(
+            'COMPL: SALA 1405/1406, BAIRRO: CENTRO',
+            35,
+            23
+        );
+
+        pdf.text(
+            'SÃO PAULO - SP - CEP: 01026-001',
+            35,
+            27
+        );
+
+        pdf.text(
+            'FONE: (11) 3315-8669, CELULAR: (11) 94108-5905',
+            35,
+            31
+        );
+
+        pdf.text(
+            'EMAIL: contato@bm36importadora.com.br',
+            35,
+            35
+        );
+
+        pdf.text(
+            'SITE: www.bm36importadora.com.br',
+            35,
+            39
+        );
+
+        pdf.text(
+            'REDES SOCIAIS: facebook.com/bm36IMPORTADORA | @bm36_importadora',
+            35,
+            43
+        );
+
+        // --------------------------------------------------------
+        // NÚMERO DO PEDIDO
+        // --------------------------------------------------------
+
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(20);
+
+        pdf.text(
+            String(pedido.id),
+            right,
+            10
+        );
+
+        // --------------------------------------------------------
+        // DATA DE EMISSÃO
+        // --------------------------------------------------------
+
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(7);
+
+        pdf.text(
+            `Emitido em ${formatarDataPdf(new Date())}`,
+            170,
+            30
+        );
+
+        // --------------------------------------------------------
+        // LINHA ABAIXO DO CABEÇALHO
+        // --------------------------------------------------------
+
+        pdf.setDrawColor(90, 90, 90);
+        pdf.setLineWidth(0.25);
+
+        pdf.line(
+            2,
+            45,
+            larguraPagina - 2,
+            45
+        );
+
+        pdf.setTextColor(28, 27, 46);
+    }
+
+    // ============================================================
+    // CABEÇALHO
+    // ============================================================
+
+    adicionarCabecalho();
+
+    // ============================================================
+    // INFORMAÇÕES DO CLIENTE
+    // ============================================================
 
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(9);
 
     pdf.text(
-        'BM36 CIE LTDA',
-        35,
-        10
+        'Código do cliente: ' + codigoCliente,
+        5,
+        50
     );
-
-    // CNPJ
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(10);
 
     pdf.text(
-        'C.N.P.J.: 00.000.000/0000-00 - I.E.: 140085675118',
-        35,
-        15
+        'Nome do Cliente: ' + clientes,
+        5,
+        54
     );
-   pdf.setFont('helvetica', 'normal');
-   pdf.setFontSize(7);
-   pdf.text('AV SENADOR QUEIROZ, N°605', 35, 20);
-
- pdf.setFont('helvetica', 'normal');
-   pdf.setFontSize(7);
-pdf.text('COMPL: SALA 1405/1406, BAIRRO: CENTRO', 35, 23);
-
-
-pdf.setFont('helvetica', 'normal');
-   pdf.setFontSize(7);
-pdf.text('SÃO PAULO - SP - CEP: 01026-001', 35, 27);
-
 
     pdf.setFont('helvetica', 'normal');
-   pdf.setFontSize(7);
-pdf.text('FONE: (11) 3315-8669, CELULAR: (11) 94108-5905', 35, 31);
-    
-    pdf.setFont('helvetica', 'normal');
-   pdf.setFontSize(7);
-pdf.text('EMAIL: contato@bm36importadora.com.br', 35, 35);
-    
-       pdf.setFont('helvetica', 'normal');
-   pdf.setFontSize(7);
-pdf.text('SITE: www.bm36importadora.com.br', 35, 39);
+    pdf.setFontSize(7);
 
- pdf.setFont('helvetica', 'normal');
-   pdf.setFontSize(7);
-pdf.text('REDES SOCIAIS: facebook.com/bm36IMPORTADORA | @bm36_importadora', 35, 43);
+    pdf.text(
+        'CNPJ/CPF: ' + (documento || 'Não informado'),
+        5,
+        58
+    );
 
+    pdf.text(
+        'Contato: ' + (pedido.cliente_telefone || 'Não informado'),
+        5,
+        62
+    );
 
-    // ======================================================================
-    // fim do informações da empresa
-    // ======================================================================
-  
-     // ======================================================================
-    // parte do codigo de barras e data de emição
-    // ======================================================================
-  
-  
-pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(20);
-    pdf.text('' + pedido.id, right, 10);
+    // ============================================================
+    // INFORMAÇÕES DO PEDIDO
+    // ============================================================
 
-    
-pdf.setFont('helvetica', 'normal');
-pdf.setFontSize(7); 
-pdf.text(
-    `Emitido em ${formatarDataPdf(new Date())}`, 170, 30,
-)
+    pdf.text(
+        'Evento: ' + evento,
+        130,
+        50
+    );
 
-   // ======================================================================
-    // fim da parte do codigo de barras e data de emição
-    // ======================================================================
-   
-        
-     
+    pdf.text(
+        'Vendedor: ' + vendedor,
+        130,
+        54
+    );
 
-    // Linha abaixo do cabeçalho
-    pdf.setDrawColor(90, 90, 90);
-    pdf.setLineWidth(0.25);
-
-    pdf.line(2,45 , larguraPagina - 2, 45);
-
-    pdf.setTextColor(28, 27, 46);
-}
-
-   // ======================================================================
-    // informações do cliente e do pedido
-    // ======================================================================
-adicionarCabecalho();
-
-// informações do cliente
-pdf.setFont('helvetica', 'bold');
-pdf.setFontSize(9);
-pdf.text('Código do cliente: ' + codigoCliente, 5, 50);
-
-pdf.setFont('helvetica', 'bold');
-pdf.setFontSize(9);
-pdf.text('Nome do Cliente: ' + clientes, 5, 54);
-
-pdf.setFont('helvetica', 'normal');
-pdf.setFontSize(7);
-pdf.text('CNPJ/CPF: ' + (documento || 'Não informado'), 5, 58);
-
-pdf.text(
-    'Contato: ' + (pedido.cliente_telefone || 'Não informado'),
-    5,
-    62
-);
-
-
-    // ======================================================================
-    // fim da parte de informações do cliente e do pedido
-    // ======================================================================
-
-// ==========================================================
-// informações do pedido
-// ==========================================================
-pdf.text(
-    'Evento: ' + (pedido.evento_nome || 'Não informado'),
-    130,
-    50
-);
-
-pdf.text(
-    'Vendedor: ' + (pedido.usuario_nome || 'Não informado'),
-    130,
-    54
-);
-
-pdf.text(
-    'Forma de pagamento: ' + (pedido.formaPagamento || 'Não informado'),
-    130,
-    58
-);
-
-
-// ==========================================================
-// fim da parte de informações do pedido
-// ==========================================================
+    pdf.text(
+        'Forma de pagamento: ' + formapagamento,
+        130,
+        58
+    );
 
     // ============================================================
     // TOTAIS DO PEDIDO
@@ -297,13 +336,11 @@ pdf.text(
             0
         );
 
-
     // ============================================================
-    // TÍTULO DOS TOTAIS
+    // TÍTULOS DOS TOTAIS
     // ============================================================
 
-    pdf.setFont(
-        'bold');
+    pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(7);
 
     pdf.text(
@@ -329,7 +366,6 @@ pdf.text(
         168,
         yTotais
     );
-
 
     // ============================================================
     // VALORES DOS TOTAIS
@@ -374,7 +410,6 @@ pdf.text(
         }
     );
 
-
     // ============================================================
     // LINHA ABAIXO DOS TOTAIS
     // ============================================================
@@ -388,7 +423,6 @@ pdf.text(
         200,
         yTotais + 10
     );
-
 
     // ============================================================
     // CABEÇALHO DOS PRODUTOS
@@ -435,7 +469,6 @@ pdf.text(
         yTabela
     );
 
-
     // ============================================================
     // LINHA DO CABEÇALHO
     // ============================================================
@@ -450,7 +483,6 @@ pdf.text(
         yTabela + 3
     );
 
-
     // ============================================================
     // PRODUTOS
     // ============================================================
@@ -461,7 +493,6 @@ pdf.text(
         Array.isArray(pedido.itens)
             ? pedido.itens
             : [];
-
 
     itens.forEach(item => {
 
@@ -507,7 +538,6 @@ pdf.text(
                 ''
             );
 
-
         // --------------------------------------------------------
         // DESCRIÇÃO
         // --------------------------------------------------------
@@ -518,10 +548,8 @@ pdf.text(
                 60
             );
 
-
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(7);
-
 
         // --------------------------------------------------------
         // CÓDIGO
@@ -533,7 +561,6 @@ pdf.text(
             yProduto
         );
 
-
         // --------------------------------------------------------
         // DESCRIÇÃO
         // --------------------------------------------------------
@@ -543,7 +570,6 @@ pdf.text(
             35,
             yProduto
         );
-
 
         // --------------------------------------------------------
         // VALOR UNITÁRIO
@@ -555,7 +581,6 @@ pdf.text(
             yProduto
         );
 
-
         // --------------------------------------------------------
         // QUANTIDADE
         // --------------------------------------------------------
@@ -565,7 +590,6 @@ pdf.text(
             140,
             yProduto
         );
-
 
         // --------------------------------------------------------
         // VALOR TOTAL
@@ -577,7 +601,6 @@ pdf.text(
             yProduto
         );
 
-
         // --------------------------------------------------------
         // PREVISÃO
         // --------------------------------------------------------
@@ -587,7 +610,6 @@ pdf.text(
             190,
             yProduto
         );
-
 
         // --------------------------------------------------------
         // LINHA DO PRODUTO
@@ -606,7 +628,6 @@ pdf.text(
             yProduto + 3
         );
 
-
         // --------------------------------------------------------
         // PRÓXIMO PRODUTO
         // --------------------------------------------------------
@@ -615,7 +636,6 @@ pdf.text(
             7,
             linhasDescricao.length * 4
         );
-
 
         // --------------------------------------------------------
         // NOVA PÁGINA
@@ -629,12 +649,10 @@ pdf.text(
 
             yProduto = 55;
         }
-
     });
 
-
     // ============================================================
-    // FINAL DO PDF
+    // RODAPÉ
     // ============================================================
 
     pdf.setFont('helvetica', 'normal');
@@ -652,160 +670,25 @@ pdf.text(
         285
     );
 
-
     // ============================================================
-    // SALVAR / IMPRIMIR
-    // ============================================================
-
-    if (imprimir && janelaDeImpressao) {
-
-        const pdfUrl =
-            pdf.output('bloburl');
-
-        janelaDeImpressao.location.href =
-            pdfUrl;
-
-    } else {
-
-        pdf.save(
-            `pedido-${pedido.id}.pdf`
-        );
-
-    }
-
-    
-    // ============================================================
-    // INÍCIO DO PDF
-    // ============================================================
-
-    adicionarCabecalho();
-
-    
-       
-    // ============================================================
-    // TOTAIS
-    // ============================================================
-
-   
-    if (y + 38 > 192) {
-        pdf.addPage();
-
-        adicionarCabecalho();
-
-        y = 45;
-    }
-
-    y += 8;
-
-    function adicionarTotal(
-    titulo,
-    valor,
-    destaque = false
-) {
-    pdf.setFont(
-    
-        destaque ? 'helvetica' : 'normal'
-    );
-
-    pdf.setFontSize(
-        destaque ? 12 : 9
-    );
-
-    pdf.text(
-        titulo,
-        232,
-        y,
-        {
-            align: 'right'
-        }
-    );
-
-    pdf.text(
-        fmtPdf(valor),
-        285,
-        y,
-        {
-            align: 'right'
-        }
-    );
-
-    y += destaque ? 8 : 6;
-}
-
-
-
-    adicionarTotal(
-        'Subtotal',
-        subtotal
-    );
-
-    pdf.setFont(
-        'helvetica',
-        'normal'
-    );
-
-    pdf.setFontSize(9);
-
-    pdf.text(
-        'Desconto',
-        170,
-        y,
-        {
-            align: 'right'
-        }
-    );
-
-    pdf.text(
-        `${desconto}%`,
-        285,
-        y,
-        {
-            align: 'right'
-        }
-    );
-
-    y += 6;
-
-    adicionarTotal(
-        'TOTAL',
-        total,
-        true
-    );
-
-    // ============================================================
-    // RODAPÉ
-    // ============================================================
-
-    pdf.setTextColor(
-        95,
-        99,
-        117
-    );
-
-    pdf.setFont(
-        'helvetica',
-        'normal'
-    );
-
-    pdf.setFontSize(8);
-
-    pdf.text(
-        'Documento gerado pelo sistema BM36.',
-        margem,
-        202
-    );
-
-    // ============================================================
-    // SALVAR / IMPRIMIR / COMPARTILHAR
+    // NOME DO ARQUIVO
     // ============================================================
 
     const nomeArquivo =
         `pedido-${pedido.id}.pdf`;
 
+    // ============================================================
+    // DISPOSITIVO MÓVEL
+    // ============================================================
+
     const dispositivoMovel =
         /Android|iPhone|iPad|iPod/i.test(
             navigator.userAgent
         );
+
+    // ============================================================
+    // IMPRESSÃO
+    // ============================================================
 
     if (
         imprimir &&
@@ -815,14 +698,8 @@ pdf.text(
         pdf.autoPrint();
     }
 
-    const blobPdf =
-        pdf.output('blob');
-
-    // ============================================================
-    // IMPRESSÃO
-    // ============================================================
-
     if (imprimir) {
+
         const janelaImpressao =
             janelaDeImpressao ||
             window.open(
@@ -831,12 +708,16 @@ pdf.text(
             );
 
         if (!janelaImpressao) {
+
             alert(
                 'O navegador bloqueou a janela de impressão. Permita pop-ups e tente novamente.'
             );
 
             return;
         }
+
+        const blobPdf =
+            pdf.output('blob');
 
         const urlPdf =
             URL.createObjectURL(
@@ -858,10 +739,15 @@ pdf.text(
     // ============================================================
 
     try {
+
         if (
             typeof File === 'function' &&
             navigator.canShare
         ) {
+
+            const blobPdf =
+                pdf.output('blob');
+
             const arquivo =
                 new File(
                     [blobPdf],
@@ -876,6 +762,7 @@ pdf.text(
                     files: [arquivo]
                 })
             ) {
+
                 await navigator.share({
                     title:
                         `Pedido #${pedido.id}`,
@@ -889,7 +776,9 @@ pdf.text(
                 return;
             }
         }
+
     } catch (erro) {
+
         if (
             erro.name === 'AbortError'
         ) {
@@ -906,5 +795,8 @@ pdf.text(
     // DOWNLOAD
     // ============================================================
 
-    pdf.save(nomeArquivo);
+    pdf.save(
+        nomeArquivo
+    );
 }
+
