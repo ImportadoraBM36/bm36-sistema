@@ -3243,7 +3243,8 @@ app.get(
 
  v."formaPagamento" AS "formaPagamento",
             v.status,
-            v.criado_em
+            v.criado_em,
+            v.observacoes_pedido
 
         FROM vendas v
 
@@ -3798,7 +3799,8 @@ app.put('/api/vendas/:id', async (req, res) => {
         const {
             itens,
             desconto = 0,
-            evento_id = null
+            evento_id = null,
+            observacoes_pedido
         } = req.body;
 
 
@@ -3866,7 +3868,8 @@ app.put('/api/vendas/:id', async (req, res) => {
                 desconto,
                 total,
                 status,
-                evento_id
+                evento_id,
+                observacoes_pedido
             FROM vendas
             WHERE id = $1
             FOR UPDATE
@@ -4357,6 +4360,18 @@ const precoUnitario =
 
 
         // ========================================================
+        // OBSERVAÇÕES DO PEDIDO
+        // ========================================================
+        // Se o campo não for enviado, mantém o texto já salvo
+        // (permite que outras edições não apaguem a observação).
+
+        const observacoesFinal =
+            observacoes_pedido !== undefined
+                ? String(observacoes_pedido)
+                : venda.observacoes_pedido;
+
+
+        // ========================================================
         // ATUALIZAR VENDA
         // ========================================================
 
@@ -4367,8 +4382,9 @@ const precoUnitario =
                 subtotal = $1,
                 desconto = $2,
                 total = $3,
-                evento_id = $4
-            WHERE id = $5
+                evento_id = $4,
+                observacoes_pedido = $5
+            WHERE id = $6
             RETURNING *
             `,
             [
@@ -4376,6 +4392,7 @@ const precoUnitario =
                 descontoFinal,
                 novoTotal,
                 eventoIdFinal,
+                observacoesFinal,
                 vendaId
             ]
         );
@@ -8357,6 +8374,16 @@ async function iniciarServidor() {
             ALTER TABLE vendas
                 ADD COLUMN IF NOT EXISTS transportadora_id INTEGER
                     REFERENCES transportadoras(id)
+        `);
+
+        // Texto padrão que aparece no PDF do pedido, editável
+        // por venda através do modal de pedido/vendido.
+        await pool.query(`
+            ALTER TABLE vendas
+                ADD COLUMN IF NOT EXISTS observacoes_pedido TEXT
+                    DEFAULT 'AS 3 PRIMEIRAS COMPRAS O PAGAMENTO É À VISTA ANTECIPADO
+PEDIDOS Á PRAZO, SUJEITO A CONSULTA E LIBERAÇÃO FINANCEIRA
+POR FAVOR INDICAR 5 FORNECEDORES QUE JÁ COMPRA Á PRAZO (MÍNIMO DE 1 ANO)'
         `);
 
         app.listen(

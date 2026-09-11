@@ -1094,6 +1094,59 @@ table {
 }
 
 
+.observacoes-pedido-textarea {
+
+    width:
+        100%;
+
+    padding:
+        11px;
+
+    border:
+        none;
+
+    border-radius:
+        8px;
+
+    resize:
+        vertical;
+
+    font-family:
+        inherit;
+
+    font-size:
+        13px;
+
+    outline:
+        none;
+}
+
+
+.observacoes-pedido-texto {
+
+    margin:
+        0 0 16px;
+
+    padding:
+        11px;
+
+    border-radius:
+        8px;
+
+    background:
+        rgba(255, 255, 255, 0.04);
+
+    font-size:
+        13px;
+
+    line-height:
+        1.5;
+
+    white-space:
+        pre-line;
+}
+
+
 .cancelamento-info {
 
     display:

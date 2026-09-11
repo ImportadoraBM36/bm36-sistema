@@ -668,6 +668,46 @@ if (modalFormaPagamento) {
     }
 
     renderItensModal();
+
+    renderObservacoesPedido();
+}
+
+
+// ============================================================
+// OBSERVAÇÕES DO PEDIDO (texto padrão editável, aparece no PDF)
+// ============================================================
+
+function renderObservacoesPedido() {
+    const container = document.getElementById('containerObservacoesPedido');
+    if (!container || !pedidoAberto) return;
+
+    const texto = pedidoAberto.observacoes_pedido || '';
+
+    if (modoEdicao) {
+        container.innerHTML = `
+            <textarea
+                id="inputObservacoesPedido"
+                class="observacoes-pedido-textarea"
+                rows="4"
+                placeholder="Texto que aparece no PDF do pedido..."
+            >${texto}</textarea>
+        `;
+
+        const inputObservacoes = document.getElementById('inputObservacoesPedido');
+        if (inputObservacoes) {
+            inputObservacoes.addEventListener('input', e => {
+                pedidoAberto.observacoes_pedido = e.target.value;
+            });
+        }
+    } else {
+        container.innerHTML = `
+            <p class="observacoes-pedido-texto">${
+                texto
+                    ? texto.replace(/\n/g, '<br>')
+                    : '<em>Sem observações.</em>'
+            }</p>
+        `;
+    }
 }
 
 
@@ -886,7 +926,8 @@ const dadosAtualizados = {
     total,
     evento_id: eventoPedido?.value
         ? Number(eventoPedido.value)
-        : null
+        : null,
+    observacoes_pedido: pedidoAberto.observacoes_pedido || ''
 };
 
 
