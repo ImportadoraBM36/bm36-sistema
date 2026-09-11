@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nova Venda - BM36</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./CadastroTransportadora.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- ============================================================
+     HEADER
+     ============================================================ -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="logo">
+
+                <img src="./imagem/logo2.jpg" alt="BM36">
+
+            </div>
+
+            <span class="wordmark"></span>
+
+        </div>
+
+
+        <nav
+      class="mainnav"
+      id="mainnav"
+    >
+
+      <a
+        href="./inicio.html"
+        
+        data-page="inicio"
+      >
+        Início
+      </a>
+
+
+      <a
+        href="./venda.html"
+        data-page="venda"
+        class="active"
+      >
+        Venda
+      </a>
+
+
+      <a
+        href="./produtos.html"
+        data-page="produtos"
+      >
+        Produtos
+      </a>
+
+
+ 
+
+
+      <a
+        href="./estoque.html"
+        data-page="estoque"
+      >
+        Estoque
+      </a>
+
+
+      <a
+        href="./CadastroCliente.html"
+        data-page="clientes"
+      >
+        Clientes
+      </a>
+
+
+      <a
+        href="./vendido.html"
+        data-page="pedidos"
+      >
+        Pedidos
+      </a>
+<a href="./eventos.html">
+    Eventos
+</a>
+    </nav>
+
+
+        <div class="topbar-right">
+
+            <div class="avatar" id="avatarInitials">
+                FN
+            </div>
+
+            <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu">
+
+                <span></span>
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- ============================================================
+     CONTEÚDO
+     ============================================================ -->
+
+<main>
+
+<!-- ========================================================
+     ABAS
+     ======================================================== -->
+
+<div class="transportadoras-tabs">
+
+    <button
+        type="button"
+        class="transportadora-tab active"
+        id="tabListaTransportadoras"
+    >
+        Transportadoras cadastradas
+    </button>
+
+
+    <button
+        type="button"
+        class="transportadora-tab"
+        id="tabNovaTransportadora"
+    >
+        + Nova transportadora
+    </button>
+
+</div>
+
+
+<!-- ========================================================
+     LISTA DE TRANSPORTADORAS
+     ======================================================== -->
+
+<section
+    id="secaoListaTransportadoras"
+    class="transportadoras-lista-section"
+>
+
+    <div class="transportadoras-lista-topo">
+
+        <div>
+
+            <div class="page-title">
+                Transportadoras
+            </div>
+
+            <div class="page-sub">
+                Consulte e altere as transportadoras cadastradas.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <section class="card transportadoras-lista-card">
+
+
+        <div class="transportadoras-busca">
+
+            <span class="transportadoras-busca-icone">
+                🔎
+            </span>
+
+
+            <input
+                type="text"
+                id="buscaTransportadoras"
+                placeholder="Buscar por código, razão social, CNPJ ou telefone..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="transportadoras-table-wrapper">
+
+            <table class="transportadoras-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Código
+                        </th>
+
+                        <th>
+                            Transportadora
+                        </th>
+
+                        <th>
+                            CNPJ
+                        </th>
+
+                        <th>
+                            Telefone
+                        </th>
+
+                        <th>
+                            Cidade
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="transportadorasBody">
+
+                    <tr>
+
+                        <td colspan="7">
+                            Carregando transportadoras...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="transportadoras-paginacao">
+
+            <span id="transportadorasContador">
+                Carregando...
+            </span>
+
+
+            <div class="transportadoras-paginas">
+
+                <button
+                    type="button"
+                    id="transportadorasAnterior"
+                >
+                    ◀
+                </button>
+
+
+                <div id="transportadorasNumerosPaginas">
+                </div>
+
+
+                <button
+                    type="button"
+                    id="transportadorasProximo"
+                >
+                    ▶
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</section>
+
+
+<!-- ========================================================
+     FORMULÁRIO DE TRANSPORTADORA
+     ======================================================== -->
+
+<section
+    id="secaoFormularioTransportadora"
+    class="transportadora-form-section escondido"
+>
+
+
+    <div class="page-top">
+
+        <div>
+
+            <div class="breadcrumb">
+
+                Transportadoras /
+
+                <span>
+                    Novo cadastro
+                </span>
+
+            </div>
+
+
+            <div class="page-title">
+                Cadastro de Transportadora
+            </div>
+
+
+            <div class="page-sub">
+                Preencha os dados para adicionar uma nova transportadora.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <form id="transportadoraForm">
+
+
+        <!-- ====================================================
+             DADOS GERAIS
+             ==================================================== -->
+
+        <section class="card">
+
+            <h2>
+                Dados Gerais
+            </h2>
+
+
+            <div class="fields">
+
+
+                <div
+                    class="field col-2"
+                    id="razaoSocialField"
+                >
+
+                    <label
+                        for="razaoSocialTransportadora"
+                    >
+                        Razão Social
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="razaoSocialTransportadora"
+                        placeholder="Ex.: Transportadora BM36 Ltda."
+                        required
+                    >
+
+                </div>
+
+
+                <div
+                    class="field col-2"
+                    id="nomeFantasiaField"
+                >
+
+                    <label
+                        for="nomeFantasiaTransportadora"
+                    >
+                        Nome Fantasia
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="nomeFantasiaTransportadora"
+                        placeholder="Ex.: BM36 Transportes"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="cnpjTransportadora">
+                        CNPJ
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="cnpjTransportadora"
+                        placeholder="00.000.000/0000-00"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="ieTransportadora">
+                        Inscrição Estadual (IE)
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="ieTransportadora"
+                        placeholder="Ex.: 123.456.789.012 ou Isento"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="telefoneTransportadora">
+                        Telefone
+                    </label>
+
+
+                    <input
+                        type="tel"
+                        id="telefoneTransportadora"
+                        placeholder="(00) 00000-0000"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="emailTransportadora">
+                        E-mail
+                    </label>
+
+
+                    <input
+                        type="email"
+                        id="emailTransportadora"
+                        placeholder="transportadora@email.com"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="contatoTransportadora">
+                        Pessoa de contato
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="contatoTransportadora"
+                        placeholder="Nome do responsável"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="categoriaTransportadora">
+                        Categoria
+                    </label>
+
+
+                    <select id="categoriaTransportadora">
+
+                        <option value="Rodoviário">
+                            Rodoviário
+                        </option>
+
+                        <option value="Transportadora">
+                            Transportadora
+                        </option>
+
+                        <option value="Frete">
+                            Frete
+                        </option>
+
+                        <option value="Outro">
+                            Outro
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ====================================================
+             ENDEREÇO
+             ==================================================== -->
+
+        <section class="card">
+
+            <h2>
+                Endereço
+            </h2>
+
+
+            <div class="fields">
+
+
+                <div class="field">
+
+                    <label for="cepTransportadora">
+                        CEP
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="cepTransportadora"
+                        placeholder="00000-000"
+                        maxlength="9"
+                        autocomplete="postal-code"
+                    >
+
+                </div>
+
+
+                <div class="field col-2">
+
+                    <label for="ruaTransportadora">
+                        Rua
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="ruaTransportadora"
+                        placeholder="Nome da rua"
+                        autocomplete="address-line1"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="numeroTransportadora">
+                        Número
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="numeroTransportadora"
+                        placeholder="Nº"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="complementoTransportadora">
+                        Complemento
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="complementoTransportadora"
+                        placeholder="Sala, galpão, bloco, etc."
+                        autocomplete="address-line2"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="bairroTransportadora">
+                        Bairro
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="bairroTransportadora"
+                        placeholder="Bairro"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="cidadeTransportadora">
+                        Cidade
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="cidadeTransportadora"
+                        placeholder="Cidade"
+                        autocomplete="address-level2"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="ufTransportadora">
+                        UF
+                    </label>
+
+
+                    <select
+                        id="ufTransportadora"
+                        autocomplete="address-level1"
+                    >
+
+                        <option value="">
+                            Selecione
+                        </option>
+
+                        <option value="AC">AC</option>
+                        <option value="AL">AL</option>
+                        <option value="AP">AP</option>
+                        <option value="AM">AM</option>
+                        <option value="BA">BA</option>
+                        <option value="CE">CE</option>
+                        <option value="DF">DF</option>
+                        <option value="ES">ES</option>
+                        <option value="GO">GO</option>
+                        <option value="MA">MA</option>
+                        <option value="MT">MT</option>
+                        <option value="MS">MS</option>
+                        <option value="MG">MG</option>
+                        <option value="PA">PA</option>
+                        <option value="PB">PB</option>
+                        <option value="PR">PR</option>
+                        <option value="PE">PE</option>
+                        <option value="PI">PI</option>
+                        <option value="RJ">RJ</option>
+                        <option value="RN">RN</option>
+                        <option value="RS">RS</option>
+                        <option value="RO">RO</option>
+                        <option value="RR">RR</option>
+                        <option value="SC">SC</option>
+                        <option value="SP">SP</option>
+                        <option value="SE">SE</option>
+                        <option value="TO">TO</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ====================================================
+             OBSERVAÇÕES
+             ==================================================== -->
+
+        <section class="card">
+
+            <h2>
+                Observações
+            </h2>
+
+
+            <div class="fields">
+
+                <div class="field col-4">
+
+                    <label for="observacoesTransportadora">
+                        Notas internas
+                    </label>
+
+
+                    <textarea
+                        id="observacoesTransportadora"
+                        placeholder="Condições de transporte, regiões atendidas, observações gerais..."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="status-row">
+
+                <div
+                    class="switch on"
+                    id="statusSwitch"
+                >
+                </div>
+
+
+                <span
+                    id="statusText"
+                    class="status-pill"
+                >
+                    Transportadora ativa
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- ====================================================
+             AÇÕES
+             ==================================================== -->
+
+        <div class="actions">
+
+            <button
+                type="button"
+                class="btn btn-ghost"
+                id="cancelBtn"
+            >
+                Cancelar
+            </button>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                id="salvarTransportadoraBtn"
+            >
+                Salvar Transportadora
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+</main>
+
+<!-- ============================================================ TOAST ============================================================ -->
+
+<div class="toast" id="toast" >
+
+<svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#fff"
+    stroke-width="2.4"
+>
+
+    <polyline
+        points="20 6 9 17 4 12"
+    ></polyline>
+
+</svg>
+
+
+<span>
+    Transportadora cadastrada com sucesso!
+</span>
+
+</div>
+
+
+    <script src="./header.js"></script>
+
+   <script src="https://unpkg.com/html5-qrcode"></script>
+
+<script src="./CadastroTransportadora.js"></script>
+
+</body>
+
+</html>
