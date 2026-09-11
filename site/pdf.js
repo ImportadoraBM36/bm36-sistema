@@ -703,7 +703,7 @@ pdf.text(
     destaque = false
 ) {
     pdf.setFont(
-        'helvetica',
+        
         destaque ? 'helvetica' : 'normal'
     );
 
