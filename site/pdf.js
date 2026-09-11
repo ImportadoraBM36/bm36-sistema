@@ -704,7 +704,7 @@ pdf.text(
 ) {
     pdf.setFont(
         'helvetica',
-        destaque ? 'bold' : 'normal'
+        destaque ? 'helvetica' : 'normal'
     );
 
     pdf.setFontSize(
