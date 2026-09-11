@@ -8229,6 +8229,16 @@ async function iniciarServidor() {
                 ADD COLUMN IF NOT EXISTS origem_sistema_antigo TEXT
         `);
 
+        // Cria a tabela transportadoras caso ainda não exista
+        // (o restante do código já assume essas colunas base).
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS transportadoras (
+                id SERIAL PRIMARY KEY,
+                nome TEXT NOT NULL,
+                cnpj TEXT
+            )
+        `);
+
         // A tabela transportadoras só tinha id, nome e cnpj.
         // CNPJ deixa de ser obrigatório (nem toda transportadora
         // terceira que a empresa usa tem esse dado disponível).
