@@ -4019,19 +4019,17 @@ function autenticar(
 
     } catch (erro) {
 
-        return res
-            .status(401)
-            .json({
+    console.error('ERRO JWT:', erro.name);
+    console.error('MENSAGEM JWT:', erro.message);
 
-                sucesso:
-                    false,
+    return res
+        .status(401)
+        .json({
+            sucesso: false,
+            mensagem: 'Sessão expirada ou inválida.'
+        });
 
-                mensagem:
-                    'Sessão expirada ou inválida.'
-
-            });
-
-    }
+}
 
 }
 
