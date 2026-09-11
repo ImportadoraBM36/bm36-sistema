@@ -9,21 +9,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // ==============================
-    // SEÇÕES DAS ABAS
+    // SEÇÕES DAS TELAS
     // ==============================
 
     const secaoLista = document.getElementById("secaoListaTransportadoras");
-    const secaoNova = document.getElementById("secaoNovaTransportadora");
+    const secaoFormulario = document.getElementById("secaoFormularioTransportadora");
 
 
     // ==============================
-    // TRANSPORTADORAS CADASTRADAS
+    // ABRIR LISTA DE TRANSPORTADORAS
     // ==============================
 
     abaLista.addEventListener("click", () => {
 
         secaoLista.style.display = "block";
-        secaoNova.style.display = "none";
+        secaoFormulario.style.display = "none";
 
         abaLista.classList.add("active");
         abaNova.classList.remove("active");
@@ -32,13 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // ==============================
-    // NOVA TRANSPORTADORA
+    // ABRIR NOVA TRANSPORTADORA
     // ==============================
 
     abaNova.addEventListener("click", () => {
 
         secaoLista.style.display = "none";
-        secaoNova.style.display = "block";
+        secaoFormulario.style.display = "block";
 
         abaLista.classList.remove("active");
         abaNova.classList.add("active");
