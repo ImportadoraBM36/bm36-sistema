@@ -242,27 +242,23 @@ pdf.text(
 // ==========================================================
 // informações do pedido
 // ==========================================================
+pdf.text(
+    'Evento: ' + (pedido.evento_nome || 'Não informado'),
+    130,
+    50
+);
 
-pdf.setFont('helvetica', 'bold');
-pdf.setFontSize(9);
-pdf.text('Evento: ' + (evento), 130, 50)
-
-
-pdf.setFont('helvetica', 'bold');
-pdf.setFontSize(9);
 pdf.text(
     'Vendedor: ' + (pedido.usuario_nome || 'Não informado'),
     130,
     54
 );
 
-pdf.setFont('helvetica', 'bold');
-pdf.setFontSize(9);
-pdf.text('forma de pagamento: ' + (formapagamento || 'Não informado') , 130, 58)
-
-
-
-
+pdf.text(
+    'Forma de pagamento: ' + (pedido.formaPagamento || 'Não informado'),
+    130,
+    58
+);
 
 
 // ==========================================================
