@@ -1655,6 +1655,648 @@ app.put(
 );
 
 // ============================================================
+// TRANSPORTADORAS
+// ============================================================
+
+
+// =========================
+// LISTAR TRANSPORTADORAS
+// =========================
+
+app.get(
+    '/api/transportadoras',
+    async (req, res) => {
+
+        try {
+
+            const resultado = await pool.query(`
+                SELECT
+                    id,
+                    nome,
+                    cnpj,
+                    telefone,
+                    email,
+                    contato,
+                    categoria,
+                    ie,
+                    cep,
+                    rua,
+                    numero,
+                    complemento,
+                    bairro,
+                    cidade,
+                    uf,
+                    observacoes,
+                    ativo,
+                    criado_em,
+                    atualizado_em
+
+                FROM transportadoras
+
+                ORDER BY nome
+            `);
+
+            res.json(resultado.rows);
+
+        } catch (erro) {
+
+            console.error(
+                'Erro ao buscar transportadoras:',
+                erro
+            );
+
+            res.status(500).json({
+                sucesso: false,
+                mensagem:
+                    'Erro ao buscar transportadoras.'
+            });
+
+        }
+
+    }
+);
+
+
+// =========================
+// BUSCAR TRANSPORTADORA POR ID
+// =========================
+
+app.get(
+    '/api/transportadoras/:id',
+    async (req, res) => {
+
+        try {
+
+            const { id } = req.params;
+
+            const resultado = await pool.query(
+                `
+                SELECT
+                    id,
+                    nome,
+                    cnpj,
+                    telefone,
+                    email,
+                    contato,
+                    categoria,
+                    ie,
+                    cep,
+                    rua,
+                    numero,
+                    complemento,
+                    bairro,
+                    cidade,
+                    uf,
+                    observacoes,
+                    ativo,
+                    criado_em,
+                    atualizado_em
+
+                FROM transportadoras
+
+                WHERE id = $1
+                `,
+                [id]
+            );
+
+
+            if (resultado.rows.length === 0) {
+
+                return res.status(404).json({
+                    sucesso: false,
+                    mensagem:
+                        'Transportadora não encontrada.'
+                });
+
+            }
+
+
+            res.json(resultado.rows[0]);
+
+        } catch (erro) {
+
+            console.error(
+                'Erro ao buscar transportadora:',
+                erro
+            );
+
+            res.status(500).json({
+                sucesso: false,
+                mensagem:
+                    'Erro ao buscar transportadora.'
+            });
+
+        }
+
+    }
+);
+
+
+// =========================
+// CADASTRAR TRANSPORTADORA
+// =========================
+
+app.post(
+    '/api/transportadoras',
+    async (req, res) => {
+
+        try {
+
+            const {
+                nome,
+                cnpj,
+                telefone,
+                email,
+                contato,
+                categoria,
+                ie,
+                cep,
+                rua,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                uf,
+                observacoes,
+                ativo
+            } = req.body;
+
+
+            // =========================
+            // CAMPOS OBRIGATÓRIOS
+            // =========================
+            // Nem sempre sabemos CNPJ, endereço etc. de
+            // transportadoras de fora da empresa, então só
+            // nome e telefone de contato são exigidos.
+
+            if (!nome || !telefone) {
+
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem:
+                        'Nome e telefone para contato são obrigatórios.'
+                });
+
+            }
+
+
+            // Remove pontuação do CNPJ quando informado
+            const cnpjLimpo =
+                cnpj
+                    ? String(cnpj).replace(/\D/g, '')
+                    : null;
+
+
+            if (cnpjLimpo && cnpjLimpo.length !== 14) {
+
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem:
+                        'CNPJ inválido.'
+                });
+
+            }
+
+
+            // =========================
+            // VERIFICAR DUPLICIDADE (só quando há CNPJ)
+            // =========================
+
+            if (cnpjLimpo) {
+
+                const transportadoraExistente =
+                    await pool.query(
+                        `
+                        SELECT id
+                        FROM transportadoras
+                        WHERE cnpj = $1
+                        LIMIT 1
+                        `,
+                        [cnpjLimpo]
+                    );
+
+
+                if (transportadoraExistente.rows.length > 0) {
+
+                    return res.status(409).json({
+                        sucesso: false,
+                        mensagem:
+                            'Já existe uma transportadora cadastrada com este CNPJ.'
+                    });
+
+                }
+
+            }
+
+
+            // =========================
+            // CADASTRAR
+            // =========================
+
+            const resultado =
+                await pool.query(
+                    `
+                    INSERT INTO transportadoras (
+                        nome,
+                        cnpj,
+                        telefone,
+                        email,
+                        contato,
+                        categoria,
+                        ie,
+                        cep,
+                        rua,
+                        numero,
+                        complemento,
+                        bairro,
+                        cidade,
+                        uf,
+                        observacoes,
+                        ativo
+                    )
+
+                    VALUES (
+                        $1,
+                        $2,
+                        $3,
+                        $4,
+                        $5,
+                        $6,
+                        $7,
+                        $8,
+                        $9,
+                        $10,
+                        $11,
+                        $12,
+                        $13,
+                        $14,
+                        $15,
+                        $16
+                    )
+
+                    RETURNING *
+                    `,
+                    [
+                        nome.trim(),
+
+                        cnpjLimpo,
+
+                        telefone.trim(),
+
+                        email
+                            ? email.trim().toLowerCase()
+                            : null,
+
+                        contato
+                            ? contato.trim()
+                            : null,
+
+                        categoria || null,
+
+                        ie
+                            ? ie.trim()
+                            : null,
+
+                        cep
+                            ? String(cep).replace(/\D/g, '')
+                            : null,
+
+                        rua
+                            ? rua.trim()
+                            : null,
+
+                        numero
+                            ? String(numero).trim()
+                            : null,
+
+                        complemento
+                            ? complemento.trim()
+                            : null,
+
+                        bairro
+                            ? bairro.trim()
+                            : null,
+
+                        cidade
+                            ? cidade.trim()
+                            : null,
+
+                        uf
+                            ? uf.trim().toUpperCase()
+                            : null,
+
+                        observacoes
+                            ? observacoes.trim()
+                            : null,
+
+                        ativo !== false
+                    ]
+                );
+
+
+            res.status(201).json({
+                sucesso: true,
+
+                mensagem:
+                    'Transportadora cadastrada com sucesso!',
+
+                transportadora:
+                    resultado.rows[0]
+            });
+
+
+        } catch (erro) {
+
+            console.error(
+                'Erro ao cadastrar transportadora:',
+                erro
+            );
+
+
+            if (erro.code === '23505') {
+
+                return res.status(409).json({
+                    sucesso: false,
+                    mensagem:
+                        'Já existe uma transportadora cadastrada com este CNPJ.'
+                });
+
+            }
+
+
+            res.status(500).json({
+                sucesso: false,
+                mensagem:
+                    'Erro interno ao cadastrar transportadora.'
+            });
+
+        }
+
+    }
+);
+
+
+// =========================
+// ALTERAR TRANSPORTADORA
+// =========================
+
+app.put(
+    '/api/transportadoras/:id',
+    async (req, res) => {
+
+        try {
+
+            const { id } = req.params;
+
+            const {
+                nome,
+                cnpj,
+                telefone,
+                email,
+                contato,
+                categoria,
+                ie,
+                cep,
+                rua,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                uf,
+                observacoes,
+                ativo
+            } = req.body;
+
+
+            if (!nome || !telefone) {
+
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem:
+                        'Nome e telefone para contato são obrigatórios.'
+                });
+
+            }
+
+
+            const cnpjLimpo =
+                cnpj
+                    ? String(cnpj).replace(/\D/g, '')
+                    : null;
+
+
+            if (cnpjLimpo && cnpjLimpo.length !== 14) {
+
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem:
+                        'CNPJ inválido.'
+                });
+
+            }
+
+
+            // Verifica se outra transportadora
+            // já usa o mesmo CNPJ
+
+            if (cnpjLimpo) {
+
+                const duplicado =
+                    await pool.query(
+                        `
+                        SELECT id
+
+                        FROM transportadoras
+
+                        WHERE cnpj = $1
+                          AND id <> $2
+
+                        LIMIT 1
+                        `,
+                        [
+                            cnpjLimpo,
+                            id
+                        ]
+                    );
+
+
+                if (duplicado.rows.length > 0) {
+
+                    return res.status(409).json({
+                        sucesso: false,
+                        mensagem:
+                            'Já existe outra transportadora com este CNPJ.'
+                    });
+
+                }
+
+            }
+
+
+            const resultado =
+                await pool.query(
+                    `
+                    UPDATE transportadoras
+
+                    SET
+                        nome = $1,
+                        cnpj = $2,
+                        telefone = $3,
+                        email = $4,
+                        contato = $5,
+                        categoria = $6,
+                        ie = $7,
+                        cep = $8,
+                        rua = $9,
+                        numero = $10,
+                        complemento = $11,
+                        bairro = $12,
+                        cidade = $13,
+                        uf = $14,
+                        observacoes = $15,
+                        ativo = $16,
+                        atualizado_em = NOW()
+
+                    WHERE id = $17
+
+                    RETURNING *
+                    `,
+                    [
+                        nome.trim(),
+                        cnpjLimpo,
+                        telefone.trim(),
+                        email || null,
+                        contato || null,
+                        categoria || null,
+                        ie || null,
+                        cep || null,
+                        rua || null,
+                        numero || null,
+                        complemento || null,
+                        bairro || null,
+                        cidade || null,
+                        uf || null,
+                        observacoes || null,
+                        ativo !== false,
+                        id
+                    ]
+                );
+
+
+            if (resultado.rows.length === 0) {
+
+                return res.status(404).json({
+                    sucesso: false,
+                    mensagem:
+                        'Transportadora não encontrada.'
+                });
+
+            }
+
+
+            res.json({
+                sucesso: true,
+                mensagem:
+                    'Transportadora alterada com sucesso!',
+                transportadora:
+                    resultado.rows[0]
+            });
+
+
+        } catch (erro) {
+
+            console.error(
+                'Erro ao alterar transportadora:',
+                erro
+            );
+
+
+            if (erro.code === '23505') {
+
+                return res.status(409).json({
+                    sucesso: false,
+                    mensagem:
+                        'Já existe outra transportadora com este CNPJ.'
+                });
+
+            }
+
+
+            res.status(500).json({
+                sucesso: false,
+                mensagem:
+                    'Erro interno ao alterar transportadora.'
+            });
+
+        }
+
+    }
+);
+
+
+// =========================
+// EXCLUIR TRANSPORTADORA
+// =========================
+
+app.delete(
+    '/api/transportadoras/:id',
+    async (req, res) => {
+
+        try {
+
+            const { id } = req.params;
+
+            const resultado =
+                await pool.query(
+                    `
+                    DELETE FROM transportadoras
+
+                    WHERE id = $1
+
+                    RETURNING id
+                    `,
+                    [id]
+                );
+
+
+            if (resultado.rows.length === 0) {
+
+                return res.status(404).json({
+                    sucesso: false,
+                    mensagem:
+                        'Transportadora não encontrada.'
+                });
+
+            }
+
+
+            res.json({
+                sucesso: true,
+                mensagem:
+                    'Transportadora excluída com sucesso!'
+            });
+
+
+        } catch (erro) {
+
+            console.error(
+                'Erro ao excluir transportadora:',
+                erro
+            );
+
+            res.status(500).json({
+                sucesso: false,
+                mensagem:
+                    'Erro interno ao excluir transportadora.'
+            });
+
+        }
+
+    }
+);
+
+
+// ============================================================
 // VENDAS
 // ============================================================
 
@@ -7585,6 +8227,30 @@ async function iniciarServidor() {
                 ADD COLUMN IF NOT EXISTS ie TEXT,
                 ADD COLUMN IF NOT EXISTS codigo_sistema_antigo TEXT,
                 ADD COLUMN IF NOT EXISTS origem_sistema_antigo TEXT
+        `);
+
+        // A tabela transportadoras só tinha id, nome e cnpj.
+        // CNPJ deixa de ser obrigatório (nem toda transportadora
+        // terceira que a empresa usa tem esse dado disponível).
+        await pool.query(`
+            ALTER TABLE transportadoras
+                ALTER COLUMN cnpj DROP NOT NULL,
+                ADD COLUMN IF NOT EXISTS telefone TEXT,
+                ADD COLUMN IF NOT EXISTS email TEXT,
+                ADD COLUMN IF NOT EXISTS contato TEXT,
+                ADD COLUMN IF NOT EXISTS categoria TEXT,
+                ADD COLUMN IF NOT EXISTS ie TEXT,
+                ADD COLUMN IF NOT EXISTS cep TEXT,
+                ADD COLUMN IF NOT EXISTS rua TEXT,
+                ADD COLUMN IF NOT EXISTS numero TEXT,
+                ADD COLUMN IF NOT EXISTS complemento TEXT,
+                ADD COLUMN IF NOT EXISTS bairro TEXT,
+                ADD COLUMN IF NOT EXISTS cidade TEXT,
+                ADD COLUMN IF NOT EXISTS uf TEXT,
+                ADD COLUMN IF NOT EXISTS observacoes TEXT,
+                ADD COLUMN IF NOT EXISTS ativo BOOLEAN DEFAULT TRUE,
+                ADD COLUMN IF NOT EXISTS criado_em TIMESTAMP DEFAULT NOW(),
+                ADD COLUMN IF NOT EXISTS atualizado_em TIMESTAMP DEFAULT NOW()
         `);
 
         app.listen(

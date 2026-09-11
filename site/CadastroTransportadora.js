@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================================================
     // CONFIGURAÇÃO DA API
     // ============================================================
-    // Ajuste aqui se o caminho dos endpoints no seu backend for diferente.
+
     const API_URL = "https://bm36-sistema-production.up.railway.app/api";
     const ENDPOINT_TRANSPORTADORAS = `${API_URL}/transportadoras`;
 
@@ -45,8 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnCancelar = document.getElementById("cancelBtn");
 
     const campos = {
-        razaoSocial: document.getElementById("razaoSocialTransportadora"),
-        nomeFantasia: document.getElementById("nomeFantasiaTransportadora"),
+        nome: document.getElementById("nomeTransportadora"),
         cnpj: document.getElementById("cnpjTransportadora"),
         ie: document.getElementById("ieTransportadora"),
         telefone: document.getElementById("telefoneTransportadora"),
@@ -68,6 +67,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const toast = document.getElementById("toast");
     const toastMensagem = toast ? toast.querySelector("span") : null;
+
+    const TEXTO_SUB_PADRAO =
+        "Preencha os dados para adicionar uma nova transportadora. Só Nome/Razão Social e Telefone são obrigatórios — o resto você preenche quando tiver a informação.";
 
 
     // ============================================================
@@ -155,7 +157,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const dados = await resposta.json();
 
-            // Aceita tanto um array direto quanto algo como { transportadoras: [...] }
             state.transportadoras = Array.isArray(dados) ? dados : (dados.transportadoras || []);
 
             state.paginaAtual = 1;
@@ -188,16 +189,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!termo) return state.transportadoras;
 
         return state.transportadoras.filter((item) => {
-            const codigo = String(item.codigo ?? item.id ?? "").toLowerCase();
-            const razaoSocial = String(item.razaoSocial ?? "").toLowerCase();
-            const nomeFantasia = String(item.nomeFantasia ?? "").toLowerCase();
+            const id = String(item.id ?? "").toLowerCase();
+            const nome = String(item.nome ?? "").toLowerCase();
             const cnpj = String(item.cnpj ?? "").toLowerCase();
             const telefone = String(item.telefone ?? "").toLowerCase();
 
             return (
-                codigo.includes(termo) ||
-                razaoSocial.includes(termo) ||
-                nomeFantasia.includes(termo) ||
+                id.includes(termo) ||
+                nome.includes(termo) ||
                 cnpj.includes(termo) ||
                 telefone.includes(termo)
             );
@@ -227,14 +226,13 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
         } else {
             corpoTabela.innerHTML = pagina.map((item) => {
-                const id = item.id ?? item._id;
                 const ativo = item.ativo !== false;
 
                 return `
                     <tr>
-                        <td>${escaparHtml(item.codigo ?? id ?? "-")}</td>
-                        <td class="transportadora-nome-tabela">${escaparHtml(item.razaoSocial || item.nomeFantasia || "-")}</td>
-                        <td class="transportadora-documento-tabela">${escaparHtml(item.cnpj || "-")}</td>
+                        <td>${escaparHtml(item.id ?? "-")}</td>
+                        <td class="transportadora-nome-tabela">${escaparHtml(item.nome || "-")}</td>
+                        <td class="transportadora-documento-tabela">${escaparHtml(formatarCnpj(item.cnpj))}</td>
                         <td>${escaparHtml(item.telefone || "-")}</td>
                         <td>${escaparHtml(item.cidade || "-")}</td>
                         <td>
@@ -244,10 +242,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         </td>
                         <td>
                             <div class="transportadora-acoes-tabela">
-                                <button type="button" class="btn-editar-transportadora" data-editar="${id}">
+                                <button type="button" class="btn-editar-transportadora" data-editar="${item.id}">
                                     Editar
                                 </button>
-                                <button type="button" class="btn-excluir-transportadora" data-excluir="${id}">
+                                <button type="button" class="btn-excluir-transportadora" data-excluir="${item.id}">
                                     Excluir
                                 </button>
                             </div>
@@ -262,6 +260,11 @@ document.addEventListener("DOMContentLoaded", () => {
             : `Mostrando ${pagina.length} de ${total} transportadora${total === 1 ? "" : "s"}`;
 
         renderizarPaginacao(totalPaginas);
+    }
+
+    function formatarCnpj(cnpj) {
+        if (!cnpj) return "Não informado";
+        return cnpj;
     }
 
     function escaparHtml(valor) {
@@ -353,7 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         campoBreadcrumbAcao.textContent = "Novo cadastro";
         campoPageTitle.textContent = "Cadastro de Transportadora";
-        campoPageSub.textContent = "Preencha os dados para adicionar uma nova transportadora.";
+        campoPageSub.textContent = TEXTO_SUB_PADRAO;
         btnSalvar.textContent = "Salvar Transportadora";
 
         mostrarFormulario();
@@ -365,7 +368,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================================================
 
     function abrirEdicao(id) {
-        const item = state.transportadoras.find((t) => String(t.id ?? t._id) === String(id));
+        const item = state.transportadoras.find((t) => String(t.id) === String(id));
 
         if (!item) {
             mostrarToast("Transportadora não encontrada.");
@@ -377,7 +380,7 @@ document.addEventListener("DOMContentLoaded", () => {
         preencherFormulario(item);
 
         campoBreadcrumbAcao.textContent = "Editar transportadora";
-        campoPageTitle.textContent = item.razaoSocial || item.nomeFantasia || "Editar Transportadora";
+        campoPageTitle.textContent = item.nome || "Editar Transportadora";
         campoPageSub.textContent = "Altere os dados e salve para atualizar o cadastro.";
         btnSalvar.textContent = "Salvar Alterações";
 
@@ -385,8 +388,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function preencherFormulario(item) {
-        campos.razaoSocial.value = item.razaoSocial || "";
-        campos.nomeFantasia.value = item.nomeFantasia || "";
+        campos.nome.value = item.nome || "";
         campos.cnpj.value = item.cnpj || "";
         campos.ie.value = item.ie || "";
         campos.telefone.value = item.telefone || "";
@@ -440,6 +442,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================================================
     // SALVAR (CRIAR / EDITAR) - POST ou PUT
     // ============================================================
+    // Só nome e telefone são obrigatórios (via atributo "required"
+    // no HTML). O resto vai como null/vazio se não for preenchido,
+    // e a API já aceita isso.
 
     form.addEventListener("submit", async (evento) => {
         evento.preventDefault();
@@ -449,22 +454,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const payload = {
-            razaoSocial: campos.razaoSocial.value.trim(),
-            nomeFantasia: campos.nomeFantasia.value.trim(),
-            cnpj: campos.cnpj.value.trim(),
-            ie: campos.ie.value.trim(),
+            nome: campos.nome.value.trim(),
+            cnpj: campos.cnpj.value.trim() || null,
+            ie: campos.ie.value.trim() || null,
             telefone: campos.telefone.value.trim(),
-            email: campos.email.value.trim(),
-            contato: campos.contato.value.trim(),
-            categoria: campos.categoria.value,
-            cep: campos.cep.value.trim(),
-            rua: campos.rua.value.trim(),
-            numero: campos.numero.value.trim(),
-            complemento: campos.complemento.value.trim(),
-            bairro: campos.bairro.value.trim(),
-            cidade: campos.cidade.value.trim(),
-            uf: campos.uf.value,
-            observacoes: campos.observacoes.value.trim(),
+            email: campos.email.value.trim() || null,
+            contato: campos.contato.value.trim() || null,
+            categoria: campos.categoria.value || null,
+            cep: campos.cep.value.trim() || null,
+            rua: campos.rua.value.trim() || null,
+            numero: campos.numero.value.trim() || null,
+            complemento: campos.complemento.value.trim() || null,
+            bairro: campos.bairro.value.trim() || null,
+            cidade: campos.cidade.value.trim() || null,
+            uf: campos.uf.value || null,
+            observacoes: campos.observacoes.value.trim() || null,
             ativo: state.statusAtivo,
         };
 
@@ -485,20 +489,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(payload),
             });
 
+            const corpo = await resposta.json().catch(() => ({}));
+
             if (!resposta.ok) {
-                throw new Error(`Erro ${resposta.status}`);
+                mostrarToast(corpo.mensagem || "Não foi possível salvar a transportadora.");
+                return;
             }
 
-            mostrarToast(editando
+            mostrarToast(corpo.mensagem || (editando
                 ? "Transportadora atualizada com sucesso!"
-                : "Transportadora cadastrada com sucesso!");
+                : "Transportadora cadastrada com sucesso!"));
 
             await carregarTransportadoras();
             mostrarLista();
 
         } catch (erro) {
             console.error("Erro ao salvar transportadora:", erro);
-            mostrarToast("Não foi possível salvar a transportadora. Tente novamente.");
+            mostrarToast("Não foi possível salvar a transportadora. Verifique sua conexão.");
         } finally {
             btnSalvar.disabled = false;
         }
@@ -510,8 +517,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================================================
 
     async function excluirTransportadora(id) {
-        const item = state.transportadoras.find((t) => String(t.id ?? t._id) === String(id));
-        const nome = item ? (item.razaoSocial || item.nomeFantasia) : "esta transportadora";
+        const item = state.transportadoras.find((t) => String(t.id) === String(id));
+        const nome = item ? item.nome : "esta transportadora";
 
         const confirmar = confirm(`Tem certeza que deseja excluir ${nome}?`);
         if (!confirmar) return;
@@ -521,16 +528,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: "DELETE",
             });
 
+            const corpo = await resposta.json().catch(() => ({}));
+
             if (!resposta.ok) {
-                throw new Error(`Erro ${resposta.status}`);
+                mostrarToast(corpo.mensagem || "Não foi possível excluir a transportadora.");
+                return;
             }
 
-            mostrarToast("Transportadora excluída.");
+            mostrarToast(corpo.mensagem || "Transportadora excluída.");
             await carregarTransportadoras();
 
         } catch (erro) {
             console.error("Erro ao excluir transportadora:", erro);
-            mostrarToast("Não foi possível excluir a transportadora.");
+            mostrarToast("Não foi possível excluir a transportadora. Verifique sua conexão.");
         }
     }
 
@@ -538,6 +548,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================================================
     // INICIALIZAÇÃO
     // ============================================================
+
+    campoPageSub.textContent = TEXTO_SUB_PADRAO;
 
     mostrarLista();
     carregarTransportadoras();
