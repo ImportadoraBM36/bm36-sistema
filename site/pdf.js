@@ -787,7 +787,7 @@ pdf.text(
 
     pdf.setFont(
         'helvetica',
-        'helvetica'
+        'normal'
     );
 
     pdf.setFontSize(8);
