@@ -74,7 +74,7 @@ async function gerarPdfPedido(
         'Não informado';
     
         const transportadora =
-        pedido.transportadora ||
+        pedido.transportadora_nome ||
         'Não informado';
 
         
