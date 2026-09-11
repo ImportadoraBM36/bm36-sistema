@@ -1,62 +1,545 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    // ==============================
-    // BOTÕES DAS ABAS
-    // ==============================
+    // ============================================================
+    // CONFIGURAÇÃO DA API
+    // ============================================================
+    // Ajuste aqui se o caminho dos endpoints no seu backend for diferente.
+    const API_URL = "https://bm36-sistema-production.up.railway.app/api";
+    const ENDPOINT_TRANSPORTADORAS = `${API_URL}/transportadoras`;
+
+
+    // ============================================================
+    // ELEMENTOS - ABAS / SEÇÕES
+    // ============================================================
 
     const abaLista = document.getElementById("tabListaTransportadoras");
     const abaNova = document.getElementById("tabNovaTransportadora");
-
-
-    // ==============================
-    // SEÇÕES DAS TELAS
-    // ==============================
 
     const secaoLista = document.getElementById("secaoListaTransportadoras");
     const secaoFormulario = document.getElementById("secaoFormularioTransportadora");
 
 
-    // ==============================
-    // ABRIR LISTA DE TRANSPORTADORAS
-    // ==============================
+    // ============================================================
+    // ELEMENTOS - LISTA
+    // ============================================================
 
-    abaLista.addEventListener("click", () => {
+    const inputBusca = document.getElementById("buscaTransportadoras");
+    const corpoTabela = document.getElementById("transportadorasBody");
+    const contador = document.getElementById("transportadorasContador");
 
+    const btnPaginaAnterior = document.getElementById("transportadorasAnterior");
+    const btnPaginaProxima = document.getElementById("transportadorasProximo");
+    const paginasWrapper = document.getElementById("transportadorasNumerosPaginas");
+
+
+    // ============================================================
+    // ELEMENTOS - FORMULÁRIO
+    // ============================================================
+
+    const form = document.getElementById("transportadoraForm");
+
+    const campoBreadcrumbAcao = document.getElementById("formBreadcrumbAcao");
+    const campoPageTitle = document.getElementById("formPageTitle");
+    const campoPageSub = document.getElementById("formPageSub");
+    const btnSalvar = document.getElementById("salvarTransportadoraBtn");
+    const btnCancelar = document.getElementById("cancelBtn");
+
+    const campos = {
+        razaoSocial: document.getElementById("razaoSocialTransportadora"),
+        nomeFantasia: document.getElementById("nomeFantasiaTransportadora"),
+        cnpj: document.getElementById("cnpjTransportadora"),
+        ie: document.getElementById("ieTransportadora"),
+        telefone: document.getElementById("telefoneTransportadora"),
+        email: document.getElementById("emailTransportadora"),
+        contato: document.getElementById("contatoTransportadora"),
+        categoria: document.getElementById("categoriaTransportadora"),
+        cep: document.getElementById("cepTransportadora"),
+        rua: document.getElementById("ruaTransportadora"),
+        numero: document.getElementById("numeroTransportadora"),
+        complemento: document.getElementById("complementoTransportadora"),
+        bairro: document.getElementById("bairroTransportadora"),
+        cidade: document.getElementById("cidadeTransportadora"),
+        uf: document.getElementById("ufTransportadora"),
+        observacoes: document.getElementById("observacoesTransportadora"),
+    };
+
+    const statusSwitch = document.getElementById("statusSwitch");
+    const statusText = document.getElementById("statusText");
+
+    const toast = document.getElementById("toast");
+    const toastMensagem = toast ? toast.querySelector("span") : null;
+
+
+    // ============================================================
+    // ESTADO
+    // ============================================================
+
+    const state = {
+        transportadoras: [],
+        editandoId: null,
+        statusAtivo: true,
+        paginaAtual: 1,
+        itensPorPagina: 8,
+        termoBusca: "",
+    };
+
+
+    // ============================================================
+    // TOAST
+    // ============================================================
+
+    let toastTimeout = null;
+
+    function mostrarToast(mensagem) {
+        if (!toast) return;
+
+        if (toastMensagem) {
+            toastMensagem.textContent = mensagem;
+        }
+
+        toast.classList.add("show");
+
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            toast.classList.remove("show");
+        }, 3200);
+    }
+
+
+    // ============================================================
+    // ABAS
+    // ============================================================
+
+    function mostrarLista() {
         secaoLista.style.display = "block";
-        secaoFormulario.style.display = "none";
+        secaoFormulario.classList.add("escondido");
 
         abaLista.classList.add("active");
         abaNova.classList.remove("active");
+    }
 
-    });
-
-
-    // ==============================
-    // ABRIR NOVA TRANSPORTADORA
-    // ==============================
-
-    abaNova.addEventListener("click", () => {
-
+    function mostrarFormulario() {
         secaoLista.style.display = "none";
-        secaoFormulario.style.display = "block";
+        secaoFormulario.classList.remove("escondido");
 
         abaLista.classList.remove("active");
         abaNova.classList.add("active");
+    }
 
+    abaLista.addEventListener("click", () => {
+        mostrarLista();
     });
-document.addEventListener("DOMContentLoaded", () => {
-
-    const abaNova = document.getElementById("tabNovaTransportadora");
-    const secaoFormulario = document.getElementById("secaoFormularioTransportadora");
 
     abaNova.addEventListener("click", () => {
-
-        console.log("Cliquei em Nova Transportadora");
-        console.log("Formulário:", secaoFormulario);
-
-        secaoFormulario.style.display = "block";
-
+        abrirNovaTransportadora();
     });
 
-});
+
+    // ============================================================
+    // CARREGAR LISTA (GET)
+    // ============================================================
+
+    async function carregarTransportadoras() {
+        corpoTabela.innerHTML = `
+            <tr>
+                <td colspan="7" class="transportadoras-vazio">Carregando transportadoras...</td>
+            </tr>
+        `;
+
+        try {
+            const resposta = await fetch(ENDPOINT_TRANSPORTADORAS);
+
+            if (!resposta.ok) {
+                throw new Error(`Erro ${resposta.status}`);
+            }
+
+            const dados = await resposta.json();
+
+            // Aceita tanto um array direto quanto algo como { transportadoras: [...] }
+            state.transportadoras = Array.isArray(dados) ? dados : (dados.transportadoras || []);
+
+            state.paginaAtual = 1;
+            renderizarTabela();
+
+        } catch (erro) {
+            console.error("Erro ao carregar transportadoras:", erro);
+
+            corpoTabela.innerHTML = `
+                <tr>
+                    <td colspan="7" class="transportadoras-erro">
+                        Não foi possível carregar as transportadoras. Tente novamente.
+                    </td>
+                </tr>
+            `;
+
+            contador.textContent = "Erro ao carregar";
+            paginasWrapper.innerHTML = "";
+        }
+    }
+
+
+    // ============================================================
+    // FILTRO + RENDER DA TABELA
+    // ============================================================
+
+    function transportadorasFiltradas() {
+        const termo = state.termoBusca.trim().toLowerCase();
+
+        if (!termo) return state.transportadoras;
+
+        return state.transportadoras.filter((item) => {
+            const codigo = String(item.codigo ?? item.id ?? "").toLowerCase();
+            const razaoSocial = String(item.razaoSocial ?? "").toLowerCase();
+            const nomeFantasia = String(item.nomeFantasia ?? "").toLowerCase();
+            const cnpj = String(item.cnpj ?? "").toLowerCase();
+            const telefone = String(item.telefone ?? "").toLowerCase();
+
+            return (
+                codigo.includes(termo) ||
+                razaoSocial.includes(termo) ||
+                nomeFantasia.includes(termo) ||
+                cnpj.includes(termo) ||
+                telefone.includes(termo)
+            );
+        });
+    }
+
+    function renderizarTabela() {
+        const filtradas = transportadorasFiltradas();
+        const total = filtradas.length;
+
+        const totalPaginas = Math.max(1, Math.ceil(total / state.itensPorPagina));
+
+        if (state.paginaAtual > totalPaginas) {
+            state.paginaAtual = totalPaginas;
+        }
+
+        const inicio = (state.paginaAtual - 1) * state.itensPorPagina;
+        const pagina = filtradas.slice(inicio, inicio + state.itensPorPagina);
+
+        if (total === 0) {
+            corpoTabela.innerHTML = `
+                <tr>
+                    <td colspan="7" class="transportadoras-vazio">
+                        Nenhuma transportadora encontrada.
+                    </td>
+                </tr>
+            `;
+        } else {
+            corpoTabela.innerHTML = pagina.map((item) => {
+                const id = item.id ?? item._id;
+                const ativo = item.ativo !== false;
+
+                return `
+                    <tr>
+                        <td>${escaparHtml(item.codigo ?? id ?? "-")}</td>
+                        <td class="transportadora-nome-tabela">${escaparHtml(item.razaoSocial || item.nomeFantasia || "-")}</td>
+                        <td class="transportadora-documento-tabela">${escaparHtml(item.cnpj || "-")}</td>
+                        <td>${escaparHtml(item.telefone || "-")}</td>
+                        <td>${escaparHtml(item.cidade || "-")}</td>
+                        <td>
+                            <span class="transportadora-status ${ativo ? "ativo" : "inativo"}">
+                                ${ativo ? "Ativo" : "Inativo"}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="transportadora-acoes-tabela">
+                                <button type="button" class="btn-editar-transportadora" data-editar="${id}">
+                                    Editar
+                                </button>
+                                <button type="button" class="btn-excluir-transportadora" data-excluir="${id}">
+                                    Excluir
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        contador.textContent = total === 0
+            ? "Nenhuma transportadora"
+            : `Mostrando ${pagina.length} de ${total} transportadora${total === 1 ? "" : "s"}`;
+
+        renderizarPaginacao(totalPaginas);
+    }
+
+    function escaparHtml(valor) {
+        return String(valor)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
+
+    // ============================================================
+    // PAGINAÇÃO
+    // ============================================================
+
+    function renderizarPaginacao(totalPaginas) {
+        paginasWrapper.innerHTML = "";
+
+        for (let i = 1; i <= totalPaginas; i++) {
+            const botao = document.createElement("button");
+            botao.type = "button";
+            botao.textContent = i;
+
+            if (i === state.paginaAtual) {
+                botao.classList.add("active");
+            }
+
+            botao.addEventListener("click", () => {
+                state.paginaAtual = i;
+                renderizarTabela();
+            });
+
+            paginasWrapper.appendChild(botao);
+        }
+
+        btnPaginaAnterior.disabled = state.paginaAtual <= 1;
+        btnPaginaProxima.disabled = state.paginaAtual >= totalPaginas;
+    }
+
+    btnPaginaAnterior.addEventListener("click", () => {
+        if (state.paginaAtual > 1) {
+            state.paginaAtual -= 1;
+            renderizarTabela();
+        }
+    });
+
+    btnPaginaProxima.addEventListener("click", () => {
+        state.paginaAtual += 1;
+        renderizarTabela();
+    });
+
+
+    // ============================================================
+    // BUSCA
+    // ============================================================
+
+    inputBusca.addEventListener("input", (evento) => {
+        state.termoBusca = evento.target.value;
+        state.paginaAtual = 1;
+        renderizarTabela();
+    });
+
+
+    // ============================================================
+    // AÇÕES DA TABELA (EDITAR / EXCLUIR) - delegação de evento
+    // ============================================================
+
+    corpoTabela.addEventListener("click", (evento) => {
+        const btnEditar = evento.target.closest("[data-editar]");
+        if (btnEditar) {
+            abrirEdicao(btnEditar.getAttribute("data-editar"));
+            return;
+        }
+
+        const btnExcluir = evento.target.closest("[data-excluir]");
+        if (btnExcluir) {
+            excluirTransportadora(btnExcluir.getAttribute("data-excluir"));
+        }
+    });
+
+
+    // ============================================================
+    // ABRIR FORMULÁRIO - NOVA TRANSPORTADORA
+    // ============================================================
+
+    function abrirNovaTransportadora() {
+        state.editandoId = null;
+
+        limparFormulario();
+
+        campoBreadcrumbAcao.textContent = "Novo cadastro";
+        campoPageTitle.textContent = "Cadastro de Transportadora";
+        campoPageSub.textContent = "Preencha os dados para adicionar uma nova transportadora.";
+        btnSalvar.textContent = "Salvar Transportadora";
+
+        mostrarFormulario();
+    }
+
+
+    // ============================================================
+    // ABRIR FORMULÁRIO - EDITAR TRANSPORTADORA EXISTENTE
+    // ============================================================
+
+    function abrirEdicao(id) {
+        const item = state.transportadoras.find((t) => String(t.id ?? t._id) === String(id));
+
+        if (!item) {
+            mostrarToast("Transportadora não encontrada.");
+            return;
+        }
+
+        state.editandoId = id;
+
+        preencherFormulario(item);
+
+        campoBreadcrumbAcao.textContent = "Editar transportadora";
+        campoPageTitle.textContent = item.razaoSocial || item.nomeFantasia || "Editar Transportadora";
+        campoPageSub.textContent = "Altere os dados e salve para atualizar o cadastro.";
+        btnSalvar.textContent = "Salvar Alterações";
+
+        mostrarFormulario();
+    }
+
+    function preencherFormulario(item) {
+        campos.razaoSocial.value = item.razaoSocial || "";
+        campos.nomeFantasia.value = item.nomeFantasia || "";
+        campos.cnpj.value = item.cnpj || "";
+        campos.ie.value = item.ie || "";
+        campos.telefone.value = item.telefone || "";
+        campos.email.value = item.email || "";
+        campos.contato.value = item.contato || "";
+        campos.categoria.value = item.categoria || "Rodoviário";
+        campos.cep.value = item.cep || "";
+        campos.rua.value = item.rua || "";
+        campos.numero.value = item.numero || "";
+        campos.complemento.value = item.complemento || "";
+        campos.bairro.value = item.bairro || "";
+        campos.cidade.value = item.cidade || "";
+        campos.uf.value = item.uf || "";
+        campos.observacoes.value = item.observacoes || "";
+
+        definirStatus(item.ativo !== false);
+    }
+
+    function limparFormulario() {
+        form.reset();
+        definirStatus(true);
+    }
+
+
+    // ============================================================
+    // STATUS (ATIVO / INATIVO)
+    // ============================================================
+
+    function definirStatus(ativo) {
+        state.statusAtivo = ativo;
+
+        statusSwitch.classList.toggle("on", ativo);
+        statusText.classList.toggle("inactive", !ativo);
+        statusText.textContent = ativo ? "Transportadora ativa" : "Transportadora inativa";
+    }
+
+    statusSwitch.addEventListener("click", () => {
+        definirStatus(!state.statusAtivo);
+    });
+
+
+    // ============================================================
+    // CANCELAR
+    // ============================================================
+
+    btnCancelar.addEventListener("click", () => {
+        mostrarLista();
+    });
+
+
+    // ============================================================
+    // SALVAR (CRIAR / EDITAR) - POST ou PUT
+    // ============================================================
+
+    form.addEventListener("submit", async (evento) => {
+        evento.preventDefault();
+
+        if (!form.reportValidity()) {
+            return;
+        }
+
+        const payload = {
+            razaoSocial: campos.razaoSocial.value.trim(),
+            nomeFantasia: campos.nomeFantasia.value.trim(),
+            cnpj: campos.cnpj.value.trim(),
+            ie: campos.ie.value.trim(),
+            telefone: campos.telefone.value.trim(),
+            email: campos.email.value.trim(),
+            contato: campos.contato.value.trim(),
+            categoria: campos.categoria.value,
+            cep: campos.cep.value.trim(),
+            rua: campos.rua.value.trim(),
+            numero: campos.numero.value.trim(),
+            complemento: campos.complemento.value.trim(),
+            bairro: campos.bairro.value.trim(),
+            cidade: campos.cidade.value.trim(),
+            uf: campos.uf.value,
+            observacoes: campos.observacoes.value.trim(),
+            ativo: state.statusAtivo,
+        };
+
+        const editando = Boolean(state.editandoId);
+
+        const url = editando
+            ? `${ENDPOINT_TRANSPORTADORAS}/${state.editandoId}`
+            : ENDPOINT_TRANSPORTADORAS;
+
+        const metodo = editando ? "PUT" : "POST";
+
+        btnSalvar.disabled = true;
+
+        try {
+            const resposta = await fetch(url, {
+                method: metodo,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            if (!resposta.ok) {
+                throw new Error(`Erro ${resposta.status}`);
+            }
+
+            mostrarToast(editando
+                ? "Transportadora atualizada com sucesso!"
+                : "Transportadora cadastrada com sucesso!");
+
+            await carregarTransportadoras();
+            mostrarLista();
+
+        } catch (erro) {
+            console.error("Erro ao salvar transportadora:", erro);
+            mostrarToast("Não foi possível salvar a transportadora. Tente novamente.");
+        } finally {
+            btnSalvar.disabled = false;
+        }
+    });
+
+
+    // ============================================================
+    // EXCLUIR (DELETE)
+    // ============================================================
+
+    async function excluirTransportadora(id) {
+        const item = state.transportadoras.find((t) => String(t.id ?? t._id) === String(id));
+        const nome = item ? (item.razaoSocial || item.nomeFantasia) : "esta transportadora";
+
+        const confirmar = confirm(`Tem certeza que deseja excluir ${nome}?`);
+        if (!confirmar) return;
+
+        try {
+            const resposta = await fetch(`${ENDPOINT_TRANSPORTADORAS}/${id}`, {
+                method: "DELETE",
+            });
+
+            if (!resposta.ok) {
+                throw new Error(`Erro ${resposta.status}`);
+            }
+
+            mostrarToast("Transportadora excluída.");
+            await carregarTransportadoras();
+
+        } catch (erro) {
+            console.error("Erro ao excluir transportadora:", erro);
+            mostrarToast("Não foi possível excluir a transportadora.");
+        }
+    }
+
+
+    // ============================================================
+    // INICIALIZAÇÃO
+    // ============================================================
+
+    mostrarLista();
+    carregarTransportadoras();
+
 });

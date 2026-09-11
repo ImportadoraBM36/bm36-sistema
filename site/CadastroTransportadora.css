@@ -411,7 +411,9 @@ color:var(--ink);
 border:1.5px solid #e5e1f5;
 }
 
-.btn-ghost:hover
+.btn-ghost:hover{
+background:#f3f1fb;
+}
 
 /* ============================================================
 TOAST
@@ -764,6 +766,54 @@ background:#f5b84f;
 
 transform:
 translateY(-1px);
+}
+
+.transportadora-acoes-tabela{
+display:flex;
+
+gap:8px;
+
+justify-content:flex-end;
+}
+
+.btn-excluir-transportadora{
+border:none;
+
+padding:
+8px
+13px;
+
+border-radius:8px;
+
+background:var(--red-bg);
+
+color:var(--red-text);
+
+font-size:11px;
+
+font-weight:800;
+
+cursor:pointer;
+
+transition:
+transform .15s ease,
+background .15s ease;
+}
+
+.btn-excluir-transportadora:hover{
+background:#fecaca;
+
+transform:
+translateY(-1px);
+}
+
+.transportadoras-table td.transportadoras-vazio,
+.transportadoras-table td.transportadoras-erro{
+text-align:center;
+
+color:#c9c6ec;
+
+font-weight:600;
 }
 
 /* ============================================================
