@@ -2373,6 +2373,7 @@ app.get(
                         v.usuario_id,
                         u.nome AS usuario_nome,
                         v.evento_id,
+                        e.nome AS evento_nome,
 
                         v.subtotal,
                         v.desconto,
@@ -2394,8 +2395,11 @@ app.get(
                     INNER JOIN clientes c
                         ON c.id = v.cliente_id
 
-                    LEFT JOIN usuarios u
-                        ON u.id = v.usuario_id
+                  LEFT JOIN usuarios u
+    ON u.id = v.usuario_id
+
+LEFT JOIN eventos e
+    ON e.id = v.evento_id
 
                     LEFT JOIN itens_venda iv
                         ON iv.venda_id = v.id
