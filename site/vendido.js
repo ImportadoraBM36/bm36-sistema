@@ -589,6 +589,13 @@ function renderModalPedido() {
     const modalCliente = document.getElementById('modalCliente');
     if (modalCliente) modalCliente.textContent = cliente;
 
+    const modalTransportadora = document.getElementById('modalTransportadora');
+    if (modalTransportadora) {
+        modalTransportadora.textContent = pedidoAberto.transportadora_nome
+            ? pedidoAberto.transportadora_nome
+            : 'Nenhuma selecionada';
+    }
+
     const modalVendedor = document.getElementById('modalVendedor');
     if (modalVendedor) {
         modalVendedor.textContent = pedidoAberto.usuario_nome || 'Não informado';

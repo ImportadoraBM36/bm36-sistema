@@ -2317,6 +2317,7 @@ app.post(
 
           const {
     cliente_id,
+    transportadora_id = null,
     desconto = 0,
     formaPagamento   ,
     itens
@@ -2427,6 +2428,68 @@ app.post(
                     mensagem:
                         'Este cliente está inativo.'
                 });
+
+            }
+
+
+            // =========================
+            // VERIFICAR TRANSPORTADORA (OPCIONAL)
+            // =========================
+
+            let transportadoraIdFinal = null;
+            let transportadoraNomeFinal = null;
+
+            if (
+                transportadora_id !== null &&
+                transportadora_id !== '' &&
+                transportadora_id !== undefined
+            ) {
+
+                transportadoraIdFinal =
+                    Number(transportadora_id);
+
+                if (
+                    !Number.isInteger(transportadoraIdFinal) ||
+                    transportadoraIdFinal <= 0
+                ) {
+
+                    await client.query('ROLLBACK');
+
+                    return res.status(400).json({
+                        sucesso: false,
+                        mensagem:
+                            'Transportadora inválida.'
+                    });
+
+                }
+
+                const transportadoraResultado =
+                    await client.query(
+                        `
+                        SELECT id, nome
+                        FROM transportadoras
+                        WHERE id = $1
+                        LIMIT 1
+                        `,
+                        [transportadoraIdFinal]
+                    );
+
+                if (
+                    transportadoraResultado.rows.length === 0
+                ) {
+
+                    await client.query('ROLLBACK');
+
+                    return res.status(404).json({
+                        sucesso: false,
+                        mensagem:
+                            'Transportadora não encontrada.'
+                    });
+
+                }
+
+                transportadoraNomeFinal =
+                    transportadoraResultado.rows[0].nome;
 
             }
 
@@ -2770,6 +2833,7 @@ const vendaResultado =
         `
         INSERT INTO vendas (
             cliente_id,
+            transportadora_id,
             usuario_id,
             evento_id,
             subtotal,
@@ -2786,12 +2850,14 @@ const vendaResultado =
             $5,
             $6,
             $7,
-            $8
+            $8,
+            $9
         )
         RETURNING *
         `,
         [
             cliente.id,
+            transportadoraIdFinal,
             usuarioId,
             eventoIdVenda,
             subtotalVenda,
@@ -2911,6 +2977,12 @@ const venda =
     cliente_nome:
         cliente.nome,
 
+    transportadora_id:
+        venda.transportadora_id,
+
+    transportadora_nome:
+        transportadoraNomeFinal,
+
     usuario_id:
         venda.usuario_id,
 
@@ -3012,6 +3084,9 @@ app.get(
     c.nome AS cliente_nome, 
     c.documento AS cliente_documento, 
 
+    v.transportadora_id,
+    t.nome AS transportadora_nome,
+
     v.usuario_id, 
     u.nome AS usuario_nome, 
 
@@ -3038,6 +3113,9 @@ FROM vendas v
 INNER JOIN clientes c 
     ON c.id = v.cliente_id 
 
+LEFT JOIN transportadoras t
+    ON t.id = v.transportadora_id
+
 LEFT JOIN usuarios u 
     ON u.id = v.usuario_id 
 
@@ -3052,6 +3130,8 @@ GROUP BY
     v.cliente_id, 
     c.nome, 
     c.documento, 
+    v.transportadora_id,
+    t.nome,
     v.usuario_id, 
     u.nome,
     v.evento_id,
@@ -3147,6 +3227,11 @@ app.get(
             c.telefone AS cliente_telefone,
             c.email AS cliente_email,
 
+            v.transportadora_id,
+            t.nome AS transportadora_nome,
+            t.telefone AS transportadora_telefone,
+            t.cnpj AS transportadora_cnpj,
+
             v.usuario_id,
             u.nome AS usuario_nome,
             v.evento_id,
@@ -3164,6 +3249,9 @@ app.get(
 
         INNER JOIN clientes c
             ON c.id = v.cliente_id
+
+        LEFT JOIN transportadoras t
+            ON t.id = v.transportadora_id
 
         LEFT JOIN usuarios u
             ON u.id = v.usuario_id
@@ -8261,6 +8349,14 @@ async function iniciarServidor() {
                 ADD COLUMN IF NOT EXISTS ativo BOOLEAN DEFAULT TRUE,
                 ADD COLUMN IF NOT EXISTS criado_em TIMESTAMP DEFAULT NOW(),
                 ADD COLUMN IF NOT EXISTS atualizado_em TIMESTAMP DEFAULT NOW()
+        `);
+
+        // A venda pode opcionalmente estar associada a uma
+        // transportadora (frete/entrega do pedido).
+        await pool.query(`
+            ALTER TABLE vendas
+                ADD COLUMN IF NOT EXISTS transportadora_id INTEGER
+                    REFERENCES transportadoras(id)
         `);
 
         app.listen(

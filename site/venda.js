@@ -9,6 +9,11 @@ let clientes = [];
 let clienteSelecionado =
     null;
 
+let transportadoras = [];
+
+let transportadoraSelecionada =
+    null;
+
 let catalog = [];
 
 let produtosFiltradosVenda =
@@ -58,6 +63,24 @@ const clientesResultados =
 const clienteSelecionadoBox =
     document.getElementById(
         'clienteSelecionadoBox'
+    );
+
+
+const transportadoraSearch =
+    document.getElementById(
+        'transportadoraSearch'
+    );
+
+
+const transportadoraResultados =
+    document.getElementById(
+        'transportadoraResultados'
+    );
+
+
+const transportadoraSelecionadoBox =
+    document.getElementById(
+        'transportadoraSelecionadoBox'
     );
 
 
@@ -483,6 +506,55 @@ async function carregarClientes() {
 
 
 // ============================================================
+// TRANSPORTADORAS
+// ============================================================
+
+async function carregarTransportadoras() {
+
+    try {
+
+        const resposta =
+            await fetch(
+                `${API_URL}/transportadoras`
+            );
+
+
+        if (
+            !resposta.ok
+        ) {
+
+            throw new Error(
+                'Erro ao carregar transportadoras.'
+            );
+
+        }
+
+
+        const dados =
+            await resposta.json();
+
+
+        transportadoras =
+            Array.isArray(dados)
+                ? dados
+                : (dados.transportadoras || []);
+
+
+    } catch (erro) {
+
+        console.error(
+            'Erro transportadoras:',
+            erro
+        );
+
+        // Não bloqueia a tela de venda: transportadora é opcional.
+
+    }
+
+}
+
+
+// ============================================================
 // BUSCAR CLIENTE
 // ============================================================
 
@@ -814,6 +886,329 @@ function removerClienteSelecionado() {
 
             <small>
                 Pesquise acima para selecionar um cliente.
+            </small>
+
+        </div>
+    `;
+
+}
+
+
+// ============================================================
+// BUSCAR TRANSPORTADORA
+// ============================================================
+
+transportadoraSearch.addEventListener(
+    'input',
+    () => {
+
+        const termo =
+            transportadoraSearch
+                .value
+                .trim()
+                .toLowerCase();
+
+
+        if (
+            !termo
+        ) {
+
+            transportadoraResultados
+                .classList
+                .remove(
+                    'aberto'
+                );
+
+
+            transportadoraResultados.innerHTML =
+                '';
+
+
+            return;
+
+        }
+
+
+        const termoDocumento =
+            termo.replace(
+                /\D/g,
+                ''
+            );
+
+
+        const resultado =
+            transportadoras
+                .filter(
+                    transportadora => {
+
+                        const nome =
+                            String(
+                                transportadora.nome ||
+                                ''
+                            )
+                                .toLowerCase();
+
+
+                        const cnpj =
+                            String(
+                                transportadora.cnpj ||
+                                ''
+                            )
+                                .replace(
+                                    /\D/g,
+                                    ''
+                                );
+
+
+                        return (
+                            nome.includes(
+                                termo
+                            )
+                            ||
+                            (
+                                termoDocumento
+                                &&
+                                cnpj.includes(
+                                    termoDocumento
+                                )
+                            )
+                        );
+
+                    }
+                )
+                .slice(
+                    0,
+                    10
+                );
+
+
+        renderizarTransportadoras(
+            resultado
+        );
+
+    }
+);
+
+
+// ============================================================
+// RENDER TRANSPORTADORAS
+// ============================================================
+
+function renderizarTransportadoras(
+    lista
+) {
+
+    transportadoraResultados.innerHTML =
+        '';
+
+
+    if (
+        lista.length ===
+        0
+    ) {
+
+        transportadoraResultados.innerHTML = `
+            <div class="cliente-resultado">
+                Nenhuma transportadora encontrada.
+            </div>
+        `;
+
+
+        transportadoraResultados
+            .classList
+            .add(
+                'aberto'
+            );
+
+
+        return;
+
+    }
+
+
+    lista.forEach(
+        transportadora => {
+
+            const item =
+                document.createElement(
+                    'div'
+                );
+
+
+            item.className =
+                'cliente-resultado';
+
+
+            const transportadoraAtiva =
+                transportadora.ativo !==
+                false;
+
+
+            item.innerHTML = `
+
+                <div class="cliente-resultado-info">
+
+                    <span class="cliente-resultado-nome">
+                        ${transportadora.nome}
+                    </span>
+
+                    <span class="cliente-resultado-documento">
+                        ${
+                            transportadora.cnpj
+                                ? formatarDocumento(transportadora.cnpj)
+                                : (transportadora.telefone || 'Sem CNPJ')
+                        }
+                    </span>
+
+                </div>
+
+
+                <span class="cliente-resultado-categoria">
+
+                    ${
+                        transportadoraAtiva
+                            ? 'ATIVA'
+                            : 'INATIVA'
+                    }
+
+                </span>
+            `;
+
+
+            item.addEventListener(
+                'click',
+                () => {
+
+                    selecionarTransportadora(
+                        transportadora
+                    );
+
+                }
+            );
+
+
+            transportadoraResultados
+                .appendChild(
+                    item
+                );
+
+        }
+    );
+
+
+    transportadoraResultados
+        .classList
+        .add(
+            'aberto'
+        );
+
+}
+
+
+// ============================================================
+// SELECIONAR TRANSPORTADORA
+// ============================================================
+
+function selecionarTransportadora(
+    transportadora
+) {
+
+    transportadoraSelecionada =
+        transportadora;
+
+
+    transportadoraSearch.value =
+        '';
+
+
+    transportadoraResultados
+        .classList
+        .remove(
+            'aberto'
+        );
+
+
+    transportadoraResultados.innerHTML =
+        '';
+
+
+    transportadoraSelecionadoBox.innerHTML = `
+
+        <div class="cliente-selecionado">
+
+            <div class="cliente-selecionado-info">
+
+                <span class="cliente-selecionado-nome">
+                    ${transportadora.nome}
+                </span>
+
+
+                <div class="cliente-selecionado-detalhes">
+
+                    <span>
+                        ${
+                            transportadora.cnpj
+                                ? formatarDocumento(transportadora.cnpj)
+                                : 'Sem CNPJ'
+                        }
+                    </span>
+
+                    <span>
+                        ${
+                            transportadora.telefone ||
+                            'Sem telefone'
+                        }
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                id="btnTrocarTransportadora"
+                class="btn-trocar-cliente"
+                type="button"
+            >
+                TROCAR TRANSPORTADORA
+            </button>
+
+        </div>
+    `;
+
+
+    document
+        .getElementById(
+            'btnTrocarTransportadora'
+        )
+        .addEventListener(
+            'click',
+            removerTransportadoraSelecionada
+        );
+
+}
+
+
+// ============================================================
+// REMOVER TRANSPORTADORA
+// ============================================================
+
+function removerTransportadoraSelecionada() {
+
+    transportadoraSelecionada =
+        null;
+
+
+    transportadoraSelecionadoBox.innerHTML = `
+
+        <div class="cliente-vazio">
+
+            <span>
+                Nenhuma transportadora selecionada.
+            </span>
+
+            <small>
+                Pesquise acima para selecionar uma transportadora.
             </small>
 
         </div>
@@ -2431,6 +2826,8 @@ cancelarBtn.addEventListener(
 
                     removerClienteSelecionado();
 
+                    removerTransportadoraSelecionada();
+
 
                     productSearch.value =
                         '';
@@ -2743,6 +3140,11 @@ if (!confirmouPagamento) {
     cliente_id:
         clienteSelecionado.id,
 
+    transportadora_id:
+        transportadoraSelecionada
+            ? transportadoraSelecionada.id
+            : null,
+
     desconto:
         valorDesconto,
 
@@ -2903,6 +3305,8 @@ if (!confirmouPagamento) {
 
 
                     removerClienteSelecionado();
+
+                    removerTransportadoraSelecionada();
 
 
                     productSearch.value =
@@ -3573,6 +3977,7 @@ document.addEventListener(
 // ============================================================
 
 carregarClientes();
+carregarTransportadoras();
 
 carregarProdutos();
 
