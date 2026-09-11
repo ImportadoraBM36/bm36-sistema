@@ -245,7 +245,7 @@ pdf.text(
 
 pdf.setFont('helvetica', 'bold');
 pdf.setFontSize(9);
-pdf.text('Evento: ' + (evento || 'sem Evento'), 130, 50)
+pdf.text('Evento: ' + (evento), 130, 50)
 
 
 pdf.setFont('helvetica', 'bold');
