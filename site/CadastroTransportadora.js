@@ -73,6 +73,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // ============================================================
+    // MÁSCARAS
+    // ============================================================
+
+    function somenteNumeros(valor) {
+        return String(valor || "").replace(/\D/g, "");
+    }
+
+    function mascaraCNPJ(valor) {
+        let v = somenteNumeros(valor).slice(0, 14);
+
+        v = v.replace(/^(\d{2})(\d)/, "$1.$2");
+        v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+        v = v.replace(/\.(\d{3})(\d)/, ".$1/$2");
+        v = v.replace(/(\d{4})(\d)/, "$1-$2");
+
+        return v;
+    }
+
+    function mascaraTelefone(valor) {
+        let v = somenteNumeros(valor).slice(0, 11);
+
+        if (v.length <= 10) {
+            v = v.replace(/^(\d{2})(\d)/, "($1) $2");
+            v = v.replace(/(\d{4})(\d)/, "$1-$2");
+            return v;
+        }
+
+        v = v.replace(/^(\d{2})(\d)/, "($1) $2");
+        v = v.replace(/(\d{5})(\d)/, "$1-$2");
+
+        return v;
+    }
+
+    function mascaraCEP(valor) {
+        const v = somenteNumeros(valor).slice(0, 8);
+
+        if (v.length <= 5) return v;
+
+        return v.slice(0, 5) + "-" + v.slice(5);
+    }
+
+
+    // ============================================================
     // ESTADO
     // ============================================================
 
@@ -389,13 +432,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function preencherFormulario(item) {
         campos.nome.value = item.nome || "";
-        campos.cnpj.value = item.cnpj || "";
+        campos.cnpj.value = mascaraCNPJ(item.cnpj || "");
         campos.ie.value = item.ie || "";
-        campos.telefone.value = item.telefone || "";
+        campos.telefone.value = mascaraTelefone(item.telefone || "");
         campos.email.value = item.email || "";
         campos.contato.value = item.contato || "";
         campos.categoria.value = item.categoria || "Rodoviário";
-        campos.cep.value = item.cep || "";
+        campos.cep.value = mascaraCEP(item.cep || "");
         campos.rua.value = item.rua || "";
         campos.numero.value = item.numero || "";
         campos.complemento.value = item.complemento || "";
@@ -410,6 +453,75 @@ document.addEventListener("DOMContentLoaded", () => {
     function limparFormulario() {
         form.reset();
         definirStatus(true);
+        removerAvisoCEP();
+    }
+
+
+    // ============================================================
+    // EVENTOS DE MÁSCARA
+    // ============================================================
+
+    campos.cnpj.addEventListener("input", () => {
+        campos.cnpj.value = mascaraCNPJ(campos.cnpj.value);
+    });
+
+    campos.telefone.addEventListener("input", () => {
+        campos.telefone.value = mascaraTelefone(campos.telefone.value);
+    });
+
+    campos.cep.addEventListener("input", () => {
+        campos.cep.value = mascaraCEP(campos.cep.value);
+    });
+
+
+    // ============================================================
+    // VIA CEP - preenche rua, bairro, cidade e UF automaticamente
+    // ============================================================
+
+    async function buscarCEP() {
+        const cep = somenteNumeros(campos.cep.value);
+
+        if (cep.length !== 8) return;
+
+        removerAvisoCEP();
+
+        try {
+            const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const dados = await resposta.json();
+
+            if (!resposta.ok || dados.erro) {
+                mostrarAvisoCEP("CEP não encontrado. Preencha o endereço manualmente.");
+                return;
+            }
+
+            campos.rua.value = dados.logradouro || "";
+            campos.bairro.value = dados.bairro || "";
+            campos.cidade.value = dados.localidade || "";
+            campos.uf.value = dados.uf || "";
+
+            campos.numero.focus();
+
+        } catch (erro) {
+            console.error("Erro ViaCEP:", erro);
+            mostrarAvisoCEP("Não foi possível consultar o CEP. Preencha manualmente.");
+        }
+    }
+
+    campos.cep.addEventListener("blur", buscarCEP);
+
+    function removerAvisoCEP() {
+        document.getElementById("avisoCepTransportadora")?.remove();
+    }
+
+    function mostrarAvisoCEP(mensagem) {
+        removerAvisoCEP();
+
+        const aviso = document.createElement("div");
+        aviso.id = "avisoCepTransportadora";
+        aviso.className = "aviso-cep";
+        aviso.textContent = mensagem;
+
+        campos.cep.closest(".field").appendChild(aviso);
     }
 
 
@@ -455,13 +567,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const payload = {
             nome: campos.nome.value.trim(),
-            cnpj: campos.cnpj.value.trim() || null,
+            cnpj: somenteNumeros(campos.cnpj.value) || null,
             ie: campos.ie.value.trim() || null,
-            telefone: campos.telefone.value.trim(),
+            telefone: somenteNumeros(campos.telefone.value),
             email: campos.email.value.trim() || null,
             contato: campos.contato.value.trim() || null,
             categoria: campos.categoria.value || null,
-            cep: campos.cep.value.trim() || null,
+            cep: somenteNumeros(campos.cep.value) || null,
             rua: campos.rua.value.trim() || null,
             numero: campos.numero.value.trim() || null,
             complemento: campos.complemento.value.trim() || null,
