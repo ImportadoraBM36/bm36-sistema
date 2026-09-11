@@ -72,7 +72,12 @@ async function gerarPdfPedido(
     const evento =
         pedido.evento_nome ||
         'Não informado';
+    
+        const transportadora =
+        pedido.transportadora ||
+        'Não informado';
 
+        
     console.log('PEDIDO:', pedido);
 
     // ============================================================
@@ -302,6 +307,12 @@ async function gerarPdfPedido(
         'Forma de pagamento: ' + formapagamento,
         130,
         58
+    );
+
+    pdf.text(
+        'Transportadora: ' + transportadora,
+        130,
+        62
     );
 
     // ============================================================
