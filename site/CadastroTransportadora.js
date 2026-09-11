@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const abaNova = document.querySelector('[data-tab="nova"]');
 
     // Seções que serão trocadas
-   const abaLista = document.getElementById("tabTransportadorasCadastradas");
-const abaNova = document.getElementById("tabNovaTransportadora");
+    const secaoLista = document.getElementById("tabTransportadorasCadastradas");
+    const secaoNova = document.getElementById("tabNovaTransportadora");
 
     // Clique em "Transportadoras cadastradas"
     abaLista.addEventListener("click", () => {
