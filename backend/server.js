@@ -2364,62 +2364,66 @@ app.get(
 
             const resultado =
                 await pool.query(`
-                    SELECT
-                        v.id,
-                        v.cliente_id,
-                        c.nome AS cliente_nome,
-                        c.documento AS cliente_documento,
+                   SELECT 
+    v.id, 
+    v.cliente_id, 
+    c.nome AS cliente_nome, 
+    c.documento AS cliente_documento, 
 
-                        v.usuario_id,
-                        u.nome AS usuario_nome,
-                        v.evento_id,
-                        e.nome AS evento_nome,
+    v.usuario_id, 
+    u.nome AS usuario_nome, 
 
-                        v.subtotal,
-                        v.desconto,
-                        v.total,
+    v.evento_id, 
+    e.nome AS evento_nome, 
 
- v."formaPagamento" AS "formaPagamento",
-                        v.status,
-                        v.criado_em,
+    v.subtotal, 
+    v.desconto, 
+    v.total, 
 
-                        COUNT(iv.id) AS quantidade_itens,
+    v."formaPagamento" AS "formaPagamento", 
+    v.status, 
+    v.criado_em, 
 
-                        COALESCE(
-                            SUM(iv.quantidade),
-                            0
-                        ) AS quantidade_produtos
+    COUNT(iv.id) AS quantidade_itens, 
 
-                   FROM vendas v
+    COALESCE(
+        SUM(iv.quantidade), 
+        0
+    ) AS quantidade_produtos 
 
-                    INNER JOIN clientes c
-                        ON c.id = v.cliente_id
+FROM vendas v 
 
-                  LEFT JOIN usuarios u
-    ON u.id = v.usuario_id
+INNER JOIN clientes c 
+    ON c.id = v.cliente_id 
 
-LEFT JOIN eventos e
-    ON e.id = v.evento_id
+LEFT JOIN usuarios u 
+    ON u.id = v.usuario_id 
 
-                    LEFT JOIN itens_venda iv
-                        ON iv.venda_id = v.id
-                     GROUP BY
-                    v.id,
-                    v.cliente_id,
-                    c.nome,
-                    c.documento,
-                    v.usuario_id,
-                    u.nome,
-                    v.subtotal,
-                    v.desconto,
+LEFT JOIN eventos e 
+    ON e.id = v.evento_id 
 
-v."formaPagamento",
-                    v.total,
-                    v.status,
-                    v.criado_em
-                    ORDER BY
-                        v.criado_em DESC,
-                        v.id DESC
+LEFT JOIN itens_venda iv 
+    ON iv.venda_id = v.id 
+
+GROUP BY 
+    v.id, 
+    v.cliente_id, 
+    c.nome, 
+    c.documento, 
+    v.usuario_id, 
+    u.nome,
+    v.evento_id,
+    e.nome,
+    v.subtotal, 
+    v.desconto, 
+    v."formaPagamento", 
+    v.total, 
+    v.status, 
+    v.criado_em 
+
+ORDER BY 
+    v.criado_em DESC, 
+    v.id DESC
                 `);
 
 
