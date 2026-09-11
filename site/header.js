@@ -740,7 +740,8 @@ const eventoOpcoes =
 async function carregarEventoAtual() {
 
     try {
-
+console.log('TOKEN HEADER:', token);
+console.log('API BASE:', API_BASE_URL);
         const resposta =
             await fetch(
                 `${API_BASE_URL}/api/me`,
@@ -1215,6 +1216,9 @@ if (eventoMenuBtn) {
 
             if (!estaAberto) {
 
+
+
+                console.log('TOKEN EVENTOS:', token);
                 await carregarEventosDisponiveis();
 
             }
