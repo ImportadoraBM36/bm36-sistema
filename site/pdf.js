@@ -124,14 +124,14 @@ async function gerarPdfPedido(
         // --------------------------------------------------------
 
         pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(16);
+        pdf.setFontSize(25);
 
         pdf.addImage(
             logo,
             'PNG',
             margem,
             5,
-            20,
+            15,
             20
         );
 
