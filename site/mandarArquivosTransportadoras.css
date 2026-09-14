@@ -704,6 +704,242 @@ html.dark-mode .import-errors {
     background: #321b22;
 }
 
+
+/* =========================================
+MODO DE IMPORTAÇÃO
+========================================= */
+
+.source-mode {
+display: flex;
+gap: 10px;
+margin: 24px 0;
+padding: 6px;
+background: #f1f4f8;
+border-radius: 12px;
+width: fit-content;
+}
+
+.source-mode-button {
+border: none;
+background: transparent;
+color: #64748b;
+padding: 11px 18px;
+border-radius: 9px;
+font-family: inherit;
+font-size: 14px;
+font-weight: 700;
+cursor: pointer;
+transition: 0.2s ease;
+}
+
+.source-mode-button:hover {
+color: #1d2b3a;
+}
+
+.source-mode-button.active {
+background: #ffffff;
+color: #e83e84;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================================
+MODO MANUAL
+========================================= */
+
+.manual-entry {
+margin-top: 20px;
+border: 1px solid #dce4ef;
+border-radius: 16px;
+background: #ffffff;
+overflow: hidden;
+}
+
+.manual-entry-heading {
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 20px;
+padding: 22px 24px;
+border-bottom: 1px solid #dce4ef;
+}
+
+.manual-entry-heading h3 {
+margin: 0 0 6px;
+font-family: "Sora", sans-serif;
+font-size: 18px;
+color: #1d2b3a;
+}
+
+.manual-entry-heading p {
+margin: 0;
+color: #718096;
+font-size: 14px;
+}
+
+/* =========================================
+TABELA MANUAL
+========================================= */
+
+.manual-table-wrap {
+width: 100%;
+overflow-x: auto;
+}
+
+.manual-table-wrap table {
+width: 100%;
+min-width: 850px;
+border-collapse: collapse;
+}
+
+.manual-table-wrap th {
+padding: 13px 14px;
+background: #f7f9fc;
+border-bottom: 1px solid #dce4ef;
+color: #526174;
+font-size: 12px;
+font-weight: 800;
+text-align: left;
+white-space: nowrap;
+}
+
+.manual-table-wrap td {
+padding: 10px 12px;
+border-bottom: 1px solid #edf1f6;
+background: #ffffff;
+}
+
+.manual-table-wrap input {
+width: 100%;
+min-width: 100px;
+box-sizing: border-box;
+padding: 10px 11px;
+border: 1px solid #d5deea;
+border-radius: 8px;
+background: #ffffff;
+color: #1d2b3a;
+font-family: inherit;
+font-size: 13px;
+outline: none;
+transition: 0.2s ease;
+}
+
+.manual-table-wrap input:focus {
+border-color: #e83e84;
+box-shadow: 0 0 0 3px rgba(232, 62, 132, 0.10);
+}
+
+/* =========================================
+BOTÃO REMOVER LINHA
+========================================= */
+
+.remove-manual-row {
+width: 34px;
+height: 34px;
+border: none;
+border-radius: 8px;
+background: #fff1f5;
+color: #d92f72;
+font-size: 16px;
+font-weight: 700;
+cursor: pointer;
+transition: 0.2s ease;
+}
+
+.remove-manual-row:hover {
+background: #ffe0ea;
+}
+
+/* =========================================
+BOTÃO ADICIONAR
+========================================= */
+
+#addTransportadoraButton {
+white-space: nowrap;
+}
+
+/* =========================================
+RESPONSIVO
+========================================= */
+
+@media (max-width: 700px) {
+
+.source-mode {
+    width: 100%;
+    flex-direction: column;
+}
+
+.source-mode-button {
+    width: 100%;
+}
+
+.manual-entry-heading {
+    align-items: stretch;
+    flex-direction: column;
+}
+
+#addTransportadoraButton {
+    width: 100%;
+}
+
+}
+
+/* =========================================
+DARK MODE
+========================================= */
+
+html.dark-mode .source-mode {
+background: #202936;
+}
+
+html.dark-mode .source-mode-button {
+color: #aeb8c6;
+}
+
+html.dark-mode .source-mode-button.active {
+background: #2b3543;
+color: #f05a99;
+}
+
+html.dark-mode .manual-entry {
+background: #18212d;
+border-color: #334155;
+}
+
+html.dark-mode .manual-entry-heading {
+border-color: #334155;
+}
+
+html.dark-mode .manual-entry-heading h3 {
+color: #f1f5f9;
+}
+
+html.dark-mode .manual-entry-heading p {
+color: #9aa7b7;
+}
+
+html.dark-mode .manual-table-wrap th {
+background: #202936;
+color: #aeb8c6;
+border-color: #334155;
+}
+
+html.dark-mode .manual-table-wrap td {
+background: #18212d;
+border-color: #293545;
+}
+
+html.dark-mode .manual-table-wrap input {
+background: #202936;
+border-color: #3a485a;
+color: #f1f5f9;
+}
+
+html.dark-mode .manual-table-wrap input:focus {
+border-color: #e83e84;
+}
+
+
+
 /* =========================
    RESPONSIVO
 ========================= */
