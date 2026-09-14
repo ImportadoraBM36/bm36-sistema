@@ -625,7 +625,25 @@ function atualizarIconeTema() {
             : ''
     }
 
+${
+    ehAdmin
+        ? `
 
+            <a
+                href="./mandarArquivosTransportadoras.html"
+                class="user-dropdown-item admin-item"
+            >
+
+                <span>
+                    🚚
+                </span>
+
+                Importar transportadoras
+
+            </a>
+        `
+        : ''
+}
     ${
         ehAdmin
             ? `
