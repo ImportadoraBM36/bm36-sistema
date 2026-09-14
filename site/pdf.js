@@ -367,13 +367,13 @@ async function gerarPdfPedido(
 
     pdf.text(
         'VALOR DE DESCONTO',
-        100,
+        110,
         yTotais
     );
 
     pdf.text(
         'TOTAL DO PEDIDO',
-        148,
+        158,
         yTotais
     );
 
