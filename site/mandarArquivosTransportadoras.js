@@ -1113,7 +1113,10 @@ applyButton.textContent =
 
 
 try {
-console.log('TRANSPORTADORAS ANTES DE ENVIAR:', transportadorasImportadas);
+console.log(
+    'TRANSPORTADORA LINHA 7:',
+    transportadorasImportadas[6]
+);
  const transportadorasNormalizadas =
     transportadorasImportadas.map(item => ({
 
