@@ -896,91 +896,110 @@ campos.forEach(campo => {
 
 function preencherAmostra() {
 
-   
-sampleRows.innerHTML = '';
+    sampleRows.innerHTML = '';
 
 
-const amostra =
-    transportadorasImportadas.slice(0, 10);
+    const amostra =
+        transportadorasImportadas;
 
 
-amostra.forEach(item => {
+    amostra.forEach(item => {
 
-    const tr =
-        document.createElement('tr');
-
-
-    const nome =
-        item.nome ||
-        item.NOME ||
-        '—';
+        const tr =
+            document.createElement('tr');
 
 
-    const cnpj =
-        item.cnpj ||
-        item.CNPJ ||
-        '—';
+        const nome =
+            item.nome ||
+            item.NOME ||
+            '—';
 
 
-    const telefone =
-        item.telefone ||
-        item.TELEFONE ||
-        '—';
+        const cnpj =
+            item.cnpj ||
+            item.CNPJ ||
+            '—';
 
 
-    const cidade =
-        item.cidade ||
-        item.CIDADE ||
-        '—';
+        const telefone =
+            item.telefone ||
+            item.TELEFONE ||
+            '—';
 
 
-    let status = 'Nova';
+        const cidade =
+            item.cidade ||
+            item.CIDADE ||
+            '—';
 
 
-    if (item.existente) {
-
-        status = 'Existente';
-
-    } else if (!cnpj || limparNumeros(cnpj).length !== 14) {
-
-        status = 'Conferir';
-
-    }
+        let status = 'Nova';
 
 
-    tr.innerHTML = `
+        if (item.ignorada) {
 
-        <td>
-            ${escaparHTML(nome)}
-        </td>
+            status = 'Ignorada';
 
-        <td>
-            ${escaparHTML(formatarCNPJ(cnpj))}
-        </td>
+        } else if (item.existente) {
 
-        <td>
-            ${escaparHTML(telefone)}
-        </td>
+            status = 'Existente';
 
-        <td>
-            ${escaparHTML(cidade)}
-        </td>
+        } else if (!nome || nome === '—' || !telefone || telefone === '—') {
 
-        <td>
-            ${status}
-        </td>
+            status = '⚠️ Conferir';
 
-    `;
+        }
 
 
-    sampleRows.appendChild(tr);
+        tr.innerHTML = `
 
-});
+            <td>
+                ${escaparHTML(nome)}
+            </td>
+
+            <td>
+                ${escaparHTML(formatarCNPJ(cnpj))}
+            </td>
+
+            <td>
+                ${escaparHTML(telefone)}
+            </td>
+
+            <td>
+                ${escaparHTML(cidade)}
+            </td>
+
+            <td>
+                ${status}
+            </td>
+
+        `;
 
 
-sampleCard.hidden =
-    amostra.length === 0;
-   
+        if (status === '⚠️ Conferir') {
+
+            tr.style.cursor = 'pointer';
+
+            tr.title =
+                'Clique para conferir e corrigir esta transportadora';
+
+
+            tr.addEventListener('click', () => {
+
+                abrirModalTransportadora(item);
+
+            });
+
+        }
+
+
+        sampleRows.appendChild(tr);
+
+    });
+
+
+    sampleCard.hidden =
+        amostra.length === 0;
 
 }
 
@@ -1076,6 +1095,304 @@ importErrors.hidden =
 
 }
 
+
+
+
+
+
+// ======================================================
+// ABRIR MODAL DE CONFERÊNCIA
+// ======================================================
+
+function abrirModalTransportadora(item) {
+
+    transportadoraEmEdicao = item;
+
+
+    modalTransportadoraLinha.textContent =
+        `Linha da planilha: ${item.linha || '—'}`;
+
+
+    preencherDadosPlanilhaModal(item);
+
+    preencherFormularioModal(item);
+
+
+    modalTransportadora.hidden = false;
+
+}
+
+
+// ======================================================
+// DADOS DA PLANILHA
+// ======================================================
+
+function preencherDadosPlanilhaModal(item) {
+
+    const campos = [
+
+        ['Nome', item.nome || ''],
+        ['CNPJ', item.cnpj || ''],
+        ['Telefone', item.telefone || ''],
+        ['E-mail', item.email || ''],
+        ['Contato', item.contato || ''],
+        ['Categoria', item.categoria || ''],
+        ['IE', item.ie || ''],
+        ['CEP', item.cep || ''],
+        ['Rua', item.rua || ''],
+        ['Número', item.numero || ''],
+        ['Complemento', item.complemento || ''],
+        ['Bairro', item.bairro || ''],
+        ['Cidade', item.cidade || ''],
+        ['UF', item.uf || ''],
+        ['Observações', item.observacoes || '']
+
+    ];
+
+
+    modalDadosPlanilha.innerHTML = '';
+
+
+    campos.forEach(([nome, valor]) => {
+
+        const div =
+            document.createElement('div');
+
+        div.className =
+            'modal-dado-planilha';
+
+
+        div.innerHTML = `
+
+            <strong>
+                ${escaparHTML(nome)}
+            </strong>
+
+            <span>
+                ${escaparHTML(valor || 'Não informado')}
+            </span>
+
+        `;
+
+
+        modalDadosPlanilha.appendChild(div);
+
+    });
+
+}
+
+
+// ======================================================
+// PREENCHER FORMULÁRIO
+// ======================================================
+
+function preencherFormularioModal(item) {
+
+    modalNome.value =
+        item.nome || '';
+
+    modalCnpj.value =
+        item.cnpj || '';
+
+    modalTelefone.value =
+        item.telefone || '';
+
+    modalEmail.value =
+        item.email || '';
+
+    modalContato.value =
+        item.contato || '';
+
+    modalCategoria.value =
+        item.categoria || '';
+
+    modalIe.value =
+        item.ie || '';
+
+    modalCep.value =
+        item.cep || '';
+
+    modalRua.value =
+        item.rua || '';
+
+    modalNumero.value =
+        item.numero || '';
+
+    modalComplemento.value =
+        item.complemento || '';
+
+    modalBairro.value =
+        item.bairro || '';
+
+    modalCidade.value =
+        item.cidade || '';
+
+    modalUf.value =
+        item.uf || '';
+
+    modalObservacoes.value =
+        item.observacoes || '';
+
+}
+
+
+// ======================================================
+// FECHAR MODAL
+// ======================================================
+
+function fecharModal() {
+
+    modalTransportadora.hidden = true;
+
+    transportadoraEmEdicao = null;
+
+}
+
+
+// ======================================================
+// SALVAR CORREÇÃO
+// ======================================================
+
+function salvarCorrecaoTransportadora() {
+
+    if (!transportadoraEmEdicao) {
+
+        return;
+
+    }
+
+
+    const nome =
+        modalNome.value.trim();
+
+    const telefone =
+        limparNumeros(
+            modalTelefone.value
+        );
+
+
+    if (!nome) {
+
+        alert(
+            'O nome da transportadora é obrigatório.'
+        );
+
+        modalNome.focus();
+
+        return;
+
+    }
+
+
+    if (!telefone) {
+
+        alert(
+            'O telefone da transportadora é obrigatório.'
+        );
+
+        modalTelefone.focus();
+
+        return;
+
+    }
+
+
+    transportadoraEmEdicao.nome =
+        nome;
+
+    transportadoraEmEdicao.cnpj =
+        limparNumeros(
+            modalCnpj.value
+        );
+
+    transportadoraEmEdicao.telefone =
+        telefone;
+
+    transportadoraEmEdicao.email =
+        modalEmail.value.trim();
+
+    transportadoraEmEdicao.contato =
+        modalContato.value.trim();
+
+    transportadoraEmEdicao.categoria =
+        modalCategoria.value.trim();
+
+    transportadoraEmEdicao.ie =
+        modalIe.value.trim();
+
+    transportadoraEmEdicao.cep =
+        limparNumeros(
+            modalCep.value
+        );
+
+    transportadoraEmEdicao.rua =
+        modalRua.value.trim();
+
+    transportadoraEmEdicao.numero =
+        modalNumero.value.trim();
+
+    transportadoraEmEdicao.complemento =
+        modalComplemento.value.trim();
+
+    transportadoraEmEdicao.bairro =
+        modalBairro.value.trim();
+
+    transportadoraEmEdicao.cidade =
+        modalCidade.value.trim();
+
+    transportadoraEmEdicao.uf =
+        modalUf.value
+            .trim()
+            .toUpperCase();
+
+    transportadoraEmEdicao.observacoes =
+        modalObservacoes.value.trim();
+
+
+    transportadoraEmEdicao.status =
+        'Pronta';
+
+
+    fecharModal();
+
+
+    preencherResumo();
+
+    preencherAmostra();
+
+    verificarTransportadorasPendentes();
+
+}
+
+
+// ======================================================
+// IGNORAR
+// ======================================================
+
+function ignorarTransportadoraAtual() {t
+
+    if (!transportadoraEmEdicao) {
+
+        return;
+
+    }
+
+
+    transportadoraEmEdicao.ignorada =
+        true;
+
+    transportadoraEmEdicao.status =
+        'Ignorada';
+
+
+    fecharModal();
+
+
+    preencherResumo();
+
+    preencherAmostra();
+
+}
 // ======================================================
 // APLICAR IMPORTAÇÃO
 // ======================================================

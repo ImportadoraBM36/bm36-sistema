@@ -846,7 +846,317 @@
 </section>
 
 </main>
+<!-- ======================================================
+     MODAL DE CONFERÊNCIA DA TRANSPORTADORA
+====================================================== -->
 
+<div
+    id="modalTransportadora"
+    class="modal-transportadora"
+    hidden
+>
+
+    <div class="modal-transportadora-overlay"></div>
+
+    <div class="modal-transportadora-content">
+
+        <div class="modal-transportadora-header">
+
+            <div>
+                <span class="modal-tag">
+                    CONFERÊNCIA
+                </span>
+
+                <h2>
+                    Conferir transportadora
+                </h2>
+
+                <p id="modalTransportadoraLinha">
+                    Linha da planilha
+                </p>
+            </div>
+
+            <button
+                type="button"
+                id="fecharModalTransportadora"
+                class="modal-close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="modal-transportadora-body">
+
+            <!-- DADOS DA PLANILHA -->
+
+            <div class="modal-planilha">
+
+                <div class="modal-section-title">
+                    Dados encontrados na planilha
+                </div>
+
+                <div
+                    id="modalDadosPlanilha"
+                    class="modal-dados-planilha"
+                ></div>
+
+            </div>
+
+
+            <!-- FORMULÁRIO -->
+
+            <div class="modal-formulario">
+
+                <div class="modal-section-title">
+                    Dados para cadastrar
+                </div>
+
+
+                <div class="modal-grid">
+
+                    <div class="modal-field">
+
+                        <label>
+                            Nome *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="modalNome"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label>
+                            CNPJ
+                        </label>
+
+                        <input
+                            type="text"
+                            id="modalCnpj"
+                            maxlength="18"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label>
+                            Telefone *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="modalTelefone"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label>
+                            E-mail
+                        </label>
+
+                        <input
+                            type="email"
+                            id="modalEmail"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label>
+                            Contato
+                        </label>
+
+                        <input
+                            type="text"
+                            id="modalContato"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label>
+                            Categoria
+                        </label>
+
+                        <input
+                            type="text"
+                            id="modalCategoria"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label>
+                            IE
+                        </label>
+
+                        <input
+                            type="text"
+                            id="modalIe"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label>
+                            CEP
+                        </label>
+
+                        <input
+                            type="text"
+                            id="modalCep"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label>
+                            Rua
+                        </label>
+
+                        <input
+                            type="text"
+                            id="modalRua"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label>
+                            Número
+                        </label>
+
+                        <input
+                            type="text"
+                            id="modalNumero"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label>
+                            Complemento
+                        </label>
+
+                        <input
+                            type="text"
+                            id="modalComplemento"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label>
+                            Bairro
+                        </label>
+
+                        <input
+                            type="text"
+                            id="modalBairro"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label>
+                            Cidade
+                        </label>
+
+                        <input
+                            type="text"
+                            id="modalCidade"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label>
+                            UF
+                        </label>
+
+                        <input
+                            type="text"
+                            id="modalUf"
+                            maxlength="2"
+                        >
+
+                    </div>
+
+
+                    <div class="modal-field modal-field-full">
+
+                        <label>
+                            Observações
+                        </label>
+
+                        <textarea
+                            id="modalObservacoes"
+                            rows="3"
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-transportadora-footer">
+
+            <button
+                type="button"
+                id="ignorarTransportadora"
+                class="modal-button secondary"
+            >
+                Ignorar
+            </button>
+
+            <button
+                type="button"
+                id="salvarTransportadora"
+                class="modal-button primary"
+            >
+                Salvar correção
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 <script src="./header.js"></script>
 
 <script src="./mandarArquivosTransportadoras.js"></script>
