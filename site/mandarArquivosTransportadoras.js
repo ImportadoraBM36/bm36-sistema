@@ -1114,21 +1114,104 @@ applyButton.textContent =
 
 try {
 
-    const payload = {
+ const transportadorasNormalizadas =
+    transportadorasImportadas.map(item => ({
 
-        transportadoras:
-            transportadorasImportadas,
+        ...item,
 
-        atualizarDadosGerais:
-            updateDadosGerais.checked,
+        nome:
+            item.nome ??
+            item.NOME ??
+            '',
 
-        atualizarEndereco:
-            updateEndereco.checked,
+        cnpj:
+            item.cnpj ??
+            item.CNPJ ??
+            '',
 
-        atualizarObservacoes:
-            updateObservacoes.checked
+        telefone:
+            item.telefone ??
+            item.TELEFONE ??
+            '',
 
-    };
+        email:
+            item.email ??
+            item.EMAIL ??
+            '',
+
+        contato:
+            item.contato ??
+            item.CONTATO ??
+            '',
+
+        categoria:
+            item.categoria ??
+            item.CATEGORIA ??
+            '',
+
+        ie:
+            item.ie ??
+            item.IE ??
+            '',
+
+        cep:
+            item.cep ??
+            item.CEP ??
+            '',
+
+        rua:
+            item.rua ??
+            item.RUA ??
+            '',
+
+        numero:
+            item.numero ??
+            item.NUMERO ??
+            '',
+
+        complemento:
+            item.complemento ??
+            item.COMPLEMENTO ??
+            '',
+
+        bairro:
+            item.bairro ??
+            item.BAIRRO ??
+            '',
+
+        cidade:
+            item.cidade ??
+            item.CIDADE ??
+            '',
+
+        uf:
+            item.uf ??
+            item.UF ??
+            '',
+
+        observacoes:
+            item.observacoes ??
+            item.OBSERVACOES ??
+            ''
+
+    }));
+
+
+const payload = {
+
+    transportadoras:
+        transportadorasNormalizadas,
+
+    atualizarDadosGerais:
+        updateDadosGerais.checked,
+
+    atualizarEndereco:
+        updateEndereco.checked,
+
+    atualizarObservacoes:
+        updateObservacoes.checked
+
+};
 
 
     const resposta = await fetch(
