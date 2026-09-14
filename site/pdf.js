@@ -37,7 +37,7 @@ async function gerarPdfPedido(
 
     const larguraPagina = 210;
     const margem = 10;
-    const logo = './imagem/logofolha-removebg-preview.jpg';
+    const logo = './imagem/logofolha-removebg-preview.png';
     const right = 180;
 
     // ============================================================
