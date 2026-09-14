@@ -1114,8 +1114,10 @@ applyButton.textContent =
 
 try {
 console.log(
-    'TRANSPORTADORA LINHA 7:',
-    transportadorasImportadas[6]
+    'TRANSPORTADORA LINHA 158:',
+    transportadorasImportadas.find(
+        item => item.linha === 158
+    )
 );
  const transportadorasNormalizadas =
     transportadorasImportadas.map(item => ({
