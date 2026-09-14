@@ -5709,7 +5709,1466 @@ app.post(
         }
     }
 );
+// ============================================================
+// IMPORTAÇÃO DE TRANSPORTADORAS
+// ============================================================
 
+
+// ============================================================
+// NORMALIZAR VALOR DA PLANILHA
+// ============================================================
+
+function normalizarTextoTransportadora(valor) {
+
+    return String(valor || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, ' ');
+}
+
+
+// ============================================================
+// LIMPAR NÚMEROS
+// ============================================================
+
+function limparNumerosTransportadora(valor) {
+
+    return String(valor || '')
+        .replace(/\D/g, '');
+}
+
+
+// ============================================================
+// ENCONTRAR COLUNA
+// ============================================================
+
+function encontrarColunaTransportadora(cabecalho, nomes) {
+
+    const nomesNormalizados =
+        nomes.map(nome =>
+            normalizarTextoTransportadora(nome)
+        );
+
+
+    return cabecalho.findIndex(celula => {
+
+        const valor =
+            normalizarTextoTransportadora(celula);
+
+        return nomesNormalizados.includes(valor);
+
+    });
+}
+
+
+// ============================================================
+// LER PLANILHA DE TRANSPORTADORAS
+// ============================================================
+
+function lerPlanilhaTransportadoras(arquivo) {
+
+    const workbook = XLSX.read(
+        arquivo.buffer,
+        {
+            type: 'buffer',
+            raw: false
+        }
+    );
+
+
+    const primeiraAba =
+        workbook.SheetNames[0];
+
+
+    if (!primeiraAba) {
+
+        throw new Error(
+            'A planilha não possui nenhuma aba.'
+        );
+
+    }
+
+
+    const linhas =
+        XLSX.utils.sheet_to_json(
+            workbook.Sheets[primeiraAba],
+            {
+                header: 1,
+                defval: '',
+                raw: false,
+                blankrows: false
+            }
+        );
+
+
+    // ========================================================
+    // PROCURAR CABEÇALHO
+    // ========================================================
+
+    const indiceCabecalho =
+        linhas.findIndex(linha =>
+            linha.some(celula => {
+
+                const valor =
+                    normalizarTextoTransportadora(
+                        celula
+                    );
+
+                return [
+                    'nome',
+                    'transportadora',
+                    'nome transportadora'
+                ].includes(valor);
+
+            })
+        );
+
+
+    if (indiceCabecalho < 0) {
+
+        throw new Error(
+            'Não encontramos a coluna "Nome" da transportadora nesta planilha.'
+        );
+
+    }
+
+
+    const cabecalho =
+        linhas[indiceCabecalho];
+
+
+    // ========================================================
+    // DESCOBRIR COLUNAS
+    // ========================================================
+
+    const indiceNome =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'nome',
+                'transportadora',
+                'nome transportadora'
+            ]
+        );
+
+
+    const indiceCnpj =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'cnpj',
+                'cnpj transportadora'
+            ]
+        );
+
+
+    const indiceTelefone =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'telefone',
+                'fone',
+                'celular',
+                'telefone transportadora'
+            ]
+        );
+
+
+    const indiceEmail =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'email',
+                'e mail',
+                'e-mail'
+            ]
+        );
+
+
+    const indiceContato =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'contato',
+                'responsavel',
+                'responsavel contato'
+            ]
+        );
+
+
+    const indiceCategoria =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'categoria',
+                'tipo'
+            ]
+        );
+
+
+    const indiceIe =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'ie',
+                'inscricao estadual',
+                'inscricao'
+            ]
+        );
+
+
+    const indiceCep =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'cep'
+            ]
+        );
+
+
+    const indiceRua =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'rua',
+                'logradouro',
+                'endereco'
+            ]
+        );
+
+
+    const indiceNumero =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'numero',
+                'n numero',
+                'nº'
+            ]
+        );
+
+
+    const indiceComplemento =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'complemento'
+            ]
+        );
+
+
+    const indiceBairro =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'bairro'
+            ]
+        );
+
+
+    const indiceCidade =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'cidade',
+                'municipio'
+            ]
+        );
+
+
+    const indiceUf =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'uf',
+                'estado'
+            ]
+        );
+
+
+    const indiceObservacoes =
+        encontrarColunaTransportadora(
+            cabecalho,
+            [
+                'observacoes',
+                'observacao',
+                'obs'
+            ]
+        );
+
+
+    // ========================================================
+    // REGISTROS
+    // ========================================================
+
+    const registros = [];
+    const erros = [];
+
+
+    linhas
+        .slice(indiceCabecalho + 1)
+        .forEach((linha, indice) => {
+
+            const numeroLinha =
+                indiceCabecalho + indice + 2;
+
+
+            const nome =
+                String(
+                    indiceNome >= 0
+                        ? linha[indiceNome]
+                        : ''
+                )
+                    .trim();
+
+
+            const cnpj =
+                limparNumerosTransportadora(
+                    indiceCnpj >= 0
+                        ? linha[indiceCnpj]
+                        : ''
+                );
+
+
+            const telefone =
+                limparNumerosTransportadora(
+                    indiceTelefone >= 0
+                        ? linha[indiceTelefone]
+                        : ''
+                );
+
+
+            const email =
+                String(
+                    indiceEmail >= 0
+                        ? linha[indiceEmail]
+                        : ''
+                )
+                    .trim()
+                    .toLowerCase();
+
+
+            const contato =
+                String(
+                    indiceContato >= 0
+                        ? linha[indiceContato]
+                        : ''
+                )
+                    .trim();
+
+
+            const categoria =
+                String(
+                    indiceCategoria >= 0
+                        ? linha[indiceCategoria]
+                        : ''
+                )
+                    .trim();
+
+
+            const ie =
+                String(
+                    indiceIe >= 0
+                        ? linha[indiceIe]
+                        : ''
+                )
+                    .trim();
+
+
+            const cep =
+                limparNumerosTransportadora(
+                    indiceCep >= 0
+                        ? linha[indiceCep]
+                        : ''
+                );
+
+
+            const rua =
+                String(
+                    indiceRua >= 0
+                        ? linha[indiceRua]
+                        : ''
+                )
+                    .trim();
+
+
+            const numero =
+                String(
+                    indiceNumero >= 0
+                        ? linha[indiceNumero]
+                        : ''
+                )
+                    .trim();
+
+
+            const complemento =
+                String(
+                    indiceComplemento >= 0
+                        ? linha[indiceComplemento]
+                        : ''
+                )
+                    .trim();
+
+
+            const bairro =
+                String(
+                    indiceBairro >= 0
+                        ? linha[indiceBairro]
+                        : ''
+                )
+                    .trim();
+
+
+            const cidade =
+                String(
+                    indiceCidade >= 0
+                        ? linha[indiceCidade]
+                        : ''
+                )
+                    .trim();
+
+
+            const uf =
+                String(
+                    indiceUf >= 0
+                        ? linha[indiceUf]
+                        : ''
+                )
+                    .trim()
+                    .toUpperCase();
+
+
+            const observacoes =
+                String(
+                    indiceObservacoes >= 0
+                        ? linha[indiceObservacoes]
+                        : ''
+                )
+                    .trim();
+
+
+            // Linha completamente vazia
+            if (
+                !nome &&
+                !cnpj &&
+                !telefone &&
+                !email &&
+                !cidade
+            ) {
+                return;
+            }
+
+
+            // ==================================================
+            // VALIDAÇÕES
+            // ==================================================
+
+            if (!nome) {
+
+                erros.push(
+                    `Linha ${numeroLinha}: nome da transportadora não informado.`
+                );
+
+            }
+
+
+            if (!telefone) {
+
+                erros.push(
+                    `Linha ${numeroLinha}: telefone não informado.`
+                );
+
+            }
+
+
+            if (
+                cnpj &&
+                cnpj.length !== 14
+            ) {
+
+                erros.push(
+                    `Linha ${numeroLinha}: CNPJ inválido.`
+                );
+
+            }
+
+
+            if (
+                uf &&
+                uf.length !== 2
+            ) {
+
+                erros.push(
+                    `Linha ${numeroLinha}: UF inválida.`
+                );
+
+            }
+
+
+            registros.push({
+
+                linha: numeroLinha,
+
+                nome,
+
+                cnpj,
+
+                telefone,
+
+                email,
+
+                contato,
+
+                categoria,
+
+                ie,
+
+                cep,
+
+                rua,
+
+                numero,
+
+                complemento,
+
+                bairro,
+
+                cidade,
+
+                uf,
+
+                observacoes
+
+            });
+
+        });
+
+
+    return {
+
+        nome: arquivo.originalname,
+
+        aba: primeiraAba,
+
+        cabecalho:
+            cabecalho
+                .filter(Boolean)
+                .map(valor =>
+                    String(valor).trim()
+                ),
+
+        registros,
+
+        erros
+
+    };
+
+}
+
+
+// ============================================================
+// ANALISAR TRANSPORTADORAS
+// ============================================================
+
+async function analisarImportacaoTransportadoras(
+    arquivos
+) {
+
+    const planilhas = [];
+    const erros = [];
+
+
+    // ========================================================
+    // LER ARQUIVOS
+    // ========================================================
+
+    arquivos.forEach(arquivo => {
+
+        try {
+
+            planilhas.push(
+                lerPlanilhaTransportadoras(
+                    arquivo
+                )
+            );
+
+        } catch (erro) {
+
+            erros.push(
+                `${arquivo.originalname}: ${erro.message}`
+            );
+
+        }
+
+    });
+
+
+    const registros =
+        planilhas.flatMap(
+            planilha =>
+                planilha.registros
+        );
+
+
+    // ========================================================
+    // BUSCAR TRANSPORTADORAS EXISTENTES
+    // ========================================================
+
+    const resultado =
+        await pool.query(`
+            SELECT
+                id,
+                nome,
+                cnpj,
+                telefone,
+                email,
+                contato,
+                categoria,
+                ie,
+                cep,
+                rua,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                uf,
+                observacoes,
+                ativo
+
+            FROM transportadoras
+        `);
+
+
+    const transportadorasPorCnpj =
+        new Map();
+
+
+    resultado.rows.forEach(
+        transportadora => {
+
+            const cnpj =
+                limparNumerosTransportadora(
+                    transportadora.cnpj
+                );
+
+
+            if (cnpj) {
+
+                transportadorasPorCnpj.set(
+                    cnpj,
+                    transportadora
+                );
+
+            }
+
+        }
+    );
+
+
+    // ========================================================
+    // VERIFICAR CADA REGISTRO
+    // ========================================================
+
+    let novas = 0;
+    let atualizacoes = 0;
+
+
+    const transportadoras =
+        registros.map(registro => {
+
+            const existente =
+                registro.cnpj
+                    ? transportadorasPorCnpj.get(
+                        registro.cnpj
+                    )
+                    : null;
+
+
+            if (existente) {
+
+                atualizacoes += 1;
+
+            } else {
+
+                novas += 1;
+
+            }
+
+
+            return {
+
+                ...registro,
+
+                existente:
+                    Boolean(existente),
+
+                id:
+                    existente
+                        ? existente.id
+                        : null,
+
+                status:
+                    existente
+                        ? 'Existente'
+                        : registro.cnpj
+                            ? 'Nova'
+                            : 'Nova - conferir CNPJ'
+
+            };
+
+        });
+
+
+    // ========================================================
+    // RETORNO
+    // ========================================================
+
+    planilhas.forEach(planilha => {
+
+        erros.push(
+            ...planilha.erros
+        );
+
+    });
+
+
+    return {
+
+        planilhas:
+            planilhas.map(planilha => ({
+                nome: planilha.nome,
+                aba: planilha.aba,
+                cabecalho: planilha.cabecalho,
+                registros:
+                    planilha.registros.length
+            })),
+
+        transportadoras,
+
+        resumo: {
+
+            arquivos:
+                planilhas.length,
+
+            registros:
+                transportadoras.length,
+
+            novas,
+
+            atualizacoes,
+
+            erros:
+                erros.length
+
+        },
+
+        erros:
+            erros.slice(0, 30)
+
+    };
+
+}
+
+
+// ============================================================
+// PREVIEW DA IMPORTAÇÃO DE TRANSPORTADORAS
+// ============================================================
+
+app.post(
+    '/api/transportadoras/importar/preview',
+    autenticar,
+    somenteAdmin,
+    uploadPlanilhasImportacao.single('arquivo'),
+    async (req, res) => {
+
+        try {
+
+            if (!req.file) {
+
+                return res.status(400).json({
+
+                    sucesso: false,
+
+                    mensagem:
+                        'Selecione uma planilha.'
+
+                });
+
+            }
+
+
+            const analise =
+                await analisarImportacaoTransportadoras(
+                    [req.file]
+                );
+
+
+            return res.json({
+
+                sucesso: true,
+
+                ...analise
+
+            });
+
+        } catch (erro) {
+
+            console.error(
+                'Erro ao gerar prévia das transportadoras:',
+                erro
+            );
+
+
+            return res.status(500).json({
+
+                sucesso: false,
+
+                mensagem:
+                    'Não foi possível ler a planilha de transportadoras.'
+
+            });
+
+        }
+
+    }
+);
+
+
+// ============================================================
+// APLICAR IMPORTAÇÃO DE TRANSPORTADORAS
+// ============================================================
+
+app.post(
+    '/api/transportadoras/importar/aplicar',
+    autenticar,
+    somenteAdmin,
+    async (req, res) => {
+
+        const client =
+            await pool.connect();
+
+
+        try {
+
+            const {
+
+                transportadoras = [],
+
+                atualizarDadosGerais = false,
+
+                atualizarEndereco = false,
+
+                atualizarObservacoes = false
+
+            } = req.body;
+
+
+            if (
+                !Array.isArray(
+                    transportadoras
+                )
+                ||
+                transportadoras.length === 0
+            ) {
+
+                return res.status(400).json({
+
+                    sucesso: false,
+
+                    mensagem:
+                        'Nenhuma transportadora foi enviada.'
+
+                });
+
+            }
+
+
+            await client.query(
+                'BEGIN'
+            );
+
+
+            let criadas = 0;
+            let atualizadas = 0;
+
+
+            for (
+                const transportadora
+                of transportadoras
+            ) {
+
+                let {
+
+                    id,
+
+                    nome,
+
+                    cnpj,
+
+                    telefone,
+
+                    email,
+
+                    contato,
+
+                    categoria,
+
+                    ie,
+
+                    cep,
+
+                    rua,
+
+                    numero,
+
+                    complemento,
+
+                    bairro,
+
+                    cidade,
+
+                    uf,
+
+                    observacoes,
+
+                    existente
+
+                } = transportadora;
+
+
+                // =================================================
+                // NORMALIZAR
+                // =================================================
+
+                nome =
+                    String(
+                        nome || ''
+                    ).trim();
+
+
+                cnpj =
+                    limparNumerosTransportadora(
+                        cnpj
+                    );
+
+
+                telefone =
+                    limparNumerosTransportadora(
+                        telefone
+                    );
+
+
+                email =
+                    String(
+                        email || ''
+                    )
+                        .trim()
+                        .toLowerCase();
+
+
+                contato =
+                    String(
+                        contato || ''
+                    ).trim();
+
+
+                categoria =
+                    String(
+                        categoria || ''
+                    ).trim();
+
+
+                ie =
+                    String(
+                        ie || ''
+                    ).trim();
+
+
+                cep =
+                    limparNumerosTransportadora(
+                        cep
+                    );
+
+
+                rua =
+                    String(
+                        rua || ''
+                    ).trim();
+
+
+                numero =
+                    String(
+                        numero || ''
+                    ).trim();
+
+
+                complemento =
+                    String(
+                        complemento || ''
+                    ).trim();
+
+
+                bairro =
+                    String(
+                        bairro || ''
+                    ).trim();
+
+
+                cidade =
+                    String(
+                        cidade || ''
+                    ).trim();
+
+
+                uf =
+                    String(
+                        uf || ''
+                    )
+                        .trim()
+                        .toUpperCase();
+
+
+                observacoes =
+                    String(
+                        observacoes || ''
+                    ).trim();
+
+
+                // =================================================
+                // VALIDAÇÕES
+                // =================================================
+
+                if (!nome) {
+
+                    throw new Error(
+                        `Linha ${transportadora.linha || '?'}: nome obrigatório.`
+                    );
+
+                }
+
+
+                if (!telefone) {
+
+                    throw new Error(
+                        `Linha ${transportadora.linha || '?'}: telefone obrigatório.`
+                    );
+
+                }
+
+
+                if (
+                    cnpj &&
+                    cnpj.length !== 14
+                ) {
+
+                    throw new Error(
+                        `Linha ${transportadora.linha || '?'}: CNPJ inválido.`
+                    );
+
+                }
+
+
+                // =================================================
+                // PROCURAR NOVAMENTE PELO CNPJ
+                // =================================================
+
+                let existenteBanco = null;
+
+
+                if (cnpj) {
+
+                    const busca =
+                        await client.query(
+                            `
+                            SELECT
+                                id
+
+                            FROM transportadoras
+
+                            WHERE cnpj = $1
+
+                            LIMIT 1
+                            `,
+                            [
+                                cnpj
+                            ]
+                        );
+
+
+                    if (
+                        busca.rows.length > 0
+                    ) {
+
+                        existenteBanco =
+                            busca.rows[0];
+
+                    }
+
+                }
+
+
+                // =================================================
+                // ATUALIZAR EXISTENTE
+                // =================================================
+
+                if (
+                    existenteBanco
+                    ||
+                    (
+                        existente
+                        &&
+                        id
+                    )
+                ) {
+
+                    const idTransportadora =
+                        existenteBanco
+                            ? existenteBanco.id
+                            : Number(id);
+
+
+                    const dadosGerais =
+                        Boolean(
+                            atualizarDadosGerais
+                        );
+
+
+                    const endereco =
+                        Boolean(
+                            atualizarEndereco
+                        );
+
+
+                    const obs =
+                        Boolean(
+                            atualizarObservacoes
+                        );
+
+
+                    await client.query(
+                        `
+                        UPDATE transportadoras
+
+                        SET
+
+                            nome =
+                                CASE
+                                    WHEN $1
+                                    THEN $2
+                                    ELSE nome
+                                END,
+
+                            telefone =
+                                CASE
+                                    WHEN $1
+                                    THEN $3
+                                    ELSE telefone
+                                END,
+
+                            email =
+                                CASE
+                                    WHEN $1
+                                    THEN $4
+                                    ELSE email
+                                END,
+
+                            contato =
+                                CASE
+                                    WHEN $1
+                                    THEN $5
+                                    ELSE contato
+                                END,
+
+                            categoria =
+                                CASE
+                                    WHEN $1
+                                    THEN $6
+                                    ELSE categoria
+                                END,
+
+                            ie =
+                                CASE
+                                    WHEN $1
+                                    THEN $7
+                                    ELSE ie
+                                END,
+
+                            cep =
+                                CASE
+                                    WHEN $8
+                                    THEN $9
+                                    ELSE cep
+                                END,
+
+                            rua =
+                                CASE
+                                    WHEN $8
+                                    THEN $10
+                                    ELSE rua
+                                END,
+
+                            numero =
+                                CASE
+                                    WHEN $8
+                                    THEN $11
+                                    ELSE numero
+                                END,
+
+                            complemento =
+                                CASE
+                                    WHEN $8
+                                    THEN $12
+                                    ELSE complemento
+                                END,
+
+                            bairro =
+                                CASE
+                                    WHEN $8
+                                    THEN $13
+                                    ELSE bairro
+                                END,
+
+                            cidade =
+                                CASE
+                                    WHEN $8
+                                    THEN $14
+                                    ELSE cidade
+                                END,
+
+                            uf =
+                                CASE
+                                    WHEN $8
+                                    THEN $15
+                                    ELSE uf
+                                END,
+
+                            observacoes =
+                                CASE
+                                    WHEN $16
+                                    THEN $17
+                                    ELSE observacoes
+                                END,
+
+                            atualizado_em =
+                                NOW()
+
+                        WHERE id = $18
+                        `,
+                        [
+
+                            dadosGerais,
+
+                            nome,
+
+                            telefone,
+
+                            email || null,
+
+                            contato || null,
+
+                            categoria || null,
+
+                            ie || null,
+
+                            endereco,
+
+                            cep || null,
+
+                            rua || null,
+
+                            numero || null,
+
+                            complemento || null,
+
+                            bairro || null,
+
+                            cidade || null,
+
+                            uf || null,
+
+                            obs,
+
+                            observacoes || null,
+
+                            idTransportadora
+
+                        ]
+                    );
+
+
+                    atualizadas += 1;
+
+                    continue;
+
+                }
+
+
+                // =================================================
+                // CRIAR NOVA
+                // =================================================
+
+                await client.query(
+                    `
+                    INSERT INTO transportadoras (
+
+                        nome,
+
+                        cnpj,
+
+                        telefone,
+
+                        email,
+
+                        contato,
+
+                        categoria,
+
+                        ie,
+
+                        cep,
+
+                        rua,
+
+                        numero,
+
+                        complemento,
+
+                        bairro,
+
+                        cidade,
+
+                        uf,
+
+                        observacoes,
+
+                        ativo
+
+                    )
+
+                    VALUES (
+
+                        $1,
+                        $2,
+                        $3,
+                        $4,
+                        $5,
+                        $6,
+                        $7,
+                        $8,
+                        $9,
+                        $10,
+                        $11,
+                        $12,
+                        $13,
+                        $14,
+                        $15,
+                        $16
+
+                    )
+                    `,
+                    [
+
+                        nome,
+
+                        cnpj || null,
+
+                        telefone,
+
+                        email || null,
+
+                        contato || null,
+
+                        categoria || null,
+
+                        ie || null,
+
+                        cep || null,
+
+                        rua || null,
+
+                        numero || null,
+
+                        complemento || null,
+
+                        bairro || null,
+
+                        cidade || null,
+
+                        uf || null,
+
+                        observacoes || null,
+
+                        true
+
+                    ]
+                );
+
+
+                criadas += 1;
+
+            }
+
+
+            await client.query(
+                'COMMIT'
+            );
+
+
+            return res.json({
+
+                sucesso: true,
+
+                mensagem:
+                    'Importação de transportadoras concluída com sucesso.',
+
+                resumo: {
+
+                    criadas,
+
+                    atualizadas,
+
+                    total:
+                        criadas +
+                        atualizadas
+
+                }
+
+            });
+
+
+        } catch (erro) {
+
+            await client.query(
+                'ROLLBACK'
+            );
+
+
+            console.error(
+                'Erro ao aplicar importação de transportadoras:',
+                erro
+            );
+
+
+            return res.status(500).json({
+
+                sucesso: false,
+
+                mensagem:
+                    erro.message ||
+                    'Não foi possível aplicar a importação.'
+
+            });
+
+        } finally {
+
+            client.release();
+
+        }
+
+    }
+);
 
 // ============================================================
 // USUÁRIOS / FUNCIONÁRIOS
