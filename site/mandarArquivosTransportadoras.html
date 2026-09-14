@@ -1,0 +1,539 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Importar transportadoras - BM36</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./mandarArquivosTransportadoras.css">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="brand">
+        <div class="logo">
+            <img src="./imagem/logo2.jpg" alt="BM36">
+        </div>
+
+        <span class="wordmark"></span>
+    </div>
+
+    <nav class="mainnav" id="mainnav">
+        <a href="./inicio.html" data-page="inicio">Início</a>
+        <a href="./venda.html" data-page="venda">Venda</a>
+        <a href="./produtos.html" data-page="produtos">Produtos</a>
+        <a href="./estoque.html" data-page="estoque">Estoque</a>
+        <a href="./CadastroCliente.html" data-page="clientes">Clientes</a>
+        <a href="./vendido.html" data-page="pedidos">Pedidos</a>
+        <a href="./CadastroTransportadora.html" data-page="transportadoras">
+            Transportadoras
+        </a>
+        <a href="./eventos.html">Eventos</a>
+    </nav>
+
+    <div class="topbar-right">
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar tema"
+            title="Alternar tema"
+        >
+            🌙
+        </button>
+
+        <div class="avatar" id="avatarInitials" title="Minha conta">
+            AD
+        </div>
+
+        <button
+            class="menu-toggle"
+            id="menuToggle"
+            type="button"
+            aria-label="Abrir menu"
+        >
+            <span></span>
+        </button>
+
+    </div>
+
+</header>
+
+
+<main class="import-transportadoras-page">
+
+    <!-- CABEÇALHO -->
+
+    <div class="page-heading">
+
+        <div class="breadcrumb">
+            Administração <span>/</span> Transportadoras <span>/</span> Importação
+        </div>
+
+        <h1>Importar transportadoras</h1>
+
+        <p>
+            Envie a planilha de transportadoras, confira os dados encontrados
+            e só então aplique as alterações no sistema.
+        </p>
+
+    </div>
+
+
+    <!-- ETAPAS -->
+
+    <ol class="import-steps" aria-label="Etapas da importação">
+
+        <li class="import-step is-active" id="stepUpload">
+            <span>1</span>
+            Enviar arquivo
+        </li>
+
+        <li class="import-step" id="stepReview">
+            <span>2</span>
+            Conferir dados
+        </li>
+
+        <li class="import-step" id="stepFinish">
+            <span>3</span>
+            Atualizar sistema
+        </li>
+
+    </ol>
+
+
+    <!-- ========================= -->
+    <!-- ETAPA 1 -->
+    <!-- ========================= -->
+
+    <section class="import-panel" id="uploadPanel">
+
+        <div class="panel-heading">
+
+            <div>
+
+                <span class="eyebrow">
+                    ETAPA 1 DE 3
+                </span>
+
+                <h2>
+                    Selecione a planilha
+                </h2>
+
+                <p>
+                    Escolha a planilha contendo as transportadoras.
+                    Nenhuma informação será alterada nesta etapa.
+                </p>
+
+            </div>
+
+            <span class="safe-badge">
+                🔒 Conferência antes de salvar
+            </span>
+
+        </div>
+
+
+        <!-- ÁREA DE UPLOAD -->
+
+        <label class="upload-dropzone" id="uploadDropzone" for="fileInput">
+
+            <input
+                id="fileInput"
+                type="file"
+                accept=".xls,.xlsx,.csv"
+            >
+
+            <span class="upload-icon" aria-hidden="true">
+                📄
+            </span>
+
+            <strong>
+                Arraste a planilha aqui
+            </strong>
+
+            <span>
+                ou clique para escolher no computador
+            </span>
+
+            <small>
+                Formatos aceitos: .xls, .xlsx e .csv
+            </small>
+
+        </label>
+
+
+        <!-- ARQUIVO SELECIONADO -->
+
+        <div class="selected-files" id="selectedFiles" hidden>
+
+            <div class="selected-files-heading">
+
+                <strong>
+                    Arquivo selecionado
+                </strong>
+
+                <button
+                    class="text-button"
+                    id="clearFilesButton"
+                    type="button"
+                >
+                    Limpar
+                </button>
+
+            </div>
+
+            <ul id="fileList"></ul>
+
+        </div>
+
+
+        <!-- AÇÕES -->
+
+        <div class="upload-actions">
+
+            <p id="sourceHelp">
+                Na próxima etapa você poderá conferir os dados encontrados
+                antes de atualizar o banco.
+            </p>
+
+            <button
+                class="primary-button"
+                id="reviewButton"
+                type="button"
+                disabled
+            >
+                Conferir dados
+                <span aria-hidden="true">→</span>
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- ETAPA 2 -->
+    <!-- ========================= -->
+
+    <section
+        class="review-panel"
+        id="reviewPanel"
+        hidden
+    >
+
+        <div class="panel-heading">
+
+            <div>
+
+                <span class="eyebrow">
+                    ETAPA 2 DE 3
+                </span>
+
+                <h2>
+                    Prévia da importação
+                </h2>
+
+                <p>
+                    Confira as transportadoras encontradas antes de atualizar o sistema.
+                </p>
+
+            </div>
+
+            <button
+                class="secondary-button"
+                id="backButton"
+                type="button"
+            >
+                ← Voltar
+            </button>
+
+        </div>
+
+
+        <!-- AVISO -->
+
+        <div class="review-notice" id="reviewNotice">
+
+            <span aria-hidden="true">
+                ℹ️
+            </span>
+
+            <p id="reviewNoticeText">
+                <strong>Confira antes de aplicar:</strong>
+                nenhuma alteração será feita enquanto você estiver apenas
+                conferindo os dados.
+            </p>
+
+        </div>
+
+
+        <!-- RESUMO -->
+
+        <div class="import-summary">
+
+            <article>
+                <strong id="summaryFiles">0</strong>
+                <span>arquivos enviados</span>
+            </article>
+
+            <article>
+                <strong id="summaryTransportadoras">—</strong>
+                <span>transportadoras encontradas</span>
+            </article>
+
+            <article>
+                <strong id="summaryNovas">—</strong>
+                <span>novas transportadoras</span>
+            </article>
+
+            <article>
+                <strong id="summaryAtualizacoes">—</strong>
+                <span>atualizações possíveis</span>
+            </article>
+
+        </div>
+
+
+        <!-- MAPEAMENTO -->
+
+        <div class="mapping-card">
+
+            <div class="mapping-card-heading">
+
+                <div>
+
+                    <h3>
+                        Mapeamento de colunas
+                    </h3>
+
+                    <p>
+                        Confira como as colunas da planilha serão interpretadas.
+                    </p>
+
+                </div>
+
+                <span
+                    class="status-pill"
+                    id="readStatus"
+                >
+                    Lendo arquivo
+                </span>
+
+            </div>
+
+
+            <div
+                class="mapping-grid"
+                id="mappingGrid"
+            >
+
+                <div class="mapping-row mapping-labels">
+
+                    <span>
+                        Coluna do arquivo
+                    </span>
+
+                    <span>
+                        Será usada como
+                    </span>
+
+                    <span>
+                        Status
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ERROS -->
+
+        <section
+            class="import-errors"
+            id="importErrors"
+            hidden
+        >
+
+            <h3>
+                Itens que precisam de atenção
+            </h3>
+
+            <ul id="errorList"></ul>
+
+        </section>
+
+
+        <!-- AMOSTRA -->
+
+        <section
+            class="sample-card"
+            id="sampleCard"
+            hidden
+        >
+
+            <h3>
+                Transportadoras encontradas
+            </h3>
+
+            <div class="sample-table-wrap">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Nome</th>
+                            <th>CNPJ</th>
+                            <th>Telefone</th>
+                            <th>Cidade</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="sampleRows"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- OPÇÕES -->
+
+        <section
+            class="update-options"
+            aria-labelledby="updateOptionsTitle"
+        >
+
+            <div>
+
+                <h3 id="updateOptionsTitle">
+                    O que deseja atualizar?
+                </h3>
+
+                <p>
+                    Escolha quais informações existentes poderão ser atualizadas.
+                </p>
+
+            </div>
+
+
+            <label>
+
+                <input
+                    id="updateDadosGerais"
+                    type="checkbox"
+                >
+
+                <span>
+
+                    <strong>
+                        Dados da transportadora
+                    </strong>
+
+                    <small>
+                        Nome, telefone, e-mail, contato, categoria e inscrição estadual.
+                    </small>
+
+                </span>
+
+            </label>
+
+
+            <label>
+
+                <input
+                    id="updateEndereco"
+                    type="checkbox"
+                >
+
+                <span>
+
+                    <strong>
+                        Endereço
+                    </strong>
+
+                    <small>
+                        CEP, rua, número, complemento, bairro, cidade e UF.
+                    </small>
+
+                </span>
+
+            </label>
+
+
+            <label>
+
+                <input
+                    id="updateObservacoes"
+                    type="checkbox"
+                >
+
+                <span>
+
+                    <strong>
+                        Observações e status
+                    </strong>
+
+                    <small>
+                        Atualiza observações e situação ativa/inativa.
+                    </small>
+
+                </span>
+
+            </label>
+
+        </section>
+
+
+        <!-- AÇÕES FINAIS -->
+
+        <div class="review-actions">
+
+            <p id="applyHint">
+                A atualização só será liberada depois que a leitura for concluída.
+            </p>
+
+            <button
+                class="primary-button"
+                id="applyButton"
+                type="button"
+                disabled
+            >
+                Atualizar sistema
+                <span aria-hidden="true">→</span>
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script src="./header.js"></script>
+<script src="./mandarArquivosTransportadoras.js"></script>
+
+</body>
+
+</html
