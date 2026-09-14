@@ -37,7 +37,7 @@ async function gerarPdfPedido(
 
     const larguraPagina = 210;
     const margem = 10;
-    const logo = './imagem/logo.png';
+    const logo = './imagem/logofolha.jpg';
     const right = 180;
 
     // ============================================================
@@ -153,7 +153,7 @@ async function gerarPdfPedido(
         pdf.setFontSize(10);
 
         pdf.text(
-            'C.N.P.J.: 00.000.000/0000-00 - I.E.: 140085675118',
+            'C.N.P.J.: 09.648.255/0001-30 - I.E.: 140085675118',
             35,
             15
         );
