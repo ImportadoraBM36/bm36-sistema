@@ -847,7 +847,7 @@
 
 </main>
 <!-- ======================================================
-     MODAL DE CONFERÊNCIA DA TRANSPORTADORA
+     MODAL DE CONFERÊNCIA
 ====================================================== -->
 
 <div
@@ -863,17 +863,15 @@
         <div class="modal-transportadora-header">
 
             <div>
+
                 <span class="modal-tag">
-                    CONFERÊNCIA
+                    ATENÇÃO
                 </span>
 
                 <h2>
-                    Conferir transportadora
+                    Corrigir transportadora?
                 </h2>
 
-                <p id="modalTransportadoraLinha">
-                    Linha da planilha
-                </p>
             </div>
 
             <button
@@ -889,247 +887,31 @@
 
         <div class="modal-transportadora-body">
 
-            <!-- DADOS DA PLANILHA -->
+            <p>
+                A transportadora
+                <strong id="modalTransportadoraNome">
+                    —
+                </strong>
+                possui dados obrigatórios que precisam
+                ser corrigidos.
+            </p>
 
-            <div class="modal-planilha">
 
-                <div class="modal-section-title">
-                    Dados encontrados na planilha
-                </div>
+            <div class="modal-warning">
 
-                <div
-                    id="modalDadosPlanilha"
-                    class="modal-dados-planilha"
-                ></div>
+                ⚠️
+
+                <span id="modalTransportadoraProblema">
+                    Existem dados que precisam ser conferidos.
+                </span>
 
             </div>
 
 
-            <!-- FORMULÁRIO -->
-
-            <div class="modal-formulario">
-
-                <div class="modal-section-title">
-                    Dados para cadastrar
-                </div>
-
-
-                <div class="modal-grid">
-
-                    <div class="modal-field">
-
-                        <label>
-                            Nome *
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modalNome"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field">
-
-                        <label>
-                            CNPJ
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modalCnpj"
-                            maxlength="18"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field">
-
-                        <label>
-                            Telefone *
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modalTelefone"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field">
-
-                        <label>
-                            E-mail
-                        </label>
-
-                        <input
-                            type="email"
-                            id="modalEmail"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field">
-
-                        <label>
-                            Contato
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modalContato"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field">
-
-                        <label>
-                            Categoria
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modalCategoria"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field">
-
-                        <label>
-                            IE
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modalIe"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field">
-
-                        <label>
-                            CEP
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modalCep"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field">
-
-                        <label>
-                            Rua
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modalRua"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field">
-
-                        <label>
-                            Número
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modalNumero"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field">
-
-                        <label>
-                            Complemento
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modalComplemento"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field">
-
-                        <label>
-                            Bairro
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modalBairro"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field">
-
-                        <label>
-                            Cidade
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modalCidade"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field">
-
-                        <label>
-                            UF
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modalUf"
-                            maxlength="2"
-                        >
-
-                    </div>
-
-
-                    <div class="modal-field modal-field-full">
-
-                        <label>
-                            Observações
-                        </label>
-
-                        <textarea
-                            id="modalObservacoes"
-                            rows="3"
-                        ></textarea>
-
-                    </div>
-
-                </div>
-
-            </div>
+            <p>
+                Deseja abrir o modo manual e corrigir
+                os dados?
+            </p>
 
         </div>
 
@@ -1141,15 +923,16 @@
                 id="ignorarTransportadora"
                 class="modal-button secondary"
             >
-                Ignorar
+                Não, ignorar
             </button>
+
 
             <button
                 type="button"
-                id="salvarTransportadora"
+                id="corrigirTransportadora"
                 class="modal-button primary"
             >
-                Salvar correção
+                Sim, corrigir
             </button>
 
         </div>

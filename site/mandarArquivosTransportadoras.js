@@ -89,7 +89,8 @@ const applyHint = document.getElementById('applyHint');
 let arquivoSelecionado = null;
 
 let transportadorasImportadas = [];
-
+let transportadorasDoArquivo = [];
+let modoCorrecaoManual = false;
 let transportadorasExistentes = [];
 
 let modoAtual = 'arquivo';
@@ -137,6 +138,7 @@ fileModeButton.addEventListener('click', () => {
 manualModeButton.addEventListener('click', () => {
 
     modoAtual = 'manual';
+modoCorrecaoManual = true;
 
     fileMode.hidden = true;
     manualMode.hidden = false;
@@ -289,109 +291,107 @@ applyButton.addEventListener(
 // ======================================================
 // ADICIONAR LINHA MANUAL
 // ======================================================
+function adicionarLinhaManual(dados = {}) {
 
-function adicionarLinhaManual() {
+    const tr = document.createElement('tr');
 
-   
-const tr = document.createElement('tr');
+    tr.innerHTML = `
 
-tr.innerHTML = `
+        <td>
+            <input
+                type="text"
+                class="manual-nome"
+                placeholder="Nome da transportadora"
+                value="${escaparHTML(dados.nome || '')}"
+            >
+        </td>
 
-    <td>
-        <input
-            type="text"
-            class="manual-nome"
-            placeholder="Nome da transportadora"
-        >
-    </td>
+        <td>
+            <input
+                type="text"
+                class="manual-cnpj"
+                placeholder="CNPJ"
+                maxlength="18"
+                value="${escaparHTML(dados.cnpj || '')}"
+            >
+        </td>
 
-    <td>
-        <input
-            type="text"
-            class="manual-cnpj"
-            placeholder="CNPJ"
-            maxlength="18"
-        >
-    </td>
+        <td>
+            <input
+                type="text"
+                class="manual-telefone"
+                placeholder="Telefone"
+                value="${escaparHTML(dados.telefone || '')}"
+            >
+        </td>
 
-    <td>
-        <input
-            type="text"
-            class="manual-telefone"
-            placeholder="Telefone"
-        >
-    </td>
+        <td>
+            <input
+                type="email"
+                class="manual-email"
+                placeholder="E-mail"
+                value="${escaparHTML(dados.email || '')}"
+            >
+        </td>
 
-    <td>
-        <input
-            type="email"
-            class="manual-email"
-            placeholder="E-mail"
-        >
-    </td>
+        <td>
+            <input
+                type="text"
+                class="manual-cidade"
+                placeholder="Cidade"
+                value="${escaparHTML(dados.cidade || '')}"
+            >
+        </td>
 
-    <td>
-        <input
-            type="text"
-            class="manual-cidade"
-            placeholder="Cidade"
-        >
-    </td>
+        <td>
+            <input
+                type="text"
+                class="manual-uf"
+                placeholder="UF"
+                maxlength="2"
+                value="${escaparHTML(dados.uf || '')}"
+            >
+        </td>
 
-    <td>
-        <input
-            type="text"
-            class="manual-uf"
-            placeholder="UF"
-            maxlength="2"
-        >
-    </td>
+        <td>
+            <button
+                type="button"
+                class="remove-manual-row"
+                title="Remover"
+            >
+                ×
+            </button>
+        </td>
 
-    <td>
-        <button
-            type="button"
-            class="remove-manual-row"
-            title="Remover"
-        >
-            ×
-        </button>
-    </td>
+    `;
 
-`;
+    const botaoRemover =
+        tr.querySelector('.remove-manual-row');
 
+    botaoRemover.addEventListener('click', () => {
 
-const botaoRemover =
-    tr.querySelector('.remove-manual-row');
+        tr.remove();
 
+        atualizarBotaoRevisao();
 
-botaoRemover.addEventListener('click', () => {
+    });
 
-    tr.remove();
+    const inputs =
+        tr.querySelectorAll('input');
+
+    inputs.forEach(input => {
+
+        input.addEventListener(
+            'input',
+            atualizarBotaoRevisao
+        );
+
+    });
+
+    manualTransportadorasRows.appendChild(tr);
 
     atualizarBotaoRevisao();
-
-});
-
-
-const inputs = tr.querySelectorAll('input');
-
-inputs.forEach(input => {
-
-    input.addEventListener(
-        'input',
-        atualizarBotaoRevisao
-    );
-
-});
-
-
-manualTransportadorasRows.appendChild(tr);
-
-atualizarBotaoRevisao();
-   
-
 }
-
 // ======================================================
 // PEGAR DADOS MANUAIS
 // ======================================================
@@ -589,6 +589,9 @@ if (!resposta.ok) {
 transportadorasImportadas =
     normalizarRespostaPreview(dados);
 
+transportadorasDoArquivo =
+    [...transportadorasImportadas];
+
 
 transportadorasExistentes =
     transportadorasImportadas.filter(
@@ -756,15 +759,7 @@ preencherAmostra();
 readStatus.textContent =
     'Leitura concluída';
 
-
-applyButton.disabled =
-    transportadorasImportadas.length === 0;
-
-
-applyHint.textContent =
-    `${transportadorasImportadas.length} transportadora(s) pronta(s) para revisão.`;
-   
-
+verificarTransportadorasPendentes();
 }
 
 // ======================================================
@@ -893,48 +888,41 @@ campos.forEach(campo => {
 // ======================================================
 // AMOSTRA
 // ======================================================
-
 function preencherAmostra() {
 
     sampleRows.innerHTML = '';
 
-
+    // Mostra somente as 10 primeiras
+    // para não deixar a tela gigante.
     const amostra =
-        transportadorasImportadas;
-
+        transportadorasImportadas.slice(0, 10);
 
     amostra.forEach(item => {
 
         const tr =
             document.createElement('tr');
 
-
         const nome =
             item.nome ||
             item.NOME ||
             '—';
-
 
         const cnpj =
             item.cnpj ||
             item.CNPJ ||
             '—';
 
-
         const telefone =
             item.telefone ||
             item.TELEFONE ||
             '—';
-
 
         const cidade =
             item.cidade ||
             item.CIDADE ||
             '—';
 
-
         let status = 'Nova';
-
 
         if (item.ignorada) {
 
@@ -944,12 +932,11 @@ function preencherAmostra() {
 
             status = 'Existente';
 
-        } else if (!nome || nome === '—' || !telefone || telefone === '—') {
+        } else if (!telefone || telefone === '—') {
 
             status = '⚠️ Conferir';
 
         }
-
 
         tr.innerHTML = `
 
@@ -975,14 +962,12 @@ function preencherAmostra() {
 
         `;
 
-
         if (status === '⚠️ Conferir') {
 
             tr.style.cursor = 'pointer';
 
             tr.title =
-                'Clique para conferir e corrigir esta transportadora';
-
+                'Clique para corrigir esta transportadora';
 
             tr.addEventListener('click', () => {
 
@@ -992,17 +977,84 @@ function preencherAmostra() {
 
         }
 
-
         sampleRows.appendChild(tr);
 
     });
 
-
     sampleCard.hidden =
         amostra.length === 0;
 
-}
+    mostrarErrosConferencia();
 
+}
+function mostrarErrosConferencia() {
+
+    errorList.innerHTML = '';
+
+    const problemas =
+        transportadorasImportadas.filter(item => {
+
+            if (item.ignorada) {
+                return false;
+            }
+
+            const nome =
+                item.nome ||
+                item.NOME ||
+                '';
+
+            const telefone =
+                item.telefone ||
+                item.TELEFONE ||
+                '';
+
+            return !nome || !telefone;
+
+        });
+
+    if (!problemas.length) {
+
+        importErrors.hidden = true;
+
+        return;
+    }
+
+    problemas.forEach(item => {
+
+        const li =
+            document.createElement('li');
+
+        const nome =
+            item.nome ||
+            item.NOME ||
+            'Transportadora sem nome';
+
+        const telefone =
+            item.telefone ||
+            item.TELEFONE ||
+            '';
+
+        li.textContent =
+            `Linha ${item.linha}: ${nome} — telefone não informado`;
+
+        li.style.cursor = 'pointer';
+
+        li.title =
+            'Clique para corrigir esta transportadora';
+
+        li.addEventListener('click', () => {
+
+            abrirModalTransportadora(item);
+
+        });
+
+        errorList.appendChild(li);
+
+    });
+
+    importErrors.hidden = false;
+
+}
 // ======================================================
 // VOLTAR
 // ======================================================
@@ -1099,139 +1151,65 @@ importErrors.hidden =
 
 
 
+// ======================================================
+// MODAL DE CONFERÊNCIA
+// ======================================================
+
+let transportadoraEmEdicao = null;
+
+const modalTransportadora =
+    document.getElementById('modalTransportadora');
+
+const fecharModalTransportadora =
+    document.getElementById('fecharModalTransportadora');
+
+const corrigirTransportadora =
+    document.getElementById('corrigirTransportadora');
+
+const ignorarTransportadora =
+    document.getElementById('ignorarTransportadora');
+
+const modalTransportadoraNome =
+    document.getElementById('modalTransportadoraNome');
+
+const modalTransportadoraProblema =
+    document.getElementById('modalTransportadoraProblema');
+
 
 // ======================================================
-// ABRIR MODAL DE CONFERÊNCIA
+// ABRIR MODAL
 // ======================================================
 
 function abrirModalTransportadora(item) {
 
     transportadoraEmEdicao = item;
 
+    const nome =
+        item.nome ||
+        item.NOME ||
+        'Transportadora';
 
-    modalTransportadoraLinha.textContent =
-        `Linha da planilha: ${item.linha || '—'}`;
+    const telefone =
+        item.telefone ||
+        item.TELEFONE ||
+        '';
 
+    modalTransportadoraNome.textContent =
+        nome;
 
-    preencherDadosPlanilhaModal(item);
+    if (!telefone) {
 
-    preencherFormularioModal(item);
+        modalTransportadoraProblema.textContent =
+            'O telefone obrigatório não foi informado na planilha.';
 
+    } else {
+
+        modalTransportadoraProblema.textContent =
+            'Existem dados que precisam ser conferidos.';
+
+    }
 
     modalTransportadora.hidden = false;
-
-}
-
-
-// ======================================================
-// DADOS DA PLANILHA
-// ======================================================
-
-function preencherDadosPlanilhaModal(item) {
-
-    const campos = [
-
-        ['Nome', item.nome || ''],
-        ['CNPJ', item.cnpj || ''],
-        ['Telefone', item.telefone || ''],
-        ['E-mail', item.email || ''],
-        ['Contato', item.contato || ''],
-        ['Categoria', item.categoria || ''],
-        ['IE', item.ie || ''],
-        ['CEP', item.cep || ''],
-        ['Rua', item.rua || ''],
-        ['Número', item.numero || ''],
-        ['Complemento', item.complemento || ''],
-        ['Bairro', item.bairro || ''],
-        ['Cidade', item.cidade || ''],
-        ['UF', item.uf || ''],
-        ['Observações', item.observacoes || '']
-
-    ];
-
-
-    modalDadosPlanilha.innerHTML = '';
-
-
-    campos.forEach(([nome, valor]) => {
-
-        const div =
-            document.createElement('div');
-
-        div.className =
-            'modal-dado-planilha';
-
-
-        div.innerHTML = `
-
-            <strong>
-                ${escaparHTML(nome)}
-            </strong>
-
-            <span>
-                ${escaparHTML(valor || 'Não informado')}
-            </span>
-
-        `;
-
-
-        modalDadosPlanilha.appendChild(div);
-
-    });
-
-}
-
-
-// ======================================================
-// PREENCHER FORMULÁRIO
-// ======================================================
-
-function preencherFormularioModal(item) {
-
-    modalNome.value =
-        item.nome || '';
-
-    modalCnpj.value =
-        item.cnpj || '';
-
-    modalTelefone.value =
-        item.telefone || '';
-
-    modalEmail.value =
-        item.email || '';
-
-    modalContato.value =
-        item.contato || '';
-
-    modalCategoria.value =
-        item.categoria || '';
-
-    modalIe.value =
-        item.ie || '';
-
-    modalCep.value =
-        item.cep || '';
-
-    modalRua.value =
-        item.rua || '';
-
-    modalNumero.value =
-        item.numero || '';
-
-    modalComplemento.value =
-        item.complemento || '';
-
-    modalBairro.value =
-        item.bairro || '';
-
-    modalCidade.value =
-        item.cidade || '';
-
-    modalUf.value =
-        item.uf || '';
-
-    modalObservacoes.value =
-        item.observacoes || '';
 
 }
 
@@ -1240,7 +1218,7 @@ function preencherFormularioModal(item) {
 // FECHAR MODAL
 // ======================================================
 
-function fecharModal() {
+function fecharModalTransportadoraFunc() {
 
     modalTransportadora.hidden = true;
 
@@ -1250,10 +1228,10 @@ function fecharModal() {
 
 
 // ======================================================
-// SALVAR CORREÇÃO
+// CORRIGIR
 // ======================================================
 
-function salvarCorrecaoTransportadora() {
+function corrigirTransportadoraAtual() {
 
     if (!transportadoraEmEdicao) {
 
@@ -1261,106 +1239,76 @@ function salvarCorrecaoTransportadora() {
 
     }
 
-
-    const nome =
-        modalNome.value.trim();
-
-    const telefone =
-        limparNumeros(
-            modalTelefone.value
-        );
+    const item =
+        transportadoraEmEdicao;
 
 
-    if (!nome) {
-
-        alert(
-            'O nome da transportadora é obrigatório.'
-        );
-
-        modalNome.focus();
-
-        return;
-
-    }
+    // Marca que essa transportadora será
+    // corrigida manualmente.
+    item.corrigirManualmente = true;
 
 
-    if (!telefone) {
+    // Volta para a primeira etapa.
+    reviewPanel.hidden = true;
 
-        alert(
-            'O telefone da transportadora é obrigatório.'
-        );
-
-        modalTelefone.focus();
-
-        return;
-
-    }
+    uploadPanel.hidden = false;
 
 
-    transportadoraEmEdicao.nome =
-        nome;
+    stepReview.classList.remove('is-active');
 
-    transportadoraEmEdicao.cnpj =
-        limparNumeros(
-            modalCnpj.value
-        );
-
-    transportadoraEmEdicao.telefone =
-        telefone;
-
-    transportadoraEmEdicao.email =
-        modalEmail.value.trim();
-
-    transportadoraEmEdicao.contato =
-        modalContato.value.trim();
-
-    transportadoraEmEdicao.categoria =
-        modalCategoria.value.trim();
-
-    transportadoraEmEdicao.ie =
-        modalIe.value.trim();
-
-    transportadoraEmEdicao.cep =
-        limparNumeros(
-            modalCep.value
-        );
-
-    transportadoraEmEdicao.rua =
-        modalRua.value.trim();
-
-    transportadoraEmEdicao.numero =
-        modalNumero.value.trim();
-
-    transportadoraEmEdicao.complemento =
-        modalComplemento.value.trim();
-
-    transportadoraEmEdicao.bairro =
-        modalBairro.value.trim();
-
-    transportadoraEmEdicao.cidade =
-        modalCidade.value.trim();
-
-    transportadoraEmEdicao.uf =
-        modalUf.value
-            .trim()
-            .toUpperCase();
-
-    transportadoraEmEdicao.observacoes =
-        modalObservacoes.value.trim();
+    stepUpload.classList.add('is-active');
 
 
-    transportadoraEmEdicao.status =
-        'Pronta';
+    // Abre o modo manual.
+    modoAtual = 'manual';
+
+    fileMode.hidden = true;
+
+    manualMode.hidden = false;
+
+    fileModeButton.classList.remove('active');
+
+    manualModeButton.classList.add('active');
 
 
-    fecharModal();
+    // Coloca os dados da planilha
+    // diretamente na tabela manual.
+    adicionarLinhaManual({
+
+        nome:
+            item.nome ||
+            item.NOME ||
+            '',
+
+        cnpj:
+            item.cnpj ||
+            item.CNPJ ||
+            '',
+
+        telefone:
+            item.telefone ||
+            item.TELEFONE ||
+            '',
+
+        email:
+            item.email ||
+            item.EMAIL ||
+            '',
+
+        cidade:
+            item.cidade ||
+            item.CIDADE ||
+            '',
+
+        uf:
+            item.uf ||
+            item.UF ||
+            ''
+
+    });
 
 
-    preencherResumo();
-
-    preencherAmostra();
-
-    verificarTransportadorasPendentes();
+    fecharModalTransportadoraFunc();
 
 }
 
@@ -1369,7 +1317,7 @@ function salvarCorrecaoTransportadora() {
 // IGNORAR
 // ======================================================
 
-function ignorarTransportadoraAtual() {t
+function ignorarTransportadoraAtual() {
 
     if (!transportadoraEmEdicao) {
 
@@ -1385,231 +1333,347 @@ function ignorarTransportadoraAtual() {t
         'Ignorada';
 
 
-    fecharModal();
+    fecharModalTransportadoraFunc();
 
 
     preencherResumo();
 
     preencherAmostra();
 
+    verificarTransportadorasPendentes();
+
 }
+
+
 // ======================================================
+// BOTÕES DO MODAL
+// ======================================================
+
+fecharModalTransportadora.addEventListener(
+    'click',
+    fecharModalTransportadoraFunc
+);
+
+
+ignorarTransportadora.addEventListener(
+    'click',
+    ignorarTransportadoraAtual
+);
+
+
+corrigirTransportadora.addEventListener(
+    'click',
+    corrigirTransportadoraAtual
+);
+
+
+// Clicar fora do modal também fecha
+modalTransportadora
+    .querySelector('.modal-transportadora-overlay')
+    .addEventListener(
+        'click',
+        fecharModalTransportadoraFunc
+    );
+// ======================================================
+// APLICAR IMPORTAÇÃO
+// ======================================================
+function verificarTransportadorasPendentes() {
+
+    const pendentes =
+        transportadorasImportadas.filter(item => {
+
+            if (item.ignorada) {
+                return false;
+            }
+
+            const nome =
+                item.nome ||
+                item.NOME ||
+                '';
+
+            const telefone =
+                item.telefone ||
+                item.TELEFONE ||
+                '';
+
+            return !nome || !telefone;
+
+        });
+
+
+    if (pendentes.length > 0) {
+
+        applyButton.disabled = true;
+
+        applyHint.textContent =
+            `${pendentes.length} transportadora(s) precisam de correção.`;
+
+        return false;
+
+    }
+
+
+    applyButton.disabled =
+        transportadorasImportadas.filter(
+            item => !item.ignorada
+        ).length === 0;
+
+    applyHint.textContent =
+        'Todos os dados obrigatórios estão preenchidos.';
+
+    return true;
+
+}// ======================================================
 // APLICAR IMPORTAÇÃO
 // ======================================================
 
 async function aplicarImportacao() {
 
+    if (!transportadorasImportadas.length) {
 
-if (!transportadorasImportadas.length) {
-
-    alert(
-        'Não existem transportadoras para importar.'
-    );
-
-    return;
-}
-
-
-const confirmar =
-    confirm(
-        `Deseja realmente atualizar o sistema com ${transportadorasImportadas.length} transportadora(s)?`
-    );
-
-
-if (!confirmar) {
-
-    return;
-
-}
-
-
-applyButton.disabled = true;
-
-applyButton.textContent =
-    'Atualizando...';
-
-
-try {
-console.log(
-    'TRANSPORTADORA LINHA 158:',
-    transportadorasImportadas.find(
-        item => item.linha === 158
-    )
-);
- const transportadorasNormalizadas =
-    transportadorasImportadas.map(item => ({
-
-        ...item,
-
-        nome:
-            item.nome ??
-            item.NOME ??
-            '',
-
-        cnpj:
-            item.cnpj ??
-            item.CNPJ ??
-            '',
-
-        telefone:
-            item.telefone ??
-            item.TELEFONE ??
-            '',
-
-        email:
-            item.email ??
-            item.EMAIL ??
-            '',
-
-        contato:
-            item.contato ??
-            item.CONTATO ??
-            '',
-
-        categoria:
-            item.categoria ??
-            item.CATEGORIA ??
-            '',
-
-        ie:
-            item.ie ??
-            item.IE ??
-            '',
-
-        cep:
-            item.cep ??
-            item.CEP ??
-            '',
-
-        rua:
-            item.rua ??
-            item.RUA ??
-            '',
-
-        numero:
-            item.numero ??
-            item.NUMERO ??
-            '',
-
-        complemento:
-            item.complemento ??
-            item.COMPLEMENTO ??
-            '',
-
-        bairro:
-            item.bairro ??
-            item.BAIRRO ??
-            '',
-
-        cidade:
-            item.cidade ??
-            item.CIDADE ??
-            '',
-
-        uf:
-            item.uf ??
-            item.UF ??
-            '',
-
-        observacoes:
-            item.observacoes ??
-            item.OBSERVACOES ??
-            ''
-
-    }));
-
-
-const payload = {
-
-    transportadoras:
-        transportadorasNormalizadas,
-
-    atualizarDadosGerais:
-        updateDadosGerais.checked,
-
-    atualizarEndereco:
-        updateEndereco.checked,
-
-    atualizarObservacoes:
-        updateObservacoes.checked
-
-};
-
-
-    const resposta = await fetch(
-        `${API_URL}/transportadoras/importar/aplicar`,
-        {
-            method: 'POST',
-
-            headers: {
-
-                Authorization: `Bearer ${token}`,
-
-                'Content-Type':
-                    'application/json'
-
-            },
-
-            body:
-                JSON.stringify(payload)
-
-        }
-    );
-
-
-    const dados =
-        await resposta.json().catch(() => ({}));
-
-
-    if (!resposta.ok) {
-
-        throw new Error(
-            dados.mensagem ||
-            'Não foi possível aplicar a importação.'
+        alert(
+            'Não existem transportadoras para importar.'
         );
+
+        return;
 
     }
 
 
-    stepReview.classList.remove('is-active');
+    // Verifica se ainda existe algum problema
+    if (!verificarTransportadorasPendentes()) {
 
-    stepFinish.classList.add('is-active');
+        alert(
+            'Existem transportadoras que precisam ser corrigidas ou ignoradas.'
+        );
+
+        return;
+
+    }
 
 
-    applyHint.textContent =
-        dados.mensagem ||
-        'Importação concluída com sucesso.';
+    const quantidadeParaEnviar =
+        transportadorasImportadas.filter(
+            item => !item.ignorada
+        ).length;
 
+
+    if (!quantidadeParaEnviar) {
+
+        alert(
+            'Todas as transportadoras foram ignoradas.'
+        );
+
+        return;
+
+    }
+
+
+    const confirmar =
+        confirm(
+            `Deseja realmente atualizar o sistema com ${quantidadeParaEnviar} transportadora(s)?`
+        );
+
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+
+    applyButton.disabled = true;
 
     applyButton.textContent =
-        'Importação concluída';
+        'Atualizando...';
 
 
-    alert(
-        dados.mensagem ||
-        'Transportadoras importadas com sucesso.'
-    );
+    try {
+
+        const transportadorasNormalizadas =
+            transportadorasImportadas
+
+                .filter(item => !item.ignorada)
+
+                .map(item => ({
+
+                    ...item,
+
+                    nome:
+                        item.nome ??
+                        item.NOME ??
+                        '',
+
+                    cnpj:
+                        item.cnpj ??
+                        item.CNPJ ??
+                        '',
+
+                    telefone:
+                        item.telefone ??
+                        item.TELEFONE ??
+                        '',
+
+                    email:
+                        item.email ??
+                        item.EMAIL ??
+                        '',
+
+                    contato:
+                        item.contato ??
+                        item.CONTATO ??
+                        '',
+
+                    categoria:
+                        item.categoria ??
+                        item.CATEGORIA ??
+                        '',
+
+                    ie:
+                        item.ie ??
+                        item.IE ??
+                        '',
+
+                    cep:
+                        item.cep ??
+                        item.CEP ??
+                        '',
+
+                    rua:
+                        item.rua ??
+                        item.RUA ??
+                        '',
+
+                    numero:
+                        item.numero ??
+                        item.NUMERO ??
+                        '',
+
+                    complemento:
+                        item.complemento ??
+                        item.COMPLEMENTO ??
+                        '',
+
+                    bairro:
+                        item.bairro ??
+                        item.BAIRRO ??
+                        '',
+
+                    cidade:
+                        item.cidade ??
+                        item.CIDADE ??
+                        '',
+
+                    uf:
+                        item.uf ??
+                        item.UF ??
+                        '',
+
+                    observacoes:
+                        item.observacoes ??
+                        item.OBSERVACOES ??
+                        ''
+
+                }));
 
 
-} catch (erro) {
+        const payload = {
 
-    console.error(erro);
+            transportadoras:
+                transportadorasNormalizadas,
 
-    alert(
-        erro.message ||
-        'Erro ao atualizar o sistema.'
-    );
+            atualizarDadosGerais:
+                updateDadosGerais.checked,
+
+            atualizarEndereco:
+                updateEndereco.checked,
+
+            atualizarObservacoes:
+                updateObservacoes.checked
+
+        };
 
 
-    applyButton.disabled = false;
+        const resposta = await fetch(
+            `${API_URL}/transportadoras/importar/aplicar`,
+            {
 
-    applyButton.textContent =
-        'Atualizar sistema →';
+                method: 'POST',
+
+                headers: {
+
+                    Authorization:
+                        `Bearer ${token}`,
+
+                    'Content-Type':
+                        'application/json'
+
+                },
+
+                body:
+                    JSON.stringify(payload)
+
+            }
+        );
+
+
+        const dados =
+            await resposta.json()
+                .catch(() => ({}));
+
+
+        if (!resposta.ok) {
+
+            throw new Error(
+                dados.mensagem ||
+                'Não foi possível aplicar a importação.'
+            );
+
+        }
+
+
+        stepReview.classList.remove(
+            'is-active'
+        );
+
+        stepFinish.classList.add(
+            'is-active'
+        );
+
+
+        applyHint.textContent =
+            dados.mensagem ||
+            'Importação concluída com sucesso.';
+
+
+        applyButton.textContent =
+            'Importação concluída';
+
+
+        alert(
+            dados.mensagem ||
+            'Transportadoras importadas com sucesso.'
+        );
+
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            erro.message ||
+            'Erro ao atualizar o sistema.'
+        );
+
+
+        applyButton.disabled = false;
+
+        applyButton.textContent =
+            'Atualizar sistema →';
+
+    }
 
 }
-
-}
-
 // ======================================================
 // UTILITÁRIOS
 // ======================================================
