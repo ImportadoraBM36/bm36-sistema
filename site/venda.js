@@ -1888,9 +1888,10 @@ const modalQuantidadeEstoque =
 const inputQuantidadeProduto =
     document.getElementById('inputQuantidadeProduto');
 
-
-    const inputDescontoProduto =
+const inputDescontoProduto =
     document.getElementById('inputDescontoProduto');
+
+
 
 const btnFecharModalQuantidade =
     document.getElementById('btnFecharModalQuantidade');
@@ -1942,6 +1943,7 @@ function abrirModalQuantidade(produto) {
     );
 
     inputQuantidadeProduto.value = 1;
+inputDescontoProduto.value = 0;
 
     modalQuantidade.classList.add('aberto');
     modalQuantidade.setAttribute('aria-hidden', 'false');
@@ -1957,7 +1959,6 @@ function abrirModalQuantidade(produto) {
     );
 
 }
-
 
 function confirmarAdicionarProduto() {
 
@@ -1978,7 +1979,19 @@ function confirmarAdicionarProduto() {
 
     }
 
-    const produto = produtoParaAdicionar;
+    const descontoPercentual =
+        Math.min(
+            100,
+            Math.max(
+                0,
+                lerPercentual(
+                    inputDescontoProduto.value
+                )
+            )
+        );
+
+    const produto =
+        produtoParaAdicionar;
 
     fecharModalQuantidade();
 
@@ -1986,7 +1999,8 @@ function confirmarAdicionarProduto() {
 
         adicionarProdutoAoCarrinho(
             produto,
-            quantidade
+            quantidade,
+            descontoPercentual
         );
 
     }
