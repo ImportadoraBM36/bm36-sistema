@@ -3293,6 +3293,27 @@ async function prepararVenda() {
             valorDesconto
         );
 
+    /*
+        IMPORTANTE:
+        O backend (server.js) trata o campo "desconto" como
+        PORCENTAGEM (ele faz subtotal * desconto / 100).
+        Aqui em cima calculamos "valorDesconto" em REAIS
+        (soma do desconto de cada item + desconto geral).
+        Se mandássemos o valor em reais direto, o backend
+        ia interpretar, por exemplo, R$ 2.400,00 de desconto
+        como "2400%", capava em 100% e zerava o pedido —
+        era exatamente o bug dos totais errados em Pedidos.
+        Por isso convertemos para a porcentagem equivalente
+        antes de enviar.
+    */
+    const descontoPercentualEquivalente =
+        subtotal > 0
+            ? Math.min(
+                100,
+                (valorDesconto / subtotal) * 100
+            )
+            : 0;
+
     // valor final de acordo com o botão selecionado (Cheio / Real / 1/3)
     const valoresPorTipo =
         calcularValoresPorTipo(total);
@@ -3369,7 +3390,7 @@ if (!confirmouPagamento) {
             : null,
 
     desconto:
-        valorDesconto,
+        descontoPercentualEquivalente,
 
     formaPagamento:
         formaPagamento,
