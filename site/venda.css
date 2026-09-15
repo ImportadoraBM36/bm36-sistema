@@ -1229,7 +1229,8 @@ table {
    QUANTIDADE DIGITADA
    ========================= */
 
-.qty-input {
+.qty-input,
+.desconto-item-input {
     width: 85px;
     height: 36px;
 
@@ -1251,7 +1252,8 @@ table {
 }
 
 
-.qty-input:focus {
+.qty-input:focus,
+.desconto-item-input:focus {
     border-color: var(--pink);
 
     box-shadow:
@@ -1919,6 +1921,13 @@ color: white;
 }
 
 
+.formaPagamento-linha {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+}
+
 .tipo-valor-wrap {
     display: flex;
     flex-direction: column;
@@ -1985,13 +1994,12 @@ color: white;
 .formaPagamento  {
   display: flex;
   
-  /* Faz os elementos ficarem lado a lado na mesma linha */
-  flex-direction: row; 
+  /* Empilha a linha do select e o tipo de valor, um embaixo do outro */
+  flex-direction: column; 
   
-  /* Centraliza verticalmente o texto com o menu de opções */
-  align-items: center; 
+  align-items: stretch; 
   
-  /* Cria o espaçamento horizontal entre o texto e o menu */
+  /* Cria o espaçamento vertical entre as duas partes */
   gap: 15px; 
   
   background-color: transparent; 
@@ -2046,31 +2054,7 @@ select {
   cursor: pointer;
   outline: none;
 }
-.desconto-venda-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-}
 
-.desconto-venda-input {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.desconto-venda-input input {
-    width: 80px;
-    padding: 7px 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: right;
-    font: inherit;
-}
-
-.desconto-venda-input span {
-    font-weight: 600;
-}
 /* =========================
    RESPONSIVO MODAL
    ========================= */

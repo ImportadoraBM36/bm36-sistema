@@ -1891,8 +1891,6 @@ const inputQuantidadeProduto =
 const inputDescontoProduto =
     document.getElementById('inputDescontoProduto');
 
-
-
 const btnFecharModalQuantidade =
     document.getElementById('btnFecharModalQuantidade');
 
@@ -1943,7 +1941,10 @@ function abrirModalQuantidade(produto) {
     );
 
     inputQuantidadeProduto.value = 1;
-inputDescontoProduto.value = 0;
+
+    if (inputDescontoProduto) {
+        inputDescontoProduto.value = 0;
+    }
 
     modalQuantidade.classList.add('aberto');
     modalQuantidade.setAttribute('aria-hidden', 'false');
@@ -1959,6 +1960,7 @@ inputDescontoProduto.value = 0;
     );
 
 }
+
 
 function confirmarAdicionarProduto() {
 
@@ -1979,19 +1981,21 @@ function confirmarAdicionarProduto() {
 
     }
 
+    const produto = produtoParaAdicionar;
+
+    // lê o desconto deste item digitado no modal (0-100%)
     const descontoPercentual =
         Math.min(
             100,
             Math.max(
                 0,
                 lerPercentual(
-                    inputDescontoProduto.value
+                    inputDescontoProduto
+                        ? inputDescontoProduto.value
+                        : 0
                 )
             )
         );
-
-    const produto =
-        produtoParaAdicionar;
 
     fecharModalQuantidade();
 
@@ -2125,7 +2129,8 @@ productsBody.addEventListener(
 
 function adicionarProdutoAoCarrinho(
     produto,
-    quantidade = 1
+    quantidade = 1,
+    descontoPercentual = 0
 ) {
 
     const existente =
@@ -2147,6 +2152,11 @@ function adicionarProdutoAoCarrinho(
 
         existente.qty += quantidade;
 
+        // se o usuário informou um desconto novo para esse lançamento, atualiza
+        if (descontoPercentual > 0) {
+            existente.descontoPercentual = descontoPercentual;
+        }
+
 
     } else {
 
@@ -2155,7 +2165,10 @@ function adicionarProdutoAoCarrinho(
             ...produto,
 
             qty:
-                quantidade
+                quantidade,
+
+            descontoPercentual:
+                descontoPercentual
 
         });
 
@@ -2234,23 +2247,27 @@ function renderCart() {
     cart.forEach(
         item => {
 
+            const descontoItem =
+                Math.min(
+                    100,
+                    Math.max(
+                        0,
+                        lerPercentual(
+                            item.descontoPercentual
+                        )
+                    )
+                );
+
+
             const subtotal =
                 item.price *
-                item.qty;
+                item.qty *
+                (
+                    1 -
+                    (descontoItem / 100)
+                );
 
-const descontoPercentual = Math.min(
-    100,
-    Math.max(
-        0,
-        lerPercentual(item.descontoPercentual)
-    )
-);
 
-const valorDescontoItem =
-    subtotal * (descontoPercentual / 100);
-
-const totalItem =
-    subtotal - valorDescontoItem;
             const caixas =
                 quantidadeCaixas(
                     item
@@ -2380,22 +2397,28 @@ const totalItem =
 
                 </td>
 
-<td>
-    <input
-        class="item-discount-input"
-        type="number"
-        min="0"
-        max="100"
-        step="0.01"
-        value="${descontoPercentual}"
-        data-id="${item.id}"
-    >
-    %
-</td>
 
-<td>
-    ${fmt(totalItem)}
-</td>
+                <!-- DESCONTO DO ITEM -->
+
+                <td>
+
+                    <input
+                        class="desconto-item-input"
+                        type="text"
+                        inputmode="decimal"
+                        value="${descontoItem}"
+                        data-id="${item.id}"
+                    >
+
+                </td>
+
+
+                <td>
+                    ${fmt(
+                        subtotal
+                    )}
+                </td>
+
 
                 <td>
 
@@ -2668,6 +2691,77 @@ itemsBody.addEventListener(
 
         item.qty =
             quantidade;
+
+
+        renderCart();
+
+    }
+);
+
+
+// ============================================================
+// DESCONTO DO ITEM DIGITADO NA LISTA
+// ============================================================
+
+itemsBody.addEventListener(
+    'change',
+    evento => {
+
+        const input =
+            evento.target.closest(
+                '.desconto-item-input'
+            );
+
+
+        if (
+            !input
+        ) {
+
+            return;
+
+        }
+
+
+        const id =
+            Number(
+                input.dataset.id
+            );
+
+
+        const item =
+            cart.find(
+                produto =>
+                    Number(
+                        produto.id
+                    )
+                    ===
+                    id
+            );
+
+
+        if (
+            !item
+        ) {
+
+            return;
+
+        }
+
+
+        const desconto =
+            Math.min(
+                100,
+                Math.max(
+                    0,
+                    lerPercentual(
+                        input.value
+                    )
+                )
+            );
+
+
+        item.descontoPercentual =
+            desconto;
 
 
         renderCart();
