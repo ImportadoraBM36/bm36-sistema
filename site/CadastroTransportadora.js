@@ -322,29 +322,89 @@ document.addEventListener("DOMContentLoaded", () => {
     // PAGINAÇÃO
     // ============================================================
 
-    function renderizarPaginacao(totalPaginas) {
-        paginasWrapper.innerHTML = "";
+  function renderizarPaginacao(totalPaginas) {
+    paginasWrapper.innerHTML = "";
+
+    const paginaAtual = state.paginaAtual;
+
+    // Se tiver poucas páginas, mostra todas
+    if (totalPaginas <= 7) {
 
         for (let i = 1; i <= totalPaginas; i++) {
-            const botao = document.createElement("button");
-            botao.type = "button";
-            botao.textContent = i;
-
-            if (i === state.paginaAtual) {
-                botao.classList.add("active");
-            }
-
-            botao.addEventListener("click", () => {
-                state.paginaAtual = i;
-                renderizarTabela();
-            });
-
-            paginasWrapper.appendChild(botao);
+            criarBotaoPagina(i);
         }
 
-        btnPaginaAnterior.disabled = state.paginaAtual <= 1;
-        btnPaginaProxima.disabled = state.paginaAtual >= totalPaginas;
+    } else {
+
+        // Primeira página
+        criarBotaoPagina(1);
+
+        // Reticências antes das páginas do meio
+        if (paginaAtual > 4) {
+            criarReticencias();
+        }
+
+        // Páginas próximas da atual
+        const inicio = Math.max(2, paginaAtual - 1);
+        const fim = Math.min(totalPaginas - 1, paginaAtual + 1);
+
+        for (let i = inicio; i <= fim; i++) {
+            criarBotaoPagina(i);
+        }
+
+        // Reticências depois
+        if (paginaAtual < totalPaginas - 3) {
+            criarReticencias();
+        }
+
+        // Última página
+        criarBotaoPagina(totalPaginas);
     }
+
+    btnPaginaAnterior.disabled = paginaAtual <= 1;
+    btnPaginaProxima.disabled = paginaAtual >= totalPaginas;
+
+
+    // ============================================================
+    // CRIA BOTÃO DE PÁGINA
+    // ============================================================
+
+    function criarBotaoPagina(numero) {
+
+        const botao = document.createElement("button");
+
+        botao.type = "button";
+        botao.textContent = numero;
+
+        if (numero === paginaAtual) {
+            botao.classList.add("active");
+        }
+
+        botao.addEventListener("click", () => {
+
+            state.paginaAtual = numero;
+
+            renderizarTabela();
+        });
+
+        paginasWrapper.appendChild(botao);
+    }
+
+
+    // ============================================================
+    // CRIA "..."
+    // ============================================================
+
+    function criarReticencias() {
+
+        const span = document.createElement("span");
+
+        span.className = "transportadoras-paginacao-reticencias";
+        span.textContent = "...";
+
+        paginasWrapper.appendChild(span);
+    }
+}
 
     btnPaginaAnterior.addEventListener("click", () => {
         if (state.paginaAtual > 1) {
