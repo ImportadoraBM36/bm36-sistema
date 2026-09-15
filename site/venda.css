@@ -2046,7 +2046,31 @@ select {
   cursor: pointer;
   outline: none;
 }
+.desconto-venda-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
 
+.desconto-venda-input {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.desconto-venda-input input {
+    width: 80px;
+    padding: 7px 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: right;
+    font: inherit;
+}
+
+.desconto-venda-input span {
+    font-weight: 600;
+}
 /* =========================
    RESPONSIVO MODAL
    ========================= */
