@@ -1888,6 +1888,10 @@ const modalQuantidadeEstoque =
 const inputQuantidadeProduto =
     document.getElementById('inputQuantidadeProduto');
 
+
+    const inputDescontoProduto =
+    document.getElementById('inputDescontoProduto');
+
 const btnFecharModalQuantidade =
     document.getElementById('btnFecharModalQuantidade');
 
@@ -2220,7 +2224,19 @@ function renderCart() {
                 item.price *
                 item.qty;
 
+const descontoPercentual = Math.min(
+    100,
+    Math.max(
+        0,
+        lerPercentual(item.descontoPercentual)
+    )
+);
 
+const valorDescontoItem =
+    subtotal * (descontoPercentual / 100);
+
+const totalItem =
+    subtotal - valorDescontoItem;
             const caixas =
                 quantidadeCaixas(
                     item
@@ -2350,13 +2366,22 @@ function renderCart() {
 
                 </td>
 
+<td>
+    <input
+        class="item-discount-input"
+        type="number"
+        min="0"
+        max="100"
+        step="0.01"
+        value="${descontoPercentual}"
+        data-id="${item.id}"
+    >
+    %
+</td>
 
-                <td>
-                    ${fmt(
-                        subtotal
-                    )}
-                </td>
-
+<td>
+    ${fmt(totalItem)}
+</td>
 
                 <td>
 
