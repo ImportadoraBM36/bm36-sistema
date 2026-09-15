@@ -631,6 +631,27 @@ if (modalFormaPagamento) {
     const modalStatus = document.getElementById('modalStatus');
     if (modalStatus) modalStatus.textContent = statusLabel(pedidoAberto.status);
 
+    const modalTipoValor =
+        document.getElementById('modalTipoValor');
+
+    if (modalTipoValor) {
+
+        const nomesTipoValor = {
+            cheio: 'Valor Cheio',
+            real: 'Valor Real',
+            terco: 'Valor 1/3'
+        };
+
+        const tipo =
+            String(
+                pedidoAberto.tipo_valor || 'real'
+            ).toLowerCase();
+
+        modalTipoValor.textContent =
+            nomesTipoValor[tipo] || 'Valor Real';
+
+    }
+
     const cancelamentoInfo = document.getElementById('cancelamentoInfo');
     const cancelado = normalizarStatus(pedidoAberto.status) === 'cancelada';
 
@@ -849,10 +870,26 @@ function recalcularResumoModal() {
         Math.max(0, Number(pedidoAberto.desconto || 0))
     );
 
-    const total = Math.max(
-        0,
-        subtotal - (subtotal * desconto / 100)
-    );
+    /*
+        Fora do modo de edição, mostramos o TOTAL DE VERDADE
+        que está salvo no pedido (pedidoAberto.total).
+        Ele já vem com Cheio/Real/1/3 aplicado — se a gente
+        recalculasse aqui do zero (subtotal - desconto%),
+        ia ignorar esse ajuste e mostrar um valor diferente
+        do que realmente foi cobrado.
+        Em modo de edição ainda recalculamos pra dar
+        uma prévia enquanto o usuário mexe no desconto/itens
+        (a edição hoje não lida com Cheio/1/3, só com desconto%).
+    */
+    const total =
+        modoEdicao
+            ? Math.max(
+                0,
+                subtotal - (subtotal * desconto / 100)
+            )
+            : Number(
+                pedidoAberto.total || 0
+            );
 
     if (modalSubtotal) {
         modalSubtotal.textContent = fmt(subtotal);

@@ -2373,6 +2373,16 @@ app.post(
             }
 
 
+            // 'cheio' | 'real' | 'terco' — qual valor foi usado na venda
+            const tiposValorPermitidos =
+                ['cheio', 'real', 'terco'];
+
+            const tipoValorFinal =
+                tiposValorPermitidos.includes(tipoValor)
+                    ? tipoValor
+                    : 'real';
+
+
             // =========================
             // INICIAR TRANSAÇÃO
             // =========================
@@ -2852,7 +2862,8 @@ const vendaResultado =
             desconto,
             total,
            "formaPagamento",
-            status
+            status,
+            tipo_valor
         )
         VALUES (
             $1,
@@ -2863,7 +2874,8 @@ const vendaResultado =
             $6,
             $7,
             $8,
-            $9
+            $9,
+            $10
         )
         RETURNING *
         `,
@@ -2876,7 +2888,8 @@ const vendaResultado =
             descontoNumero,
             totalVenda,
           formaPagamento || 'dinheiro',
-    'FINALIZADA'
+    'FINALIZADA',
+    tipoValorFinal
         ]
     );
 
@@ -3010,6 +3023,9 @@ const venda =
     formaPagamento:
         venda.formaPagamento,
 
+    tipo_valor:
+        venda.tipo_valor,
+
     status:
         venda.status,
 
@@ -3108,6 +3124,7 @@ app.get(
     v.subtotal, 
     v.desconto, 
     v.total, 
+    v.tipo_valor,
 
     v."formaPagamento" AS "formaPagamento", 
     v.status, 
@@ -3150,6 +3167,7 @@ GROUP BY
     e.nome,
     v.subtotal, 
     v.desconto, 
+    v.tipo_valor,
     v."formaPagamento", 
     v.total, 
     v.status, 
@@ -3252,6 +3270,7 @@ app.get(
             v.subtotal,
             v.desconto,
             v.total,
+            v.tipo_valor,
 
  v."formaPagamento" AS "formaPagamento",
             v.status,
@@ -8396,6 +8415,14 @@ async function iniciarServidor() {
                     DEFAULT 'AS 3 PRIMEIRAS COMPRAS O PAGAMENTO É À VISTA ANTECIPADO
 PEDIDOS Á PRAZO, SUJEITO A CONSULTA E LIBERAÇÃO FINANCEIRA
 POR FAVOR INDICAR 5 FORNECEDORES QUE JÁ COMPRA Á PRAZO (MÍNIMO DE 1 ANO)'
+        `);
+
+        // Guarda qual dos 3 valores (Cheio / Real / 1/3) foi usado
+        // na venda, pra poder mostrar isso depois em Pedidos.
+        await pool.query(`
+            ALTER TABLE vendas
+                ADD COLUMN IF NOT EXISTS tipo_valor TEXT
+                    DEFAULT 'real'
         `);
 
         app.listen(
