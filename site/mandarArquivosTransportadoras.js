@@ -103,6 +103,17 @@ const applyButton =
 const applyHint =
     document.getElementById('applyHint');
 
+const correcaoTransportadoras =
+    document.getElementById('correcaoTransportadoras');
+
+const voltarRevisaoButton =
+    document.getElementById('voltarRevisaoButton');
+
+const atualizarSistemaCorrecaoButton =
+    document.getElementById('atualizarSistemaCorrecaoButton');
+
+const correcaoHint =
+    document.getElementById('correcaoHint');
 // ======================================================
 // DADOS DA IMPORTAÇÃO
 // ======================================================
@@ -413,6 +424,15 @@ function configurarBotoes() {
         'click',
         aplicarImportacao
     );
+    voltarRevisaoButton.addEventListener(
+    'click',
+    fecharTelaCorrecao
+);
+
+atualizarSistemaCorrecaoButton.addEventListener(
+    'click',
+    aplicarImportacao
+);
 
 }
 
@@ -1174,48 +1194,77 @@ function abrirTelaCorrecao() {
 
     modoCorrecao = true;
 
-    /*
-        Mantém todos os dados.
-        Não cria uma transportadora por vez.
-    */
-
     if (!transportadorasImportadas.length) {
+
+        alert('Não existem transportadoras para corrigir.');
 
         return;
 
     }
 
-    /*
-        A tabela será criada no HTML
-        na próxima etapa.
-    */
+    // Esconde a tela de revisão
+    reviewPanel.hidden = true;
 
-    const tabela =
-        document.getElementById(
-            'tabelaCorrecaoTransportadoras'
-        );
+    // Mostra a tela de correção
+    correcaoTransportadoras.hidden = false;
 
-    if (tabela) {
+    // Atualiza a etapa visual
+    stepReview.classList.remove('is-active');
 
-        tabela.hidden = false;
+    stepFinish.classList.add('is-active');
 
-        preencherTabelaCorrecao();
+    // Monta a tabela
+    preencherTabelaCorrecao();
+
+    atualizarEstadoBotaoCorrecao();
+
+}
+
+function fecharTelaCorrecao() {
+
+    modoCorrecao = false;
+
+    correcaoTransportadoras.hidden = true;
+
+    reviewPanel.hidden = false;
+
+    stepFinish.classList.remove('is-active');
+
+    stepReview.classList.add('is-active');
+
+    verificarTransportadorasPendentes();
+
+}
+
+function atualizarEstadoBotaoCorrecao() {
+
+    const possuiPendencias =
+        transportadorasImportadas.some(item => {
+
+            if (item.ignorada) {
+                return false;
+            }
+
+            return possuiErros(item);
+
+        });
+
+    atualizarSistemaCorrecaoButton.disabled =
+        possuiPendencias;
+
+    if (possuiPendencias) {
+
+        correcaoHint.textContent =
+            'Existem campos em vermelho que precisam ser corrigidos.';
 
     } else {
 
-        /*
-            Enquanto o HTML ainda não tiver
-            a tabela, avisamos claramente.
-        */
-
-        alert(
-            'A tela de correção ainda precisa ser adicionada ao HTML.'
-        );
+        correcaoHint.textContent =
+            'Todos os dados obrigatórios estão corretos.';
 
     }
 
 }
-
 // ======================================================
 // PREENCHER TABELA DE CORREÇÃO
 // ======================================================
@@ -1320,8 +1369,9 @@ function preencherTabelaCorrecao() {
                                 item
                             );
 
-                            verificarTransportadorasPendentes();
+verificarTransportadorasPendentes();
 
+atualizarEstadoBotaoCorrecao();
                         }
                     );
 
