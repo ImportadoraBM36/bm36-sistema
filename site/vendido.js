@@ -1133,7 +1133,7 @@ if (cancelCloseX) cancelCloseX.addEventListener('click', fecharCancelamento);
 if (voltarCancelamentoBtn) voltarCancelamentoBtn.addEventListener('click', fecharCancelamento);
 
 
-// ============================================================q
+// ============================================================
 // INICIAR
 // ============================================================
 
