@@ -43,28 +43,6 @@ let listaProdutosCompacta =
 let cart =
     [];
 
-// 'cheio' | 'real' | 'terco' — controla qual dos 3 valores é usado como Total
-let tipoValorSelecionado =
-    'real';
-
-// calcula os 3 valores a partir do valor real (valor já com desconto aplicado)
-function calcularValoresPorTipo(valorReal) {
-
-    const base =
-        Number(valorReal || 0);
-
-    return {
-        cheio:
-            base +
-            (base * 0.2), // vlr + 20%vlr = vlc
-        real:
-            base,
-        terco:
-            base / 3 // valor real / 3
-    };
-
-}
-
 
 // ============================================================
 // ELEMENTOS
@@ -1888,11 +1866,6 @@ const modalQuantidadeEstoque =
 const inputQuantidadeProduto =
     document.getElementById('inputQuantidadeProduto');
 
-const inputDescontoProduto =
-    document.getElementById('inputDescontoProduto');
-
-
-
 const btnFecharModalQuantidade =
     document.getElementById('btnFecharModalQuantidade');
 
@@ -1943,7 +1916,6 @@ function abrirModalQuantidade(produto) {
     );
 
     inputQuantidadeProduto.value = 1;
-inputDescontoProduto.value = 0;
 
     modalQuantidade.classList.add('aberto');
     modalQuantidade.setAttribute('aria-hidden', 'false');
@@ -1959,6 +1931,7 @@ inputDescontoProduto.value = 0;
     );
 
 }
+
 
 function confirmarAdicionarProduto() {
 
@@ -1979,19 +1952,7 @@ function confirmarAdicionarProduto() {
 
     }
 
-    const descontoPercentual =
-        Math.min(
-            100,
-            Math.max(
-                0,
-                lerPercentual(
-                    inputDescontoProduto.value
-                )
-            )
-        );
-
-    const produto =
-        produtoParaAdicionar;
+    const produto = produtoParaAdicionar;
 
     fecharModalQuantidade();
 
@@ -1999,8 +1960,7 @@ function confirmarAdicionarProduto() {
 
         adicionarProdutoAoCarrinho(
             produto,
-            quantidade,
-            descontoPercentual
+            quantidade
         );
 
     }
@@ -2238,19 +2198,7 @@ function renderCart() {
                 item.price *
                 item.qty;
 
-const descontoPercentual = Math.min(
-    100,
-    Math.max(
-        0,
-        lerPercentual(item.descontoPercentual)
-    )
-);
 
-const valorDescontoItem =
-    subtotal * (descontoPercentual / 100);
-
-const totalItem =
-    subtotal - valorDescontoItem;
             const caixas =
                 quantidadeCaixas(
                     item
@@ -2380,22 +2328,13 @@ const totalItem =
 
                 </td>
 
-<td>
-    <input
-        class="item-discount-input"
-        type="number"
-        min="0"
-        max="100"
-        step="0.01"
-        value="${descontoPercentual}"
-        data-id="${item.id}"
-    >
-    %
-</td>
 
-<td>
-    ${fmt(totalItem)}
-</td>
+                <td>
+                    ${fmt(
+                        subtotal
+                    )}
+                </td>
+
 
                 <td>
 
@@ -2816,69 +2755,16 @@ document
     .textContent =
     `${descontoGeral}%`;
 
-    // valor real é o "total" já calculado acima (subtotal - descontos)
-    const valoresPorTipo =
-        calcularValoresPorTipo(total);
-
-    const tipoValorCheioPreco =
-        document.getElementById('tipoValorCheioPreco');
-    const tipoValorRealPreco =
-        document.getElementById('tipoValorRealPreco');
-    const tipoValorTercoPreco =
-        document.getElementById('tipoValorTercoPreco');
-
-    if (tipoValorCheioPreco) {
-        tipoValorCheioPreco.textContent = fmt(valoresPorTipo.cheio);
-    }
-    if (tipoValorRealPreco) {
-        tipoValorRealPreco.textContent = fmt(valoresPorTipo.real);
-    }
-    if (tipoValorTercoPreco) {
-        tipoValorTercoPreco.textContent = fmt(valoresPorTipo.terco);
-    }
-
 document
     .getElementById(
         'sumTotal'
     )
     .textContent =
     fmt(
-        valoresPorTipo[tipoValorSelecionado]
+        total
     );
 
 }
-
-
-// ============================================================
-// TIPO DE VALOR (Cheio / Real / 1/3)
-// ============================================================
-
-const tipoValorSegmented =
-    document.getElementById('tipoValorSegmented');
-
-tipoValorSegmented
-    ?.querySelectorAll('.tipo-valor-btn')
-    .forEach(botao => {
-
-        botao.addEventListener(
-            'click',
-            () => {
-
-                tipoValorSegmented
-                    .querySelectorAll('.tipo-valor-btn')
-                    .forEach(b => b.classList.remove('ativo'));
-
-                botao.classList.add('ativo');
-
-                tipoValorSelecionado =
-                    botao.dataset.tipo;
-
-                renderSummary();
-
-            }
-        );
-
-    });
 
 
 inputDesconto?.addEventListener(
@@ -3198,14 +3084,6 @@ async function prepararVenda() {
             subtotal -
             valorDesconto
         );
-
-    // valor final de acordo com o botão selecionado (Cheio / Real / 1/3)
-    const valoresPorTipo =
-        calcularValoresPorTipo(total);
-
-    const valorFinal =
-        valoresPorTipo[tipoValorSelecionado];
-
 // ============================================================
 // VALIDAR FORMA DE PAGAMENTO
 // ============================================================
@@ -3245,16 +3123,9 @@ if (!formaPagamento) {
 // CONFIRMAR FORMA DE PAGAMENTO
 // ============================================================
 
-const nomesTipoValor = {
-    cheio: 'Valor Cheio',
-    real: 'Valor Real',
-    terco: 'Valor 1/3'
-};
-
 const confirmouPagamento =
     confirm(
-        `A forma de pagamento selecionada foi: ${formasPagamento[formaPagamento]}.\n` +
-        `Tipo de valor: ${nomesTipoValor[tipoValorSelecionado]} (${fmt(valorFinal)}).\n\n` +
+        `A forma de pagamento selecionada foi: ${formasPagamento[formaPagamento]}.\n\n` +
         `Deseja confirmar essa forma de pagamento?`
     );
 
@@ -3279,12 +3150,6 @@ if (!confirmouPagamento) {
 
     formaPagamento:
         formaPagamento,
-
-    tipoValor:
-        tipoValorSelecionado,
-
-    valorFinal:
-        valorFinal,
 
     itens:
         cart.map(
