@@ -512,7 +512,7 @@ async function carregarFuncionarios() {
             Array.isArray(resultado)
                 ? resultado
                 : [];
-
+console.log('FUNCIONÁRIOS:', funcionarios);
 
         atualizarResumo();
 
