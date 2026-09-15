@@ -1137,6 +1137,187 @@ white-space: nowrap;
     }
 
 }
+
+
+/* ======================================================
+   TABELA DE CORREÇÃO
+====================================================== */
+
+.correcao-transportadoras {
+    margin-top: 24px;
+}
+
+.correcao-legenda {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    margin: 18px 0;
+}
+
+.legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.legenda-cor {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Vermelho = precisa corrigir */
+.legenda-cor.erro {
+    background: #ffdddd;
+    border: 1px solid #e05252;
+}
+
+/* Azul = corrigido */
+.legenda-cor.corrigido {
+    background: #dcecff;
+    border: 1px solid #4d8edb;
+}
+
+
+/* ======================================================
+   ÁREA DA TABELA
+====================================================== */
+
+.correcao-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: white;
+}
+
+.correcao-table {
+    width: 100%;
+    min-width: 1000px;
+    border-collapse: collapse;
+}
+
+.correcao-table th {
+    padding: 14px 12px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    background: #f7f8fa;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+.correcao-table td {
+    padding: 8px;
+    border-bottom: 1px solid #eeeeee;
+    vertical-align: middle;
+}
+
+
+/* ======================================================
+   CAMPOS DA TABELA
+====================================================== */
+
+.correcao-table input {
+    width: 100%;
+    min-width: 130px;
+    box-sizing: border-box;
+
+    padding: 10px 11px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+
+    background: white;
+
+    font-family: inherit;
+    font-size: 13px;
+
+    outline: none;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.correcao-table input:focus {
+    border-color: #555;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06);
+}
+
+
+/* ======================================================
+   🔴 CAMPO COM ERRO
+====================================================== */
+
+.correcao-table td.celula-erro {
+    background: #fff0f0;
+}
+
+.correcao-table td.celula-erro input {
+    background: #ffe1e1;
+    border-color: #e05252;
+}
+
+.correcao-table td.celula-erro input:focus {
+    border-color: #c93636;
+    box-shadow: 0 0 0 2px rgba(201, 54, 54, 0.15);
+}
+
+
+/* ======================================================
+   🔵 CAMPO CORRIGIDO
+====================================================== */
+
+.correcao-table td.celula-corrigida {
+    background: #eef6ff;
+}
+
+.correcao-table td.celula-corrigida input {
+    background: #dcecff;
+    border-color: #4d8edb;
+}
+
+.correcao-table td.celula-corrigida input:focus {
+    border-color: #3478bd;
+    box-shadow: 0 0 0 2px rgba(52, 120, 189, 0.15);
+}
+
+
+/* ======================================================
+   AÇÕES DA CORREÇÃO
+====================================================== */
+
+.correcao-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    margin-top: 24px;
+    padding-top: 20px;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+.correcao-actions p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+
+/* ======================================================
+   BOTÃO DESABILITADO
+====================================================== */
+
+.correcao-actions .primary-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 /* =========================================
 RESPONSIVO
 ========================================= */

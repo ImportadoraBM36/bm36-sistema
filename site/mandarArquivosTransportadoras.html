@@ -844,7 +844,140 @@
     </div>
 
 </section>
+<!-- ======================================================
+     TELA DE CORREÇÃO DAS TRANSPORTADORAS
+====================================================== -->
 
+<section
+    class="correcao-transportadoras"
+    id="correcaoTransportadoras"
+    hidden
+>
+
+    <div class="panel-heading">
+
+        <div>
+
+            <span class="eyebrow">
+                CORREÇÃO DOS DADOS
+            </span>
+
+            <h2>
+                Corrija os dados das transportadoras
+            </h2>
+
+            <p>
+                Os campos em vermelho precisam de atenção.
+                Depois de corrigir, eles ficarão azuis.
+            </p>
+
+        </div>
+
+        <button
+            class="secondary-button"
+            id="voltarRevisaoButton"
+            type="button"
+        >
+            ← Voltar
+        </button>
+
+    </div>
+
+
+    <!-- AVISO -->
+
+    <div class="review-notice">
+
+        <span aria-hidden="true">
+            ⚠️
+        </span>
+
+        <p>
+
+            <strong>
+                Atenção:
+            </strong>
+
+            confira todos os campos em vermelho antes de
+            atualizar o sistema.
+
+        </p>
+
+    </div>
+
+
+    <!-- LEGENDA -->
+
+    <div class="correcao-legenda">
+
+        <div class="legenda-item">
+
+            <span class="legenda-cor erro"></span>
+
+            <span>
+                Precisa corrigir
+            </span>
+
+        </div>
+
+
+        <div class="legenda-item">
+
+            <span class="legenda-cor corrigido"></span>
+
+            <span>
+                Corrigido
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABELA -->
+
+    <div class="correcao-table-wrap">
+
+        <table
+            class="correcao-table"
+            id="tabelaCorrecaoTransportadoras"
+        >
+
+            <!--
+                O JavaScript vai preencher
+                cabeçalho e linhas aqui.
+            -->
+
+        </table>
+
+    </div>
+
+
+    <!-- AÇÕES -->
+
+    <div class="correcao-actions">
+
+        <p id="correcaoHint">
+            Corrija os campos marcados em vermelho.
+        </p>
+
+
+        <button
+            class="primary-button"
+            id="atualizarSistemaCorrecaoButton"
+            type="button"
+        >
+            Atualizar sistema
+
+            <span aria-hidden="true">
+                →
+            </span>
+
+        </button>
+
+    </div>
+
+</section>
 </main>
 <!-- ======================================================
      MODAL DE CONFERÊNCIA

@@ -7,12 +7,13 @@ const usuario = JSON.parse(localStorage.getItem('bm36_usuario') || '{}');
 // VERIFICAÇÃO DE LOGIN E ADMIN
 // ======================================================
 
-if (!token || !usuario || String(usuario.perfil || '').toUpperCase() !== 'ADMIN') {
-
-alert('Acesso permitido somente para administradores.');
-
-window.location.href = './inicio.html';
-
+if (
+    !token ||
+    !usuario ||
+    String(usuario.perfil || '').toUpperCase() !== 'ADMIN'
+) {
+    alert('Acesso permitido somente para administradores.');
+    window.location.href = './inicio.html';
 }
 
 // ======================================================
@@ -30,57 +31,77 @@ const selectedFiles = document.getElementById('selectedFiles');
 const fileList = document.getElementById('fileList');
 const clearFilesButton = document.getElementById('clearFilesButton');
 
-const addTransportadoraButton = document.getElementById(
-'addTransportadoraButton'
-);
+const addTransportadoraButton =
+    document.getElementById('addTransportadoraButton');
 
-const manualTransportadorasRows = document.getElementById(
-'manualTransportadorasRows'
-);
+const manualTransportadorasRows =
+    document.getElementById('manualTransportadorasRows');
 
-const reviewButton = document.getElementById('reviewButton');
+const reviewButton =
+    document.getElementById('reviewButton');
 
-const uploadPanel = document.getElementById('uploadPanel');
-const reviewPanel = document.getElementById('reviewPanel');
+const uploadPanel =
+    document.getElementById('uploadPanel');
 
-const backButton = document.getElementById('backButton');
+const reviewPanel =
+    document.getElementById('reviewPanel');
 
-const stepUpload = document.getElementById('stepUpload');
-const stepReview = document.getElementById('stepReview');
-const stepFinish = document.getElementById('stepFinish');
+const backButton =
+    document.getElementById('backButton');
 
-const summaryFiles = document.getElementById('summaryFiles');
-const summaryTransportadoras = document.getElementById(
-'summaryTransportadoras'
-);
-const summaryNovas = document.getElementById('summaryNovas');
-const summaryAtualizacoes = document.getElementById(
-'summaryAtualizacoes'
-);
+const stepUpload =
+    document.getElementById('stepUpload');
 
-const mappingGrid = document.getElementById('mappingGrid');
-const readStatus = document.getElementById('readStatus');
+const stepReview =
+    document.getElementById('stepReview');
 
-const importErrors = document.getElementById('importErrors');
-const errorList = document.getElementById('errorList');
+const stepFinish =
+    document.getElementById('stepFinish');
 
-const sampleCard = document.getElementById('sampleCard');
-const sampleRows = document.getElementById('sampleRows');
+const summaryFiles =
+    document.getElementById('summaryFiles');
 
-const updateDadosGerais = document.getElementById(
-'updateDadosGerais'
-);
+const summaryTransportadoras =
+    document.getElementById('summaryTransportadoras');
 
-const updateEndereco = document.getElementById(
-'updateEndereco'
-);
+const summaryNovas =
+    document.getElementById('summaryNovas');
 
-const updateObservacoes = document.getElementById(
-'updateObservacoes'
-);
+const summaryAtualizacoes =
+    document.getElementById('summaryAtualizacoes');
 
-const applyButton = document.getElementById('applyButton');
-const applyHint = document.getElementById('applyHint');
+const mappingGrid =
+    document.getElementById('mappingGrid');
+
+const readStatus =
+    document.getElementById('readStatus');
+
+const importErrors =
+    document.getElementById('importErrors');
+
+const errorList =
+    document.getElementById('errorList');
+
+const sampleCard =
+    document.getElementById('sampleCard');
+
+const sampleRows =
+    document.getElementById('sampleRows');
+
+const updateDadosGerais =
+    document.getElementById('updateDadosGerais');
+
+const updateEndereco =
+    document.getElementById('updateEndereco');
+
+const updateObservacoes =
+    document.getElementById('updateObservacoes');
+
+const applyButton =
+    document.getElementById('applyButton');
+
+const applyHint =
+    document.getElementById('applyHint');
 
 // ======================================================
 // DADOS DA IMPORTAÇÃO
@@ -89,11 +110,135 @@ const applyHint = document.getElementById('applyHint');
 let arquivoSelecionado = null;
 
 let transportadorasImportadas = [];
+
+/*
+    Guarda uma cópia da planilha original.
+    Assim conseguimos voltar para os dados originais
+    caso seja necessário.
+*/
 let transportadorasDoArquivo = [];
-let modoCorrecaoManual = false;
+
 let transportadorasExistentes = [];
 
 let modoAtual = 'arquivo';
+
+/*
+    Indica se estamos na tela de correção da planilha.
+*/
+let modoCorrecao = false;
+
+// ======================================================
+// CAMPOS DA PLANILHA
+// ======================================================
+
+const CAMPOS_TRANSPORTADORA = [
+
+    {
+        chave: 'nome',
+        coluna: 'NOME',
+        titulo: 'Nome',
+        obrigatorio: true
+    },
+
+    {
+        chave: 'cnpj',
+        coluna: 'CNPJ',
+        titulo: 'CNPJ',
+        obrigatorio: false
+    },
+
+    {
+        chave: 'telefone',
+        coluna: 'TELEFONE',
+        titulo: 'Telefone',
+        obrigatorio: true
+    },
+
+    {
+        chave: 'email',
+        coluna: 'EMAIL',
+        titulo: 'E-mail',
+        obrigatorio: false
+    },
+
+    {
+        chave: 'contato',
+        coluna: 'CONTATO',
+        titulo: 'Contato',
+        obrigatorio: false
+    },
+
+    {
+        chave: 'categoria',
+        coluna: 'CATEGORIA',
+        titulo: 'Categoria',
+        obrigatorio: false
+    },
+
+    {
+        chave: 'ie',
+        coluna: 'IE',
+        titulo: 'Inscrição estadual',
+        obrigatorio: false
+    },
+
+    {
+        chave: 'cep',
+        coluna: 'CEP',
+        titulo: 'CEP',
+        obrigatorio: false
+    },
+
+    {
+        chave: 'rua',
+        coluna: 'RUA',
+        titulo: 'Rua',
+        obrigatorio: false
+    },
+
+    {
+        chave: 'numero',
+        coluna: 'NUMERO',
+        titulo: 'Número',
+        obrigatorio: false
+    },
+
+    {
+        chave: 'complemento',
+        coluna: 'COMPLEMENTO',
+        titulo: 'Complemento',
+        obrigatorio: false
+    },
+
+    {
+        chave: 'bairro',
+        coluna: 'BAIRRO',
+        titulo: 'Bairro',
+        obrigatorio: false
+    },
+
+    {
+        chave: 'cidade',
+        coluna: 'CIDADE',
+        titulo: 'Cidade',
+        obrigatorio: false
+    },
+
+    {
+        chave: 'uf',
+        coluna: 'UF',
+        titulo: 'UF',
+        obrigatorio: false
+    },
+
+    {
+        chave: 'observacoes',
+        coluna: 'OBSERVACOES',
+        titulo: 'Observações',
+        obrigatorio: false
+    }
+
+];
 
 // ======================================================
 // INICIALIZAÇÃO
@@ -101,15 +246,13 @@ let modoAtual = 'arquivo';
 
 document.addEventListener('DOMContentLoaded', () => {
 
-   
-configurarModos();
+    configurarModos();
 
-configurarUpload();
+    configurarUpload();
 
-configurarBotoes();
+    configurarBotoes();
 
-atualizarBotaoRevisao();
-   
+    atualizarBotaoRevisao();
 
 });
 
@@ -119,43 +262,43 @@ atualizarBotaoRevisao();
 
 function configurarModos() {
 
-   
-fileModeButton.addEventListener('click', () => {
+    fileModeButton.addEventListener('click', () => {
 
-    modoAtual = 'arquivo';
+        modoAtual = 'arquivo';
 
-    fileMode.hidden = false;
-    manualMode.hidden = true;
+        modoCorrecao = false;
 
-    fileModeButton.classList.add('active');
-    manualModeButton.classList.remove('active');
+        fileMode.hidden = false;
+        manualMode.hidden = true;
 
-    atualizarBotaoRevisao();
+        fileModeButton.classList.add('active');
+        manualModeButton.classList.remove('active');
 
-});
+        atualizarBotaoRevisao();
 
+    });
 
-manualModeButton.addEventListener('click', () => {
+    manualModeButton.addEventListener('click', () => {
 
-    modoAtual = 'manual';
-modoCorrecaoManual = true;
+        modoAtual = 'manual';
 
-    fileMode.hidden = true;
-    manualMode.hidden = false;
+        modoCorrecao = false;
 
-    manualModeButton.classList.add('active');
-    fileModeButton.classList.remove('active');
+        fileMode.hidden = true;
+        manualMode.hidden = false;
 
-    if (!manualTransportadorasRows.children.length) {
+        manualModeButton.classList.add('active');
+        fileModeButton.classList.remove('active');
 
-        adicionarLinhaManual();
+        if (!manualTransportadorasRows.children.length) {
 
-    }
+            adicionarLinhaManual();
 
-    atualizarBotaoRevisao();
+        }
 
-});
-   
+        atualizarBotaoRevisao();
+
+    });
 
 }
 
@@ -165,43 +308,38 @@ modoCorrecaoManual = true;
 
 function configurarUpload() {
 
-   
-fileInput.addEventListener('change', () => {
+    fileInput.addEventListener('change', () => {
 
-    const arquivo = fileInput.files[0];
+        const arquivo = fileInput.files[0];
 
-    if (!arquivo) {
+        if (!arquivo) {
+
+            arquivoSelecionado = null;
+
+            atualizarArquivos();
+            atualizarBotaoRevisao();
+
+            return;
+
+        }
+
+        arquivoSelecionado = arquivo;
+
+        atualizarArquivos();
+        atualizarBotaoRevisao();
+
+    });
+
+    clearFilesButton.addEventListener('click', () => {
+
+        fileInput.value = '';
 
         arquivoSelecionado = null;
 
         atualizarArquivos();
-
         atualizarBotaoRevisao();
 
-        return;
-    }
-
-    arquivoSelecionado = arquivo;
-
-    atualizarArquivos();
-
-    atualizarBotaoRevisao();
-
-});
-
-
-clearFilesButton.addEventListener('click', () => {
-
-    fileInput.value = '';
-
-    arquivoSelecionado = null;
-
-    atualizarArquivos();
-
-    atualizarBotaoRevisao();
-
-});
-   
+    });
 
 }
 
@@ -211,47 +349,42 @@ clearFilesButton.addEventListener('click', () => {
 
 function atualizarArquivos() {
 
-   
-fileList.innerHTML = '';
+    fileList.innerHTML = '';
 
-if (!arquivoSelecionado) {
+    if (!arquivoSelecionado) {
 
-    selectedFiles.hidden = true;
+        selectedFiles.hidden = true;
 
-    return;
-}
+        return;
 
+    }
 
-selectedFiles.hidden = false;
+    selectedFiles.hidden = false;
 
+    const li = document.createElement('li');
 
-const li = document.createElement('li');
+    li.textContent =
+        `${arquivoSelecionado.name} (${formatarTamanho(arquivoSelecionado.size)})`;
 
-li.textContent =
-    `${arquivoSelecionado.name} (${formatarTamanho(arquivoSelecionado.size)})`;
-
-fileList.appendChild(li);
-   
+    fileList.appendChild(li);
 
 }
 
 function formatarTamanho(bytes) {
 
-   
-if (bytes < 1024) {
+    if (bytes < 1024) {
 
-    return `${bytes} B`;
+        return `${bytes} B`;
 
-}
+    }
 
-if (bytes < 1024 * 1024) {
+    if (bytes < 1024 * 1024) {
 
-    return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / 1024).toFixed(1)} KB`;
 
-}
+    }
 
-return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-   
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 
 }
 
@@ -261,36 +394,32 @@ return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 
 function configurarBotoes() {
 
-   
-addTransportadoraButton.addEventListener(
-    'click',
-    adicionarLinhaManual
-);
+    addTransportadoraButton.addEventListener(
+        'click',
+        adicionarLinhaManual
+    );
 
+    reviewButton.addEventListener(
+        'click',
+        iniciarRevisao
+    );
 
-reviewButton.addEventListener(
-    'click',
-    iniciarRevisao
-);
+    backButton.addEventListener(
+        'click',
+        voltarParaUpload
+    );
 
-
-backButton.addEventListener(
-    'click',
-    voltarParaUpload
-);
-
-
-applyButton.addEventListener(
-    'click',
-    aplicarImportacao
-);
-   
+    applyButton.addEventListener(
+        'click',
+        aplicarImportacao
+    );
 
 }
 
 // ======================================================
 // ADICIONAR LINHA MANUAL
 // ======================================================
+
 function adicionarLinhaManual(dados = {}) {
 
     const tr = document.createElement('tr');
@@ -391,70 +520,75 @@ function adicionarLinhaManual(dados = {}) {
     manualTransportadorasRows.appendChild(tr);
 
     atualizarBotaoRevisao();
+
 }
+
 // ======================================================
 // PEGAR DADOS MANUAIS
 // ======================================================
 
 function obterTransportadorasManuais() {
 
-   
-const linhas =
-    manualTransportadorasRows.querySelectorAll('tr');
+    const linhas =
+        manualTransportadorasRows.querySelectorAll('tr');
 
-const transportadoras = [];
+    const transportadoras = [];
 
-linhas.forEach((linha, index) => {
+    linhas.forEach((linha, index) => {
 
-    const nome =
-        linha.querySelector('.manual-nome').value.trim();
+        const nome =
+            linha.querySelector('.manual-nome').value.trim();
 
-    const cnpj =
-        limparNumeros(
-            linha.querySelector('.manual-cnpj').value
-        );
+        const cnpj =
+            limparNumeros(
+                linha.querySelector('.manual-cnpj').value
+            );
 
-    const telefone =
-        limparNumeros(
-            linha.querySelector('.manual-telefone').value
-        );
+        const telefone =
+            limparNumeros(
+                linha.querySelector('.manual-telefone').value
+            );
 
-    const email =
-        linha.querySelector('.manual-email').value.trim();
+        const email =
+            linha.querySelector('.manual-email').value.trim();
 
-    const cidade =
-        linha.querySelector('.manual-cidade').value.trim();
+        const cidade =
+            linha.querySelector('.manual-cidade').value.trim();
 
-    const uf =
-        linha.querySelector('.manual-uf').value
-            .trim()
-            .toUpperCase();
+        const uf =
+            linha.querySelector('.manual-uf').value
+                .trim()
+                .toUpperCase();
 
+        if (
+            !nome &&
+            !telefone &&
+            !cnpj &&
+            !email &&
+            !cidade &&
+            !uf
+        ) {
 
-    if (!nome && !telefone && !cnpj && !email && !cidade && !uf) {
+            return;
 
-        return;
+        }
 
-    }
+        transportadoras.push({
 
+            linha: index + 1,
 
-    transportadoras.push({
+            nome,
+            cnpj,
+            telefone,
+            email,
+            cidade,
+            uf
 
-        linha: index + 1,
-
-        nome,
-        cnpj,
-        telefone,
-        email,
-        cidade,
-        uf
+        });
 
     });
 
-});
-
-return transportadoras;
-   
+    return transportadoras;
 
 }
 
@@ -464,23 +598,20 @@ return transportadoras;
 
 function atualizarBotaoRevisao() {
 
-   
-if (modoAtual === 'arquivo') {
+    if (modoAtual === 'arquivo') {
 
-    reviewButton.disabled = !arquivoSelecionado;
+        reviewButton.disabled =
+            !arquivoSelecionado;
 
-    return;
+        return;
 
-}
+    }
 
+    const transportadoras =
+        obterTransportadorasManuais();
 
-const transportadoras =
-    obterTransportadorasManuais();
-
-
-reviewButton.disabled =
-    transportadoras.length === 0;
-   
+    reviewButton.disabled =
+        transportadoras.length === 0;
 
 }
 
@@ -490,47 +621,43 @@ reviewButton.disabled =
 
 async function iniciarRevisao() {
 
-   
-reviewButton.disabled = true;
+    reviewButton.disabled = true;
 
-readStatus.textContent = 'Lendo dados...';
+    readStatus.textContent = 'Lendo dados...';
 
-limparRevisao();
+    limparRevisao();
 
+    try {
 
-try {
+        if (modoAtual === 'arquivo') {
 
-    if (modoAtual === 'arquivo') {
+            await lerArquivo();
 
-        await lerArquivo();
+        } else {
 
-    } else {
+            await lerDadosManuais();
 
-        await lerDadosManuais();
+        }
+
+        mostrarRevisao();
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            erro.message ||
+            'Não foi possível ler os dados.'
+        );
+
+        readStatus.textContent =
+            'Erro na leitura';
+
+    } finally {
+
+        atualizarBotaoRevisao();
 
     }
-
-
-    mostrarRevisao();
-
-
-} catch (erro) {
-
-    console.error(erro);
-
-    alert(
-        erro.message ||
-        'Não foi possível ler os dados.'
-    );
-
-    readStatus.textContent = 'Erro na leitura';
-
-} finally {
-
-    atualizarBotaoRevisao();
-
-}
-   
 
 }
 
@@ -540,64 +667,66 @@ try {
 
 async function lerArquivo() {
 
-   
-if (!arquivoSelecionado) {
+    if (!arquivoSelecionado) {
 
-    throw new Error(
-        'Selecione uma planilha primeiro.'
-    );
+        throw new Error(
+            'Selecione uma planilha primeiro.'
+        );
 
-}
-
-
-const formData = new FormData();
-
-formData.append(
-    'arquivo',
-    arquivoSelecionado
-);
-
-
-const resposta = await fetch(
-    `${API_URL}/transportadoras/importar/preview`,
-    {
-        method: 'POST',
-
-        headers: {
-            Authorization: `Bearer ${token}`
-        },
-
-        body: formData
     }
-);
 
+    const formData =
+        new FormData();
 
-const dados =
-    await resposta.json().catch(() => ({}));
-
-
-if (!resposta.ok) {
-
-    throw new Error(
-        dados.mensagem ||
-        'Não foi possível ler a planilha.'
+    formData.append(
+        'arquivo',
+        arquivoSelecionado
     );
 
-}
+    const resposta =
+        await fetch(
+            `${API_URL}/transportadoras/importar/preview`,
+            {
+                method: 'POST',
 
+                headers: {
+                    Authorization:
+                        `Bearer ${token}`
+                },
 
-transportadorasImportadas =
-    normalizarRespostaPreview(dados);
+                body: formData
+            }
+        );
 
-transportadorasDoArquivo =
-    [...transportadorasImportadas];
+    const dados =
+        await resposta
+            .json()
+            .catch(() => ({}));
 
+    if (!resposta.ok) {
 
-transportadorasExistentes =
-    transportadorasImportadas.filter(
-        item => item.existente
-    );
-   
+        throw new Error(
+            dados.mensagem ||
+            'Não foi possível ler a planilha.'
+        );
+
+    }
+
+    transportadorasImportadas =
+        normalizarRespostaPreview(dados);
+
+    /*
+        Guarda uma cópia independente.
+    */
+    transportadorasDoArquivo =
+        transportadorasImportadas.map(item => ({
+            ...item
+        }));
+
+    transportadorasExistentes =
+        transportadorasImportadas.filter(
+            item => item.existente
+        );
 
 }
 
@@ -607,33 +736,31 @@ transportadorasExistentes =
 
 function normalizarRespostaPreview(dados) {
 
-   
-if (Array.isArray(dados.transportadoras)) {
+    if (Array.isArray(dados.transportadoras)) {
 
-    return dados.transportadoras;
+        return dados.transportadoras;
 
-}
+    }
 
-if (Array.isArray(dados.dados)) {
+    if (Array.isArray(dados.dados)) {
 
-    return dados.dados;
+        return dados.dados;
 
-}
+    }
 
-if (Array.isArray(dados.resultado)) {
+    if (Array.isArray(dados.resultado)) {
 
-    return dados.resultado;
+        return dados.resultado;
 
-}
+    }
 
-if (Array.isArray(dados.rows)) {
+    if (Array.isArray(dados.rows)) {
 
-    return dados.rows;
+        return dados.rows;
 
-}
+    }
 
-return [];
-   
+    return [];
 
 }
 
@@ -643,93 +770,90 @@ return [];
 
 async function lerDadosManuais() {
 
-   
-const transportadoras =
-    obterTransportadorasManuais();
+    const transportadoras =
+        obterTransportadorasManuais();
 
+    if (!transportadoras.length) {
 
-if (!transportadoras.length) {
-
-    throw new Error(
-        'Adicione pelo menos uma transportadora.'
-    );
-
-}
-
-
-const erros = [];
-
-
-transportadoras.forEach(item => {
-
-    if (!item.nome) {
-
-        erros.push(
-            `Linha ${item.linha}: informe o nome.`
+        throw new Error(
+            'Adicione pelo menos uma transportadora.'
         );
 
     }
 
-    if (!item.telefone) {
+    const erros = [];
 
-        erros.push(
-            `Linha ${item.linha}: informe o telefone.`
+    transportadoras.forEach(item => {
+
+        if (!item.nome) {
+
+            erros.push(
+                `Linha ${item.linha}: informe o nome.`
+            );
+
+        }
+
+        if (!item.telefone) {
+
+            erros.push(
+                `Linha ${item.linha}: informe o telefone.`
+            );
+
+        }
+
+        if (
+            item.cnpj &&
+            item.cnpj.length !== 14
+        ) {
+
+            erros.push(
+                `Linha ${item.linha}: CNPJ inválido.`
+            );
+
+        }
+
+        if (
+            item.uf &&
+            item.uf.length !== 2
+        ) {
+
+            erros.push(
+                `Linha ${item.linha}: UF inválida.`
+            );
+
+        }
+
+    });
+
+    if (erros.length) {
+
+        mostrarErros(erros);
+
+        throw new Error(
+            'Existem dados que precisam ser corrigidos.'
         );
 
     }
 
-    if (
-        item.cnpj &&
-        item.cnpj.length !== 14
-    ) {
+    transportadorasImportadas =
+        transportadoras.map(item => ({
 
-        erros.push(
-            `Linha ${item.linha}: CNPJ inválido.`
-        );
+            ...item,
 
-    }
+            existente: false,
 
-    if (
-        item.uf &&
-        item.uf.length !== 2
-    ) {
+            status: item.cnpj
+                ? 'Nova / conferir CNPJ'
+                : 'Nova'
 
-        erros.push(
-            `Linha ${item.linha}: UF inválida.`
-        );
+        }));
 
-    }
+    transportadorasDoArquivo =
+        transportadorasImportadas.map(item => ({
+            ...item
+        }));
 
-});
-
-
-if (erros.length) {
-
-    mostrarErros(erros);
-
-    throw new Error(
-        'Existem dados que precisam ser corrigidos.'
-    );
-
-}
-
-
-transportadorasImportadas =
-    transportadoras.map(item => ({
-
-        ...item,
-
-        existente: false,
-
-        status: item.cnpj
-            ? 'Nova / conferir CNPJ'
-            : 'Nova'
-
-    }));
-
-
-transportadorasExistentes = [];
-   
+    transportadorasExistentes = [];
 
 }
 
@@ -739,27 +863,29 @@ transportadorasExistentes = [];
 
 function mostrarRevisao() {
 
-   
-uploadPanel.hidden = true;
+    uploadPanel.hidden = true;
 
-reviewPanel.hidden = false;
+    reviewPanel.hidden = false;
 
+    stepUpload.classList.remove(
+        'is-active'
+    );
 
-stepUpload.classList.remove('is-active');
-stepReview.classList.add('is-active');
+    stepReview.classList.add(
+        'is-active'
+    );
 
+    preencherResumo();
 
-preencherResumo();
+    preencherMapeamento();
 
-preencherMapeamento();
+    preencherAmostra();
 
-preencherAmostra();
+    readStatus.textContent =
+        'Leitura concluída';
 
+    verificarTransportadorasPendentes();
 
-readStatus.textContent =
-    'Leitura concluída';
-
-verificarTransportadorasPendentes();
 }
 
 // ======================================================
@@ -768,38 +894,32 @@ verificarTransportadorasPendentes();
 
 function preencherResumo() {
 
-   
-const total =
-    transportadorasImportadas.length;
+    const total =
+        transportadorasImportadas.length;
 
+    const novas =
+        transportadorasImportadas.filter(
+            item => !item.existente
+        ).length;
 
-const novas =
-    transportadorasImportadas.filter(
-        item => !item.existente
-    ).length;
+    const atualizacoes =
+        transportadorasImportadas.filter(
+            item => item.existente
+        ).length;
 
+    summaryFiles.textContent =
+        modoAtual === 'arquivo'
+            ? '1'
+            : '—';
 
-const atualizacoes =
-    transportadorasImportadas.filter(
-        item => item.existente
-    ).length;
+    summaryTransportadoras.textContent =
+        total;
 
+    summaryNovas.textContent =
+        novas;
 
-summaryFiles.textContent =
-    modoAtual === 'arquivo' ? '1' : '—';
-
-
-summaryTransportadoras.textContent =
-    total;
-
-
-summaryNovas.textContent =
-    novas;
-
-
-summaryAtualizacoes.textContent =
-    atualizacoes;
-   
+    summaryAtualizacoes.textContent =
+        atualizacoes;
 
 }
 
@@ -809,91 +929,84 @@ summaryAtualizacoes.textContent =
 
 function preencherMapeamento() {
 
-   
-mappingGrid.innerHTML = `
+    mappingGrid.innerHTML = `
 
-    <div class="mapping-row mapping-labels">
+        <div class="mapping-row mapping-labels">
 
-        <span>
-            Coluna do arquivo
-        </span>
+            <span>
+                Coluna do arquivo
+            </span>
 
-        <span>
-            Será usada como
-        </span>
+            <span>
+                Será usada como
+            </span>
 
-        <span>
-            Status
-        </span>
+            <span>
+                Status
+            </span>
 
-    </div>
-
-`;
-
-
-const campos = [
-
-    ['NOME', 'Nome da transportadora'],
-    ['CNPJ', 'CNPJ'],
-    ['TELEFONE', 'Telefone'],
-    ['EMAIL', 'E-mail'],
-    ['CONTATO', 'Contato'],
-    ['CATEGORIA', 'Categoria'],
-    ['IE', 'Inscrição estadual'],
-    ['CEP', 'CEP'],
-    ['RUA', 'Rua'],
-    ['NUMERO', 'Número'],
-    ['COMPLEMENTO', 'Complemento'],
-    ['BAIRRO', 'Bairro'],
-    ['CIDADE', 'Cidade'],
-    ['UF', 'UF'],
-    ['OBSERVACOES', 'Observações']
-
-];
-
-
-campos.forEach(campo => {
-
-    const row =
-        document.createElement('div');
-
-    row.className =
-        'mapping-row';
-
-
-    row.innerHTML = `
-
-        <span>
-            ${campo[0]}
-        </span>
-
-        <span>
-            ${campo[1]}
-        </span>
-
-        <span class="status-pill">
-            ✓ Aceita
-        </span>
+        </div>
 
     `;
 
+    const campos = [
 
-    mappingGrid.appendChild(row);
+        ['NOME', 'Nome da transportadora'],
+        ['CNPJ', 'CNPJ'],
+        ['TELEFONE', 'Telefone'],
+        ['EMAIL', 'E-mail'],
+        ['CONTATO', 'Contato'],
+        ['CATEGORIA', 'Categoria'],
+        ['IE', 'Inscrição estadual'],
+        ['CEP', 'CEP'],
+        ['RUA', 'Rua'],
+        ['NUMERO', 'Número'],
+        ['COMPLEMENTO', 'Complemento'],
+        ['BAIRRO', 'Bairro'],
+        ['CIDADE', 'Cidade'],
+        ['UF', 'UF'],
+        ['OBSERVACOES', 'Observações']
 
-});
-   
+    ];
+
+    campos.forEach(campo => {
+
+        const row =
+            document.createElement('div');
+
+        row.className =
+            'mapping-row';
+
+        row.innerHTML = `
+
+            <span>
+                ${campo[0]}
+            </span>
+
+            <span>
+                ${campo[1]}
+            </span>
+
+            <span class="status-pill">
+                ✓ Aceita
+            </span>
+
+        `;
+
+        mappingGrid.appendChild(row);
+
+    });
 
 }
 
 // ======================================================
 // AMOSTRA
 // ======================================================
+
 function preencherAmostra() {
 
     sampleRows.innerHTML = '';
 
-    // Mostra somente as 10 primeiras
-    // para não deixar a tela gigante.
     const amostra =
         transportadorasImportadas.slice(0, 10);
 
@@ -903,24 +1016,16 @@ function preencherAmostra() {
             document.createElement('tr');
 
         const nome =
-            item.nome ||
-            item.NOME ||
-            '—';
+            obterValor(item, 'nome');
 
         const cnpj =
-            item.cnpj ||
-            item.CNPJ ||
-            '—';
+            obterValor(item, 'cnpj');
 
         const telefone =
-            item.telefone ||
-            item.TELEFONE ||
-            '—';
+            obterValor(item, 'telefone');
 
         const cidade =
-            item.cidade ||
-            item.CIDADE ||
-            '—';
+            obterValor(item, 'cidade');
 
         let status = 'Nova';
 
@@ -932,7 +1037,7 @@ function preencherAmostra() {
 
             status = 'Existente';
 
-        } else if (!telefone || telefone === '—') {
+        } else if (possuiErros(item)) {
 
             status = '⚠️ Conferir';
 
@@ -941,19 +1046,25 @@ function preencherAmostra() {
         tr.innerHTML = `
 
             <td>
-                ${escaparHTML(nome)}
+                ${escaparHTML(nome || '—')}
             </td>
 
             <td>
-                ${escaparHTML(formatarCNPJ(cnpj))}
+                ${escaparHTML(
+                    formatarCNPJ(cnpj)
+                )}
             </td>
 
             <td>
-                ${escaparHTML(telefone)}
+                ${escaparHTML(
+                    telefone || '—'
+                )}
             </td>
 
             <td>
-                ${escaparHTML(cidade)}
+                ${escaparHTML(
+                    cidade || '—'
+                )}
             </td>
 
             <td>
@@ -961,21 +1072,6 @@ function preencherAmostra() {
             </td>
 
         `;
-
-        if (status === '⚠️ Conferir') {
-
-            tr.style.cursor = 'pointer';
-
-            tr.title =
-                'Clique para corrigir esta transportadora';
-
-            tr.addEventListener('click', () => {
-
-                abrirModalTransportadora(item);
-
-            });
-
-        }
 
         sampleRows.appendChild(tr);
 
@@ -987,6 +1083,11 @@ function preencherAmostra() {
     mostrarErrosConferencia();
 
 }
+
+// ======================================================
+// MOSTRAR ERROS
+// ======================================================
+
 function mostrarErrosConferencia() {
 
     errorList.innerHTML = '';
@@ -995,20 +1096,12 @@ function mostrarErrosConferencia() {
         transportadorasImportadas.filter(item => {
 
             if (item.ignorada) {
+
                 return false;
+
             }
 
-            const nome =
-                item.nome ||
-                item.NOME ||
-                '';
-
-            const telefone =
-                item.telefone ||
-                item.TELEFONE ||
-                '';
-
-            return !nome || !telefone;
+            return possuiErros(item);
 
         });
 
@@ -1017,7 +1110,14 @@ function mostrarErrosConferencia() {
         importErrors.hidden = true;
 
         return;
+
     }
+
+    /*
+        Agora a lista mostra os problemas,
+        mas NÃO abre mais uma transportadora
+        individualmente.
+    */
 
     problemas.forEach(item => {
 
@@ -1025,55 +1125,522 @@ function mostrarErrosConferencia() {
             document.createElement('li');
 
         const nome =
-            item.nome ||
-            item.NOME ||
+            obterValor(item, 'nome') ||
             'Transportadora sem nome';
 
-        const telefone =
-            item.telefone ||
-            item.TELEFONE ||
-            '';
+        const problemasItem =
+            obterProblemas(item);
 
         li.textContent =
-            `Linha ${item.linha}: ${nome} — telefone não informado`;
-
-        li.style.cursor = 'pointer';
-
-        li.title =
-            'Clique para corrigir esta transportadora';
-
-        li.addEventListener('click', () => {
-
-            abrirModalTransportadora(item);
-
-        });
+            `Linha ${item.linha || '—'}: ${nome} — ${problemasItem.join(', ')}`;
 
         errorList.appendChild(li);
 
     });
 
+    /*
+        Cria o botão geral de correção.
+    */
+
+    const botaoCorrigir =
+        document.createElement('button');
+
+    botaoCorrigir.type = 'button';
+
+    botaoCorrigir.className =
+        'botao-corrigir-importacao';
+
+    botaoCorrigir.textContent =
+        '🔧 Corrigir dados';
+
+    botaoCorrigir.addEventListener(
+        'click',
+        abrirTelaCorrecao
+    );
+
+    errorList.appendChild(
+        botaoCorrigir
+    );
+
     importErrors.hidden = false;
 
 }
+
+// ======================================================
+// ABRIR TELA DE CORREÇÃO
+// ======================================================
+
+function abrirTelaCorrecao() {
+
+    modoCorrecao = true;
+
+    /*
+        Mantém todos os dados.
+        Não cria uma transportadora por vez.
+    */
+
+    if (!transportadorasImportadas.length) {
+
+        return;
+
+    }
+
+    /*
+        A tabela será criada no HTML
+        na próxima etapa.
+    */
+
+    const tabela =
+        document.getElementById(
+            'tabelaCorrecaoTransportadoras'
+        );
+
+    if (tabela) {
+
+        tabela.hidden = false;
+
+        preencherTabelaCorrecao();
+
+    } else {
+
+        /*
+            Enquanto o HTML ainda não tiver
+            a tabela, avisamos claramente.
+        */
+
+        alert(
+            'A tela de correção ainda precisa ser adicionada ao HTML.'
+        );
+
+    }
+
+}
+
+// ======================================================
+// PREENCHER TABELA DE CORREÇÃO
+// ======================================================
+
+function preencherTabelaCorrecao() {
+
+    const tabela =
+        document.getElementById(
+            'tabelaCorrecaoTransportadoras'
+        );
+
+    if (!tabela) {
+
+        return;
+
+    }
+
+    tabela.innerHTML = '';
+
+    const cabecalho =
+        document.createElement('thead');
+
+    const linhaCabecalho =
+        document.createElement('tr');
+
+    linhaCabecalho.innerHTML = `
+
+        <th>Linha</th>
+
+        ${CAMPOS_TRANSPORTADORA.map(
+            campo =>
+                `<th>${campo.titulo}</th>`
+        ).join('')}
+
+    `;
+
+    cabecalho.appendChild(
+        linhaCabecalho
+    );
+
+    const corpo =
+        document.createElement('tbody');
+
+    transportadorasImportadas.forEach(
+        (item, index) => {
+
+            const linha =
+                document.createElement('tr');
+
+            const numero =
+                document.createElement('td');
+
+            numero.textContent =
+                item.linha || index + 1;
+
+            linha.appendChild(numero);
+
+            CAMPOS_TRANSPORTADORA.forEach(
+                campo => {
+
+                    const td =
+                        document.createElement('td');
+
+                    const input =
+                        document.createElement('input');
+
+                    input.type = 'text';
+
+                    input.value =
+                        obterValor(
+                            item,
+                            campo.chave
+                        );
+
+                    input.dataset.campo =
+                        campo.chave;
+
+                    input.dataset.index =
+                        index;
+
+                    atualizarVisualCelula(
+                        td,
+                        input,
+                        campo,
+                        item
+                    );
+
+                    input.addEventListener(
+                        'input',
+                        () => {
+
+                            atualizarItemDaTabela(
+                                item,
+                                campo,
+                                input.value
+                            );
+
+                            atualizarVisualCelula(
+                                td,
+                                input,
+                                campo,
+                                item
+                            );
+
+                            verificarTransportadorasPendentes();
+
+                        }
+                    );
+
+                    td.appendChild(input);
+
+                    linha.appendChild(td);
+
+                }
+            );
+
+            corpo.appendChild(linha);
+
+        }
+    );
+
+    tabela.appendChild(cabecalho);
+
+    tabela.appendChild(corpo);
+
+}
+
+// ======================================================
+// ATUALIZAR ITEM DA TABELA
+// ======================================================
+
+function atualizarItemDaTabela(
+    item,
+    campo,
+    valor
+) {
+
+    const valorLimpo =
+        valor.trim();
+
+    item[campo.chave] =
+        valorLimpo;
+
+    /*
+        Também atualiza a coluna original
+        caso o backend tenha enviado NOME,
+        TELEFONE etc.
+    */
+
+    item[campo.coluna] =
+        valorLimpo;
+
+}
+
+// ======================================================
+// VISUAL DA CÉLULA
+// ======================================================
+
+function atualizarVisualCelula(
+    td,
+    input,
+    campo,
+    item
+) {
+
+    const valor =
+        input.value.trim();
+
+    const valido =
+        campoValido(
+            campo,
+            valor
+        );
+
+    td.classList.remove(
+        'celula-erro',
+        'celula-corrigida'
+    );
+
+    if (!valido) {
+
+        td.classList.add(
+            'celula-erro'
+        );
+
+        input.title =
+            obterMensagemCampo(
+                campo,
+                valor
+            );
+
+    } else {
+
+        td.classList.add(
+            'celula-corrigida'
+        );
+
+        input.title =
+            'Campo preenchido corretamente';
+
+    }
+
+}
+
+// ======================================================
+// VALIDAR CAMPO
+// ======================================================
+
+function campoValido(
+    campo,
+    valor
+) {
+
+    /*
+        NOME é obrigatório.
+    */
+
+    if (
+        campo.chave === 'nome'
+    ) {
+
+        return valor.length > 0;
+
+    }
+
+    /*
+        TELEFONE é obrigatório.
+    */
+
+    if (
+        campo.chave === 'telefone'
+    ) {
+
+        return limparNumeros(valor).length > 0;
+
+    }
+
+    /*
+        CNPJ é opcional.
+        Mas se foi informado,
+        precisa ter 14 números.
+    */
+
+    if (
+        campo.chave === 'cnpj'
+    ) {
+
+        if (!valor) {
+
+            return true;
+
+        }
+
+        return limparNumeros(valor).length === 14;
+
+    }
+
+    /*
+        UF é opcional.
+        Mas se foi informado,
+        precisa ter 2 letras.
+    */
+
+    if (
+        campo.chave === 'uf'
+    ) {
+
+        if (!valor) {
+
+            return true;
+
+        }
+
+        return valor.length === 2;
+
+    }
+
+    /*
+        Os outros campos são opcionais.
+    */
+
+    return true;
+
+}
+
+// ======================================================
+// MENSAGEM DO CAMPO
+// ======================================================
+
+function obterMensagemCampo(
+    campo,
+    valor
+) {
+
+    if (
+        campo.chave === 'nome'
+    ) {
+
+        return 'Informe o nome da transportadora.';
+
+    }
+
+    if (
+        campo.chave === 'telefone'
+    ) {
+
+        return 'Informe o telefone.';
+
+    }
+
+    if (
+        campo.chave === 'cnpj' &&
+        valor
+    ) {
+
+        return 'O CNPJ precisa ter 14 números.';
+
+    }
+
+    if (
+        campo.chave === 'uf' &&
+        valor
+    ) {
+
+        return 'A UF precisa ter 2 letras.';
+
+    }
+
+    return 'Confira este campo.';
+
+}
+
+// ======================================================
+// DESCOBRIR PROBLEMAS
+// ======================================================
+
+function possuiErros(item) {
+
+    return obterProblemas(item).length > 0;
+
+}
+
+function obterProblemas(item) {
+
+    const problemas = [];
+
+    CAMPOS_TRANSPORTADORA.forEach(
+        campo => {
+
+            const valor =
+                obterValor(
+                    item,
+                    campo.chave
+                );
+
+            if (
+                !campoValido(
+                    campo,
+                    valor
+                )
+            ) {
+
+                problemas.push(
+                    campo.titulo
+                );
+
+            }
+
+        }
+    );
+
+    return problemas;
+
+}
+
+// ======================================================
+// OBTER VALOR
+// ======================================================
+
+function obterValor(
+    item,
+    chave
+) {
+
+    const campo =
+        CAMPOS_TRANSPORTADORA.find(
+            itemCampo =>
+                itemCampo.chave === chave
+        );
+
+    if (!campo) {
+
+        return '';
+
+    }
+
+    return String(
+        item[chave] ??
+        item[campo.coluna] ??
+        ''
+    ).trim();
+
+}
+
 // ======================================================
 // VOLTAR
 // ======================================================
 
 function voltarParaUpload() {
 
-   
-reviewPanel.hidden = true;
+    reviewPanel.hidden = true;
 
-uploadPanel.hidden = false;
+    uploadPanel.hidden = false;
 
+    stepReview.classList.remove(
+        'is-active'
+    );
 
-stepReview.classList.remove('is-active');
+    stepUpload.classList.add(
+        'is-active'
+    );
 
-stepUpload.classList.add('is-active');
+    modoCorrecao = false;
 
-
-applyButton.disabled = true;
-   
+    applyButton.disabled = true;
 
 }
 
@@ -1083,40 +1650,41 @@ applyButton.disabled = true;
 
 function limparRevisao() {
 
-   
-transportadorasImportadas = [];
+    transportadorasImportadas = [];
 
-transportadorasExistentes = [];
+    transportadorasDoArquivo = [];
 
-mappingGrid.innerHTML = `
+    transportadorasExistentes = [];
 
-    <div class="mapping-row mapping-labels">
+    modoCorrecao = false;
 
-        <span>
-            Coluna do arquivo
-        </span>
+    mappingGrid.innerHTML = `
 
-        <span>
-            Será usada como
-        </span>
+        <div class="mapping-row mapping-labels">
 
-        <span>
-            Status
-        </span>
+            <span>
+                Coluna do arquivo
+            </span>
 
-    </div>
+            <span>
+                Será usada como
+            </span>
 
-`;
+            <span>
+                Status
+            </span>
 
+        </div>
 
-sampleRows.innerHTML = '';
+    `;
 
-sampleCard.hidden = true;
+    sampleRows.innerHTML = '';
 
-importErrors.hidden = true;
+    sampleCard.hidden = true;
 
-errorList.innerHTML = '';
-   
+    importErrors.hidden = true;
+
+    errorList.innerHTML = '';
 
 }
 
@@ -1126,280 +1694,45 @@ errorList.innerHTML = '';
 
 function mostrarErros(erros) {
 
-   
-errorList.innerHTML = '';
+    errorList.innerHTML = '';
 
+    erros.forEach(erro => {
 
-erros.forEach(erro => {
+        const li =
+            document.createElement('li');
 
-    const li =
-        document.createElement('li');
+        li.textContent =
+            erro;
 
-    li.textContent = erro;
-
-    errorList.appendChild(li);
-
-});
-
-
-importErrors.hidden =
-    erros.length === 0;
-
-}
-
-
-
-
-
-// ======================================================
-// MODAL DE CONFERÊNCIA
-// ======================================================
-
-let transportadoraEmEdicao = null;
-
-const modalTransportadora =
-    document.getElementById('modalTransportadora');
-
-const fecharModalTransportadora =
-    document.getElementById('fecharModalTransportadora');
-
-const corrigirTransportadora =
-    document.getElementById('corrigirTransportadora');
-
-const ignorarTransportadora =
-    document.getElementById('ignorarTransportadora');
-
-const modalTransportadoraNome =
-    document.getElementById('modalTransportadoraNome');
-
-const modalTransportadoraProblema =
-    document.getElementById('modalTransportadoraProblema');
-
-
-// ======================================================
-// ABRIR MODAL
-// ======================================================
-
-function abrirModalTransportadora(item) {
-
-    transportadoraEmEdicao = item;
-
-    const nome =
-        item.nome ||
-        item.NOME ||
-        'Transportadora';
-
-    const telefone =
-        item.telefone ||
-        item.TELEFONE ||
-        '';
-
-    modalTransportadoraNome.textContent =
-        nome;
-
-    if (!telefone) {
-
-        modalTransportadoraProblema.textContent =
-            'O telefone obrigatório não foi informado na planilha.';
-
-    } else {
-
-        modalTransportadoraProblema.textContent =
-            'Existem dados que precisam ser conferidos.';
-
-    }
-
-    modalTransportadora.hidden = false;
-
-}
-
-
-// ======================================================
-// FECHAR MODAL
-// ======================================================
-
-function fecharModalTransportadoraFunc() {
-
-    modalTransportadora.hidden = true;
-
-    transportadoraEmEdicao = null;
-
-}
-
-
-// ======================================================
-// CORRIGIR
-// ======================================================
-
-function corrigirTransportadoraAtual() {
-
-    if (!transportadoraEmEdicao) {
-
-        return;
-
-    }
-
-    const item =
-        transportadoraEmEdicao;
-
-
-    // Marca que essa transportadora será
-    // corrigida manualmente.
-    item.corrigirManualmente = true;
-
-
-    // Volta para a primeira etapa.
-    reviewPanel.hidden = true;
-
-    uploadPanel.hidden = false;
-
-
-    stepReview.classList.remove('is-active');
-
-    stepUpload.classList.add('is-active');
-
-
-    // Abre o modo manual.
-    modoAtual = 'manual';
-
-    fileMode.hidden = true;
-
-    manualMode.hidden = false;
-
-    fileModeButton.classList.remove('active');
-
-    manualModeButton.classList.add('active');
-
-
-    // Coloca os dados da planilha
-    // diretamente na tabela manual.
-    adicionarLinhaManual({
-
-        nome:
-            item.nome ||
-            item.NOME ||
-            '',
-
-        cnpj:
-            item.cnpj ||
-            item.CNPJ ||
-            '',
-
-        telefone:
-            item.telefone ||
-            item.TELEFONE ||
-            '',
-
-        email:
-            item.email ||
-            item.EMAIL ||
-            '',
-
-        cidade:
-            item.cidade ||
-            item.CIDADE ||
-            '',
-
-        uf:
-            item.uf ||
-            item.UF ||
-            ''
+        errorList.appendChild(li);
 
     });
 
-
-    fecharModalTransportadoraFunc();
-
-}
-
-
-// ======================================================
-// IGNORAR
-// ======================================================
-
-function ignorarTransportadoraAtual() {
-
-    if (!transportadoraEmEdicao) {
-
-        return;
-
-    }
-
-
-    transportadoraEmEdicao.ignorada =
-        true;
-
-    transportadoraEmEdicao.status =
-        'Ignorada';
-
-
-    fecharModalTransportadoraFunc();
-
-
-    preencherResumo();
-
-    preencherAmostra();
-
-    verificarTransportadorasPendentes();
+    importErrors.hidden =
+        erros.length === 0;
 
 }
 
-
 // ======================================================
-// BOTÕES DO MODAL
+// VERIFICAR TRANSPORTADORAS PENDENTES
 // ======================================================
 
-fecharModalTransportadora.addEventListener(
-    'click',
-    fecharModalTransportadoraFunc
-);
-
-
-ignorarTransportadora.addEventListener(
-    'click',
-    ignorarTransportadoraAtual
-);
-
-
-corrigirTransportadora.addEventListener(
-    'click',
-    corrigirTransportadoraAtual
-);
-
-
-// Clicar fora do modal também fecha
-modalTransportadora
-    .querySelector('.modal-transportadora-overlay')
-    .addEventListener(
-        'click',
-        fecharModalTransportadoraFunc
-    );
-// ======================================================
-// APLICAR IMPORTAÇÃO
-// ======================================================
 function verificarTransportadorasPendentes() {
 
     const pendentes =
-        transportadorasImportadas.filter(item => {
+        transportadorasImportadas.filter(
+            item => {
 
-            if (item.ignorada) {
-                return false;
+                if (item.ignorada) {
+
+                    return false;
+
+                }
+
+                return possuiErros(item);
+
             }
-
-            const nome =
-                item.nome ||
-                item.NOME ||
-                '';
-
-            const telefone =
-                item.telefone ||
-                item.TELEFONE ||
-                '';
-
-            return !nome || !telefone;
-
-        });
-
+        );
 
     if (pendentes.length > 0) {
 
@@ -1412,18 +1745,22 @@ function verificarTransportadorasPendentes() {
 
     }
 
-
-    applyButton.disabled =
+    const quantidadeValidas =
         transportadorasImportadas.filter(
             item => !item.ignorada
-        ).length === 0;
+        ).length;
+
+    applyButton.disabled =
+        quantidadeValidas === 0;
 
     applyHint.textContent =
         'Todos os dados obrigatórios estão preenchidos.';
 
     return true;
 
-}// ======================================================
+}
+
+// ======================================================
 // APLICAR IMPORTAÇÃO
 // ======================================================
 
@@ -1439,24 +1776,20 @@ async function aplicarImportacao() {
 
     }
 
-
-    // Verifica se ainda existe algum problema
     if (!verificarTransportadorasPendentes()) {
 
         alert(
-            'Existem transportadoras que precisam ser corrigidas ou ignoradas.'
+            'Existem transportadoras que precisam ser corrigidas.'
         );
 
         return;
 
     }
 
-
     const quantidadeParaEnviar =
         transportadorasImportadas.filter(
             item => !item.ignorada
         ).length;
-
 
     if (!quantidadeParaEnviar) {
 
@@ -1468,12 +1801,10 @@ async function aplicarImportacao() {
 
     }
 
-
     const confirmar =
         confirm(
             `Deseja realmente atualizar o sistema com ${quantidadeParaEnviar} transportadora(s)?`
         );
-
 
     if (!confirmar) {
 
@@ -1481,101 +1812,121 @@ async function aplicarImportacao() {
 
     }
 
-
     applyButton.disabled = true;
 
     applyButton.textContent =
         'Atualizando...';
-
 
     try {
 
         const transportadorasNormalizadas =
             transportadorasImportadas
 
-                .filter(item => !item.ignorada)
+                .filter(
+                    item => !item.ignorada
+                )
 
                 .map(item => ({
 
                     ...item,
 
                     nome:
-                        item.nome ??
-                        item.NOME ??
-                        '',
+                        obterValor(
+                            item,
+                            'nome'
+                        ),
 
                     cnpj:
-                        item.cnpj ??
-                        item.CNPJ ??
-                        '',
+                        limparNumeros(
+                            obterValor(
+                                item,
+                                'cnpj'
+                            )
+                        ),
 
                     telefone:
-                        item.telefone ??
-                        item.TELEFONE ??
-                        '',
+                        limparNumeros(
+                            obterValor(
+                                item,
+                                'telefone'
+                            )
+                        ),
 
                     email:
-                        item.email ??
-                        item.EMAIL ??
-                        '',
+                        obterValor(
+                            item,
+                            'email'
+                        ),
 
                     contato:
-                        item.contato ??
-                        item.CONTATO ??
-                        '',
+                        obterValor(
+                            item,
+                            'contato'
+                        ),
 
                     categoria:
-                        item.categoria ??
-                        item.CATEGORIA ??
-                        '',
+                        obterValor(
+                            item,
+                            'categoria'
+                        ),
 
                     ie:
-                        item.ie ??
-                        item.IE ??
-                        '',
+                        obterValor(
+                            item,
+                            'ie'
+                        ),
 
                     cep:
-                        item.cep ??
-                        item.CEP ??
-                        '',
+                        limparNumeros(
+                            obterValor(
+                                item,
+                                'cep'
+                            )
+                        ),
 
                     rua:
-                        item.rua ??
-                        item.RUA ??
-                        '',
+                        obterValor(
+                            item,
+                            'rua'
+                        ),
 
                     numero:
-                        item.numero ??
-                        item.NUMERO ??
-                        '',
+                        obterValor(
+                            item,
+                            'numero'
+                        ),
 
                     complemento:
-                        item.complemento ??
-                        item.COMPLEMENTO ??
-                        '',
+                        obterValor(
+                            item,
+                            'complemento'
+                        ),
 
                     bairro:
-                        item.bairro ??
-                        item.BAIRRO ??
-                        '',
+                        obterValor(
+                            item,
+                            'bairro'
+                        ),
 
                     cidade:
-                        item.cidade ??
-                        item.CIDADE ??
-                        '',
+                        obterValor(
+                            item,
+                            'cidade'
+                        ),
 
                     uf:
-                        item.uf ??
-                        item.UF ??
-                        '',
+                        obterValor(
+                            item,
+                            'uf'
+                        ).toUpperCase(),
 
                     observacoes:
-                        item.observacoes ??
-                        item.OBSERVACOES ??
-                        ''
+                        obterValor(
+                            item,
+                            'observacoes'
+                        )
 
                 }));
-
 
         const payload = {
 
@@ -1593,34 +1944,35 @@ async function aplicarImportacao() {
 
         };
 
+        const resposta =
+            await fetch(
+                `${API_URL}/transportadoras/importar/aplicar`,
+                {
 
-        const resposta = await fetch(
-            `${API_URL}/transportadoras/importar/aplicar`,
-            {
+                    method: 'POST',
 
-                method: 'POST',
+                    headers: {
 
-                headers: {
+                        Authorization:
+                            `Bearer ${token}`,
 
-                    Authorization:
-                        `Bearer ${token}`,
+                        'Content-Type':
+                            'application/json'
 
-                    'Content-Type':
-                        'application/json'
+                    },
 
-                },
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
 
-                body:
-                    JSON.stringify(payload)
-
-            }
-        );
-
+                }
+            );
 
         const dados =
-            await resposta.json()
+            await resposta
+                .json()
                 .catch(() => ({}));
-
 
         if (!resposta.ok) {
 
@@ -1631,7 +1983,6 @@ async function aplicarImportacao() {
 
         }
 
-
         stepReview.classList.remove(
             'is-active'
         );
@@ -1640,21 +1991,17 @@ async function aplicarImportacao() {
             'is-active'
         );
 
-
         applyHint.textContent =
             dados.mensagem ||
             'Importação concluída com sucesso.';
 
-
         applyButton.textContent =
             'Importação concluída';
-
 
         alert(
             dados.mensagem ||
             'Transportadoras importadas com sucesso.'
         );
-
 
     } catch (erro) {
 
@@ -1665,8 +2012,8 @@ async function aplicarImportacao() {
             'Erro ao atualizar o sistema.'
         );
 
-
-        applyButton.disabled = false;
+        applyButton.disabled =
+            false;
 
         applyButton.textContent =
             'Atualizar sistema →';
@@ -1674,44 +2021,58 @@ async function aplicarImportacao() {
     }
 
 }
+
 // ======================================================
 // UTILITÁRIOS
 // ======================================================
 
 function limparNumeros(valor) {
 
-return String(valor || '')
-    .replace(/\D/g, '');
+    return String(valor || '')
+        .replace(/\D/g, '');
 
 }
 
 function formatarCNPJ(valor) {
 
-const numeros =
-    limparNumeros(valor);
+    const numeros =
+        limparNumeros(valor);
 
+    if (numeros.length !== 14) {
 
-if (numeros.length !== 14) {
+        return valor || '—';
 
-    return valor || '—';
+    }
 
-}
-
-
-return numeros.replace(
-    /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
-    '$1.$2.$3/$4-$5'
-);
+    return numeros.replace(
+        /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
+        '$1.$2.$3/$4-$5'
+    );
 
 }
 
 function escaparHTML(valor) {
 
-return String(valor ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    return String(valor ?? '')
+        .replace(
+            /&/g,
+            '&amp;'
+        )
+        .replace(
+            /</g,
+            '&lt;'
+        )
+        .replace(
+            />/g,
+            '&gt;'
+        )
+        .replace(
+            /"/g,
+            '&quot;'
+        )
+        .replace(
+            /'/g,
+            '&#039;'
+        );
 
 }
