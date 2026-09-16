@@ -527,21 +527,24 @@ async function gerarPdfPedido(
                 0
             );
 
-        const valorUnitario =
-            Number(
-                item.preco_unitario ||
-                item.valor_unitario ||
-                item.preco ||
-                0
-            );
+  const valorUnitario = 
+    Number( 
+        item.preco_unitario || 
+        item.valor_unitario || 
+        item.preco || 
+        0 
+    );
 
-        const valorTotal =
-            Number(
-                item.subtotal ||
-                item.valor_total ||
-                (valorUnitario * quantidade)
-            );
+const valorUnitarioPDF = valorUnitario / 3;
 
+const valorTotal = 
+    Number( 
+        item.subtotal || 
+        item.valor_total || 
+        (valorUnitario * quantidade) 
+    );
+
+const valorTotalPDF = valorTotal / 3;
         const previsao =
             textoSeguro(
                 item.previsao ||
@@ -585,11 +588,11 @@ async function gerarPdfPedido(
         // VALOR UNITÁRIO
         // --------------------------------------------------------
 
-        pdf.text(
-            fmtPdf(valorUnitario),
-            100,
-            yProduto
-        );
+      pdf.text( 
+    fmtPdf(valorUnitarioPDF), 
+    100, 
+    yProduto 
+);
 
         // --------------------------------------------------------
         // QUANTIDADE
@@ -605,11 +608,11 @@ async function gerarPdfPedido(
         // VALOR TOTAL
         // --------------------------------------------------------
 
-        pdf.text(
-            fmtPdf(valorTotal),
-            160,
-            yProduto
-        );
+    pdf.text( 
+    fmtPdf(valorTotalPDF), 
+    160, 
+    yProduto 
+);
 
         // --------------------------------------------------------
         // PREVISÃO
