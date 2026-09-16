@@ -495,7 +495,104 @@ app.post(
     }
 );
 
+app.post(
+    '/api/auth/confirmar-senha',
+    autenticar,
+    async (req, res) => {
 
+        try {
+
+            const {
+                senha
+            } = req.body;
+
+
+            if (!senha) {
+
+                return res.status(400).json({
+                    mensagem:
+                        'Senha não informada.'
+                });
+
+            }
+
+
+            const usuarioId =
+                req.usuario.id;
+
+
+            const resultado =
+                await pool.query(
+                    `
+                 SELECT
+    id,
+    senha_hash
+FROM usuarios
+WHERE id = $1
+LIMIT 1
+                    `,
+                    [
+                        usuarioId
+                    ]
+                );
+
+
+            if (
+                resultado.rows.length === 0
+            ) {
+
+                return res.status(404).json({
+                    mensagem:
+                        'Usuário não encontrado.'
+                });
+
+            }
+
+
+            const usuario =
+                resultado.rows[0];
+
+
+           const senhaCorreta =
+    await bcrypt.compare(
+        senha,
+        usuario.senha_hash
+    );
+
+
+            if (!senhaCorreta) {
+
+                return res.status(401).json({
+                    mensagem:
+                        'Senha incorreta.'
+                });
+
+            }
+
+
+            return res.json({
+                autorizado:
+                    true
+            });
+
+
+        } catch (erro) {
+
+            console.error(
+                'Erro ao confirmar senha:',
+                erro
+            );
+
+
+            return res.status(500).json({
+                mensagem:
+                    'Erro ao validar senha.'
+            });
+
+        }
+
+    }
+);
 // =========================
 // ALTERAR PRODUTO
 // =========================

@@ -742,7 +742,138 @@
     </div>
 
 </div>
+<!-- ============================================================
+     MODAL AUTORIZAÇÃO - PRODUTO SEM ESTOQUE
+     ============================================================ -->
 
+<div
+    id="modalAutorizacaoEstoque"
+    class="modal-overlay"
+    aria-hidden="true"
+>
+
+    <section
+        class="modal-quantidade"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalAutorizacaoEstoqueTitulo"
+    >
+
+        <div class="modal-aviso-header">
+
+            <h2 id="modalAutorizacaoEstoqueTitulo">
+                Produto sem estoque
+            </h2>
+
+            <button
+                id="btnFecharAutorizacaoEstoque"
+                type="button"
+                class="btn-fechar-modal"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="produto-confirmacao">
+
+            <strong id="autorizacaoEstoqueNome">
+                Produto
+            </strong>
+
+            <span>
+                Este produto está sem estoque.
+            </span>
+
+            <div class="produto-confirmacao-detalhes">
+
+                <span>
+                    Código do produto:
+                </span>
+
+                <strong id="autorizacaoEstoqueCodigo">
+                    -
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- CONFIRMAÇÃO DO CÓDIGO -->
+
+        <label
+            class="campo-quantidade"
+            for="inputConfirmarCodigoEstoque"
+        >
+
+            Digite o código do produto
+
+            <input
+                id="inputConfirmarCodigoEstoque"
+                type="text"
+                autocomplete="off"
+                placeholder="Digite o código acima"
+            >
+
+        </label>
+
+
+        <!-- SENHA -->
+
+        <label
+            class="campo-quantidade"
+            for="inputSenhaEstoque"
+        >
+
+            Digite sua senha de login
+
+            <input
+                id="inputSenhaEstoque"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Sua senha"
+            >
+
+        </label>
+
+
+        <p
+            id="mensagemAutorizacaoEstoque"
+            style="
+                display: none;
+                margin: 10px 0;
+                color: #b42318;
+                font-size: 14px;
+                font-weight: 600;
+            "
+        ></p>
+
+
+        <div class="acoes-modal-aviso">
+
+            <button
+                id="btnCancelarAutorizacaoEstoque"
+                type="button"
+                class="btn-modal-cancelar"
+            >
+                CANCELAR
+            </button>
+
+            <button
+                id="btnConfirmarAutorizacaoEstoque"
+                type="button"
+                class="btn-modal-confirmar"
+            >
+                AUTORIZAR
+            </button>
+
+        </div>
+
+    </section>
+
+</div>
     <script src="./header.js"></script>
 
    <script src="https://unpkg.com/html5-qrcode"></script>

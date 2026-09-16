@@ -64,8 +64,428 @@ function calcularValoresPorTipo(valorReal) {
     };
 
 }
+// ============================================================
+// MODAL AUTORIZAÇÃO - PRODUTO SEM ESTOQUE
+// ============================================================
+
+const modalAutorizacaoEstoque =
+    document.getElementById(
+        'modalAutorizacaoEstoque'
+    );
+
+const autorizacaoEstoqueNome =
+    document.getElementById(
+        'autorizacaoEstoqueNome'
+    );
+
+const autorizacaoEstoqueCodigo =
+    document.getElementById(
+        'autorizacaoEstoqueCodigo'
+    );
+
+const inputConfirmarCodigoEstoque =
+    document.getElementById(
+        'inputConfirmarCodigoEstoque'
+    );
+
+const inputSenhaEstoque =
+    document.getElementById(
+        'inputSenhaEstoque'
+    );
+
+const mensagemAutorizacaoEstoque =
+    document.getElementById(
+        'mensagemAutorizacaoEstoque'
+    );
+
+const btnFecharAutorizacaoEstoque =
+    document.getElementById(
+        'btnFecharAutorizacaoEstoque'
+    );
+
+const btnCancelarAutorizacaoEstoque =
+    document.getElementById(
+        'btnCancelarAutorizacaoEstoque'
+    );
+
+const btnConfirmarAutorizacaoEstoque =
+    document.getElementById(
+        'btnConfirmarAutorizacaoEstoque'
+    );
+
+let produtoParaAutorizarEstoque =
+    null;
+function abrirModalAutorizacaoEstoque(produto) {
+
+    produtoParaAutorizarEstoque =
+        produto;
 
 
+    autorizacaoEstoqueNome.textContent =
+        produto.name || 'Produto';
+
+
+    /*
+        Mostra o código que o usuário
+        precisa confirmar.
+    */
+
+    autorizacaoEstoqueCodigo.textContent =
+        produto.code ||
+        produto.manufacturerCode ||
+        '-';
+
+
+    inputConfirmarCodigoEstoque.value =
+        '';
+
+    inputSenhaEstoque.value =
+        '';
+
+
+    mensagemAutorizacaoEstoque.textContent =
+        '';
+
+    mensagemAutorizacaoEstoque.style.display =
+        'none';
+
+
+    btnConfirmarAutorizacaoEstoque.disabled =
+        false;
+
+    btnConfirmarAutorizacaoEstoque.textContent =
+        'AUTORIZAR';
+
+
+    modalAutorizacaoEstoque
+        .classList
+        .add('aberto');
+
+    modalAutorizacaoEstoque
+        .setAttribute(
+            'aria-hidden',
+            'false'
+        );
+
+
+    document.body.style.overflow =
+        'hidden';
+
+
+    setTimeout(
+        () => {
+
+            inputConfirmarCodigoEstoque.focus();
+
+        },
+        50
+    );
+
+}
+
+
+function fecharModalAutorizacaoEstoque() {
+
+    modalAutorizacaoEstoque
+        .classList
+        .remove('aberto');
+
+    modalAutorizacaoEstoque
+        .setAttribute(
+            'aria-hidden',
+            'true'
+        );
+
+    document.body.style.overflow =
+        '';
+
+    produtoParaAutorizarEstoque =
+        null;
+
+}
+
+btnFecharAutorizacaoEstoque.addEventListener(
+    'click',
+    fecharModalAutorizacaoEstoque
+);
+
+btnCancelarAutorizacaoEstoque.addEventListener(
+    'click',
+    fecharModalAutorizacaoEstoque
+);
+
+
+modalAutorizacaoEstoque.addEventListener(
+    'click',
+    evento => {
+
+        if (
+            evento.target ===
+            modalAutorizacaoEstoque
+        ) {
+
+            fecharModalAutorizacaoEstoque();
+
+        }
+
+    }
+);
+
+
+async function confirmarAutorizacaoEstoque() {
+
+    const produto =
+        produtoParaAutorizarEstoque;
+
+
+    if (!produto) {
+
+        return;
+
+    }
+
+
+    const codigoProduto =
+        String(
+            produto.code ||
+            produto.manufacturerCode ||
+            ''
+        )
+        .trim();
+
+
+    const codigoDigitado =
+        inputConfirmarCodigoEstoque
+            .value
+            .trim();
+
+
+    const senha =
+        inputSenhaEstoque
+            .value;
+
+
+    // ========================================================
+    // VALIDAR CÓDIGO
+    // ========================================================
+
+    if (!codigoDigitado) {
+
+        mensagemAutorizacaoEstoque.textContent =
+            'Digite o código do produto para continuar.';
+
+        mensagemAutorizacaoEstoque.style.display =
+            'block';
+
+        inputConfirmarCodigoEstoque.focus();
+
+        return;
+
+    }
+
+
+    if (
+        codigoDigitado !==
+        codigoProduto
+    ) {
+
+        mensagemAutorizacaoEstoque.textContent =
+            'O código digitado não corresponde ao produto selecionado.';
+
+        mensagemAutorizacaoEstoque.style.display =
+            'block';
+
+        inputConfirmarCodigoEstoque.focus();
+
+        inputConfirmarCodigoEstoque.select();
+
+        return;
+
+    }
+
+
+    // ========================================================
+    // VALIDAR SENHA
+    // ========================================================
+
+    if (!senha) {
+
+        mensagemAutorizacaoEstoque.textContent =
+            'Digite sua senha de login para continuar.';
+
+        mensagemAutorizacaoEstoque.style.display =
+            'block';
+
+        inputSenhaEstoque.focus();
+
+        return;
+
+    }
+
+
+    const token =
+        localStorage.getItem(
+            'bm36_token'
+        );
+
+
+    if (!token) {
+
+        mensagemAutorizacaoEstoque.textContent =
+            'Sua sessão expirou. Faça login novamente.';
+
+        mensagemAutorizacaoEstoque.style.display =
+            'block';
+
+        return;
+
+    }
+
+
+    btnConfirmarAutorizacaoEstoque.disabled =
+        true;
+
+    btnConfirmarAutorizacaoEstoque.textContent =
+        'VALIDANDO...';
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                `${API_URL}/auth/confirmar-senha`,
+                {
+
+                    method:
+                        'POST',
+
+                    headers: {
+
+                        'Content-Type':
+                            'application/json',
+
+                        'Authorization':
+                            `Bearer ${token}`
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            senha:
+                                senha
+
+                        })
+
+                }
+            );
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if (!resposta.ok) {
+
+            mensagemAutorizacaoEstoque.textContent =
+                resultado.mensagem ||
+                'Senha incorreta.';
+
+            mensagemAutorizacaoEstoque.style.display =
+                'block';
+
+            inputSenhaEstoque.value =
+                '';
+
+            inputSenhaEstoque.focus();
+
+            btnConfirmarAutorizacaoEstoque.disabled =
+                false;
+
+            btnConfirmarAutorizacaoEstoque.textContent =
+                'AUTORIZAR';
+
+            return;
+
+        }
+
+
+        // ====================================================
+        // AUTORIZAÇÃO APROVADA
+        // ====================================================
+
+        fecharModalAutorizacaoEstoque();
+
+
+        /*
+            Depois que código + senha foram confirmados,
+            abrimos o modal normal de quantidade.
+        */
+
+        abrirModalQuantidade(
+            produto
+        );
+
+    } catch (erro) {
+
+        console.error(
+            'Erro ao validar senha:',
+            erro
+        );
+
+
+        mensagemAutorizacaoEstoque.textContent =
+            'Não foi possível validar sua senha. Tente novamente.';
+
+        mensagemAutorizacaoEstoque.style.display =
+            'block';
+
+
+        btnConfirmarAutorizacaoEstoque.disabled =
+            false;
+
+        btnConfirmarAutorizacaoEstoque.textContent =
+            'AUTORIZAR';
+
+    }
+
+}
+
+btnConfirmarAutorizacaoEstoque.addEventListener(
+    'click',
+    confirmarAutorizacaoEstoque
+);
+
+inputConfirmarCodigoEstoque.addEventListener(
+    'keydown',
+    evento => {
+
+        if (evento.key === 'Enter') {
+
+            evento.preventDefault();
+
+            inputSenhaEstoque.focus();
+
+        }
+
+    }
+);
+
+
+inputSenhaEstoque.addEventListener(
+    'keydown',
+    evento => {
+
+        if (evento.key === 'Enter') {
+
+            evento.preventDefault();
+
+            confirmarAutorizacaoEstoque();
+
+        }
+
+    }
+);
 // ============================================================
 // ELEMENTOS
 // ============================================================
@@ -204,7 +624,10 @@ const btnCancelarModalAviso =
     document.getElementById(
         'btnCancelarModalAviso'
     );
-
+const inputDesconto =
+    document.getElementById(
+        'inputDesconto'
+    );
 
 const btnConfirmarModalAviso =
     document.getElementById(
@@ -2081,46 +2504,57 @@ productsBody.addEventListener(
                 '.add-btn'
             );
 
-
-        if (
-            !btn
-        ) {
-
+        if (!btn) {
             return;
-
         }
-
 
         const produtoId =
             Number(
                 btn.dataset.id
             );
 
-
         const produto =
             catalog.find(
                 item =>
                     Number(
                         item.id
-                    )
-                    ===
+                    ) ===
                     produtoId
             );
 
+        if (!produto) {
+            return;
+        }
+
+        // ====================================================
+        // PRODUTO SEM ESTOQUE
+        // ====================================================
 
         if (
-            !produto
+            Number(produto.stock || 0) <= 0
         ) {
+
+            abrirModalAutorizacaoEstoque(
+                produto
+            );
 
             return;
 
         }
 
+        // ====================================================
+        // PRODUTO COM ESTOQUE
+        // ====================================================
 
-        abrirModalQuantidade(produto);
+        abrirModalQuantidade(
+            produto
+        );
 
     }
 );
+
+
+
 
 
 // ============================================================
@@ -2973,12 +3407,6 @@ tipoValorSegmented
         );
 
     });
-
-
-inputDesconto?.addEventListener(
-    'input',
-    renderSummary
-);
 
 
 inputDesconto?.addEventListener(
