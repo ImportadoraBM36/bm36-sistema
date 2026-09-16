@@ -347,6 +347,54 @@ async function gerarPdfPedido(
         );
 
     // ============================================================
+    // TIPO DE VALOR DA VENDA (Cheio / Real / 1/3)
+    // ------------------------------------------------------------
+    // No banco, o preço de cada item e o "subtotal" SEMPRE ficam
+    // gravados em valor real (sem ajuste). Só o "total" do pedido
+    // já vem pronto, no valor que foi escolhido na tela de Venda.
+    // Por isso aplicamos o mesmo fator do tipo escolhido em cima
+    // dos itens e do subtotal, para o PDF nunca misturar números
+    // de "moedas" diferentes (real / cheio / 1-3) na mesma folha.
+    // ============================================================
+
+    const tipoValorPedido =
+        pedido.tipo_valor ||
+        pedido.tipoValor ||
+        'real';
+
+    function fatorTipoValorPDF(tipo) {
+
+        if (tipo === 'cheio') {
+            return 1.2; // valor real + 20%
+        }
+
+        if (tipo === 'terco') {
+            return 1 / 3; // valor real / 3
+        }
+
+        return 1; // valor real, sem alteração
+    }
+
+    const FATOR_EXIBICAO_PDF =
+        fatorTipoValorPDF(tipoValorPedido);
+
+    // subtotal e IPI vêm em valor real do banco -> aplicamos o fator
+    const subtotalPDF = subtotal * FATOR_EXIBICAO_PDF;
+    const totalIpiPDF = totalIpi * FATOR_EXIBICAO_PDF;
+
+    // "total" já vem certo/ajustado do banco (não multiplicar de novo)
+    const totalPDF = total;
+
+    // "desconto" no banco é PORCENTAGEM, não valor em R$.
+    // Calculamos o valor em reais coerente com o subtotal e o total
+    // já exibidos acima, para Subtotal - Desconto = Total sempre bater.
+    const descontoPDF =
+        Math.max(
+            0,
+            subtotalPDF - totalPDF
+        );
+
+    // ============================================================
     // TÍTULOS DOS TOTAIS
     // ============================================================
 
@@ -385,7 +433,7 @@ async function gerarPdfPedido(
     pdf.setFontSize(9);
 
     pdf.text(
-        fmtPdf(subtotal),
+        fmtPdf(subtotalPDF),
         32,
         yTotais + 7,
         {
@@ -394,7 +442,7 @@ async function gerarPdfPedido(
     );
 
     pdf.text(
-        fmtPdf(totalIpi),
+        fmtPdf(totalIpiPDF),
         78,
         yTotais + 7,
         {
@@ -403,7 +451,7 @@ async function gerarPdfPedido(
     );
 
     pdf.text(
-        fmtPdf(desconto),
+        fmtPdf(descontoPDF),
         125,
         yTotais + 7,
         {
@@ -412,7 +460,7 @@ async function gerarPdfPedido(
     );
 
     pdf.text(
-        fmtPdf(total),
+        fmtPdf(totalPDF),
         175,
         yTotais + 7,
         {
@@ -535,7 +583,7 @@ async function gerarPdfPedido(
         0 
     );
 
-const valorUnitarioPDF = valorUnitario / 3;
+const valorUnitarioPDF = valorUnitario * FATOR_EXIBICAO_PDF;
 
 const valorTotal = 
     Number( 
@@ -544,7 +592,7 @@ const valorTotal =
         (valorUnitario * quantidade) 
     );
 
-const valorTotalPDF = valorTotal / 3;
+const valorTotalPDF = valorTotal * FATOR_EXIBICAO_PDF;
         const previsao =
             textoSeguro(
                 item.previsao ||
