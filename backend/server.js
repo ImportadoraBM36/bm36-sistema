@@ -3916,8 +3916,10 @@ return res.json({
 // ALTERAR VENDA / PEDIDO
 // ============================================================
 
-app.put('/api/vendas/:id', async (req, res) => {
-
+app.put(
+    '/api/vendas/:id',
+    autenticar,
+    async (req, res) => {
     const client = await pool.connect();
 
     try {
@@ -4487,18 +4489,32 @@ const precoUnitario =
         );
 
 
-        // ========================================================
-        // OBSERVAÇÕES DO PEDIDO
-        // ========================================================
-        // Se o campo não for enviado, mantém o texto já salvo
-        // (permite que outras edições não apaguem a observação).
+    // ========================================================
+// OBSERVAÇÕES DO PEDIDO
+// ========================================================
 
-        const observacoesFinal =
-            observacoes_pedido !== undefined
-                ? String(observacoes_pedido)
-                : venda.observacoes_pedido;
+// Somente ADMIN pode alterar as observações.
+// Usuários comuns mantêm o texto que já estava salvo.
 
+let observacoesFinal =
+    venda.observacoes_pedido;
 
+if (
+    req.usuario.perfil === 'ADMIN'
+) {
+
+    if (
+        observacoes_pedido !== undefined
+    ) {
+
+        observacoesFinal =
+            String(
+                observacoes_pedido
+            );
+
+    }
+
+}
         // ========================================================
         // ATUALIZAR VENDA
         // ========================================================
