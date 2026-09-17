@@ -552,7 +552,15 @@ async function gerarPdfPedido(
             ? pedido.itens
             : [];
 
-    itens.forEach(item => {
+itens.forEach((item, indice) => {
+
+    const numeroLinha = indice + 1;
+
+    pdf.text(
+    'Nº',
+    5,
+    yTabela
+);
 
         const codigo =
             textoSeguro(
@@ -599,9 +607,8 @@ const valorTotalPDF = valorTotal * FATOR_EXIBICAO_PDF;
                 ''
             );
 
-for(item = 0; item < itens.length; item++){
-    
-}
+
+
 
 
 
@@ -620,12 +627,21 @@ for(item = 0; item < itens.length; item++){
         pdf.setFontSize(7);
 
         // --------------------------------------------------------
+// NÚMERO DA LINHA
+// --------------------------------------------------------
+
+pdf.text(
+    String(numeroLinha),
+    5,
+    yProduto
+);
+
+        // --------------------------------------------------------
         // CÓDIGO
         // --------------------------------------------------------
-
         pdf.text(
             codigo,
-            12,
+            15,
             yProduto
         );
 
