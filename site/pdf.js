@@ -491,6 +491,13 @@ async function gerarPdfPedido(
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(7);
 
+  pdf.text(
+    'Nº',
+    5,
+    yTabela
+);
+
+
     pdf.text(
         'CÓDIGO',
         12,
@@ -556,11 +563,7 @@ itens.forEach((item, indice) => {
 
     const numeroLinha = indice + 1;
 
-    pdf.text(
-    'Nº',
-    5,
-    yTabela
-);
+  
 
         const codigo =
             textoSeguro(
@@ -626,7 +629,7 @@ const valorTotalPDF = valorTotal * FATOR_EXIBICAO_PDF;
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(7);
 
-        // --------------------------------------------------------
+// --------------------------------------------------------
 // NÚMERO DA LINHA
 // --------------------------------------------------------
 
