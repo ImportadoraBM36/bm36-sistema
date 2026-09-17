@@ -599,6 +599,13 @@ const valorTotalPDF = valorTotal * FATOR_EXIBICAO_PDF;
                 ''
             );
 
+for(item = 0; item < itens.length; item++){
+    
+}
+
+
+
+
         // --------------------------------------------------------
         // DESCRIÇÃO
         // --------------------------------------------------------
