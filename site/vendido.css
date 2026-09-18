@@ -1284,6 +1284,33 @@ width: 78px;
     pointer-events: none;
 }
 /* ============================================================
+   OBSERVAÇÃO DO PEDIDO
+   ============================================================ */
+
+.observacao-textarea {
+
+    border:
+        1px solid var(--navy-border);
+
+    margin-bottom:
+        16px;
+}
+
+
+.observacoes-aviso {
+
+    margin:
+        -8px 0 16px;
+
+    font-size:
+        12px;
+
+    opacity:
+        0.7;
+}
+
+
+/* ============================================================
    DARK MODE
    ============================================================ */
 

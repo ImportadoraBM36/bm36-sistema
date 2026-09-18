@@ -178,6 +178,42 @@ function statusLabel(status) {
     return 'FINALIZADO';
 }
 
+// Evita que texto digitado pelo usuário quebre o HTML do modal
+function escaparHtml(texto) {
+    return String(texto ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// Lê o perfil do usuário logado direto do token (JWT).
+// A segurança de verdade continua no servidor (PUT /api/vendas/:id);
+// aqui é só pra mostrar/esconder o que a pessoa pode editar.
+function usuarioEhAdmin() {
+    try {
+        const token =
+            localStorage.getItem('bm36_token') ||
+            localStorage.getItem('token');
+
+        if (!token) return false;
+
+        const base64 = token
+            .split('.')[1]
+            .replace(/-/g, '+')
+            .replace(/_/g, '/');
+
+        const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+        const payload = JSON.parse(new TextDecoder().decode(bytes));
+
+        return String(payload.perfil || '').toUpperCase() === 'ADMIN';
+
+    } catch (erro) {
+        return false;
+    }
+}
+
 
 // ============================================================
 // PDF DO PEDIDO
@@ -688,6 +724,8 @@ if (modalFormaPagamento) {
         }
     }
 
+    renderObservacao();
+
     renderItensModal();
 
     renderObservacoesPedido();
@@ -695,7 +733,50 @@ if (modalFormaPagamento) {
 
 
 // ============================================================
-// OBSERVAÇÕES DO PEDIDO (texto padrão editável, aparece no PDF)
+// OBSERVAÇÃO DO PEDIDO
+// Qualquer usuário pode editar. No PDF aparece depois dos dados
+// do cliente/pedido e antes do subtotal.
+// ============================================================
+
+function renderObservacao() {
+    const container = document.getElementById('containerObservacao');
+    if (!container || !pedidoAberto) return;
+
+    const texto = pedidoAberto.observacao || '';
+
+    if (modoEdicao) {
+        container.innerHTML = `
+            <textarea
+                id="inputObservacao"
+                class="observacoes-pedido-textarea observacao-textarea"
+                rows="3"
+                maxlength="1000"
+                placeholder="Escreva uma observação sobre este pedido..."
+            >${escaparHtml(texto)}</textarea>
+        `;
+
+        const inputObservacao = document.getElementById('inputObservacao');
+
+        if (inputObservacao) {
+            inputObservacao.addEventListener('input', e => {
+                pedidoAberto.observacao = e.target.value;
+            });
+        }
+    } else {
+        container.innerHTML = `
+            <p class="observacoes-pedido-texto">${
+                texto
+                    ? escaparHtml(texto)
+                    : '<em>Sem observação.</em>'
+            }</p>
+        `;
+    }
+}
+
+
+// ============================================================
+// REQUISITOS DE VENDA (texto padrão, aparece no PDF antes das
+// assinaturas). Somente ADMIN pode editar.
 // ============================================================
 
 function renderObservacoesPedido() {
@@ -703,18 +784,20 @@ function renderObservacoesPedido() {
     if (!container || !pedidoAberto) return;
 
     const texto = pedidoAberto.observacoes_pedido || '';
+    const podeEditar = modoEdicao && usuarioEhAdmin();
 
-    if (modoEdicao) {
+    if (podeEditar) {
         container.innerHTML = `
             <textarea
                 id="inputObservacoesPedido"
                 class="observacoes-pedido-textarea"
                 rows="4"
                 placeholder="Texto que aparece no PDF do pedido..."
-            >${texto}</textarea>
+            >${escaparHtml(texto)}</textarea>
         `;
 
         const inputObservacoes = document.getElementById('inputObservacoesPedido');
+
         if (inputObservacoes) {
             inputObservacoes.addEventListener('input', e => {
                 pedidoAberto.observacoes_pedido = e.target.value;
@@ -724,9 +807,14 @@ function renderObservacoesPedido() {
         container.innerHTML = `
             <p class="observacoes-pedido-texto">${
                 texto
-                    ? texto.replace(/\n/g, '<br>')
-                    : '<em>Sem observações.</em>'
+                    ? escaparHtml(texto).replace(/\n/g, '<br>')
+                    : '<em>Sem requisitos de venda.</em>'
             }</p>
+            ${
+                modoEdicao
+                    ? '<p class="observacoes-aviso">Somente administradores podem alterar este texto.</p>'
+                    : ''
+            }
         `;
     }
 }
@@ -964,7 +1052,8 @@ const dadosAtualizados = {
     evento_id: eventoPedido?.value
         ? Number(eventoPedido.value)
         : null,
-    observacoes_pedido: pedidoAberto.observacoes_pedido || ''
+    observacoes_pedido: pedidoAberto.observacoes_pedido || '',
+    observacao: pedidoAberto.observacao || ''
 };
 
 

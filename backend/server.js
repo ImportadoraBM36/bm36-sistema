@@ -3372,7 +3372,8 @@ app.get(
  v."formaPagamento" AS "formaPagamento",
             v.status,
             v.criado_em,
-            v.observacoes_pedido
+            v.observacoes_pedido,
+            v.observacao
 
         FROM vendas v
 
@@ -3930,7 +3931,8 @@ app.put(
             itens,
             desconto = 0,
             evento_id = null,
-            observacoes_pedido
+            observacoes_pedido,
+            observacao
         } = req.body;
 
 
@@ -3999,7 +4001,8 @@ app.put(
                 total,
                 status,
                 evento_id,
-                observacoes_pedido
+                observacoes_pedido,
+                observacao
             FROM vendas
             WHERE id = $1
             FOR UPDATE
@@ -4496,6 +4499,26 @@ const precoUnitario =
 // Somente ADMIN pode alterar as observações.
 // Usuários comuns mantêm o texto que já estava salvo.
 
+// ========================================================
+// OBSERVAÇÃO LIVRE DO PEDIDO
+// ========================================================
+
+// Qualquer usuário autenticado pode alterar esta observação
+// (diferente das "observacoes_pedido" acima, que são só ADMIN).
+// Se o campo não vier na requisição, mantém o que já estava salvo.
+
+let observacaoFinal =
+    venda.observacao;
+
+if (observacao !== undefined) {
+
+    observacaoFinal =
+        String(observacao || '')
+            .trim()
+            .slice(0, 1000) || null;
+
+}
+
 let observacoesFinal =
     venda.observacoes_pedido;
 
@@ -4527,8 +4550,9 @@ if (
                 desconto = $2,
                 total = $3,
                 evento_id = $4,
-                observacoes_pedido = $5
-            WHERE id = $6
+                observacoes_pedido = $5,
+                observacao = $6
+            WHERE id = $7
             RETURNING *
             `,
             [
@@ -4537,6 +4561,7 @@ if (
                 novoTotal,
                 eventoIdFinal,
                 observacoesFinal,
+                observacaoFinal,
                 vendaId
             ]
         );
@@ -8528,6 +8553,13 @@ async function iniciarServidor() {
                     DEFAULT 'AS 3 PRIMEIRAS COMPRAS O PAGAMENTO É À VISTA ANTECIPADO
 PEDIDOS Á PRAZO, SUJEITO A CONSULTA E LIBERAÇÃO FINANCEIRA
 POR FAVOR INDICAR 5 FORNECEDORES QUE JÁ COMPRA Á PRAZO (MÍNIMO DE 1 ANO)'
+        `);
+
+        // Observação livre do pedido (aparece no PDF, antes do subtotal).
+        // Diferente de observacoes_pedido, qualquer usuário pode editar.
+        await pool.query(`
+            ALTER TABLE vendas
+                ADD COLUMN IF NOT EXISTS observacao TEXT
         `);
 
         // Guarda qual dos 3 valores (Cheio / Real / 1/3) foi usado

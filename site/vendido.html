@@ -410,6 +410,11 @@
             </select>
         </div>
 
+        <!-- OBSERVAÇÃO (qualquer usuário edita; no PDF sai antes do subtotal) -->
+        <div class="modal-section-title">Observação</div>
+
+        <div id="containerObservacao"></div>
+
         <!-- ITENS DO PEDIDO -->
         <div class="modal-section-title">Itens</div>
 
@@ -425,7 +430,7 @@
                 <thead>
                     <tr>
                         <th>Produto</th>
-                        <th>Qtd5.</th>
+                        <th>Qtd.</th>
                         <th>Unit.</th>
                         <th>Total</th>
                         <th id="thAcoes" style="display: none; text-align: center;">Ações</th>
@@ -435,7 +440,7 @@
             </table>
         </div>
 
-        <!-- OBSERVAÇÕES DO PEDIDO (aparece no PDF) -->
+        <!-- REQUISITOS DE VENDA (aparece no PDF antes das assinaturas; só ADMIN edita) -->
         <div class="modal-section-title">Requisitos de venda</div>
 
         <div id="containerObservacoesPedido"></div>
