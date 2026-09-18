@@ -154,7 +154,7 @@ console.log(
     "STATUS CONFIGURAÇÕES:",
     resposta.status
 );
-s
+
         const dados =
             await resposta.json();
 
