@@ -105,7 +105,7 @@ const ultimaData =
 
 function obterToken() {
 
-    return localStorage.getItem("token");
+   localStorage.getItem("bm36_token")
 
 }
 
@@ -120,7 +120,7 @@ async function carregarConfiguracoes() {
 
         const token =
             obterToken();
-   console.log("TOKEN DA SESSÃO:", token);
+   
 
         if (!token) {
 
