@@ -4948,8 +4948,333 @@ function autenticar(
 }
 
 }
+// ============================================================
+// VERIFICAR ADMINISTRADOR
+// ============================================================
+
+function verificarAdmin(req, res, next) {
+
+    if (
+        !req.usuario ||
+        req.usuario.perfil !== 'ADMIN'
+    ) {
+
+        return res.status(403).json({
+
+            sucesso: false,
+
+            mensagem:
+                'Acesso permitido somente para administradores.'
+
+        });
+
+    }
+
+    next();
+}
+// ============================================================
+// BUSCAR CONFIGURAÇÕES DA EMPRESA
+// ============================================================
+
+app.get(
+    '/api/configuracoes-empresa',
+    autenticar,
+    verificarAdmin,
+    async (req, res) => {
+
+        try {
+
+            const resultado =
+                await pool.query(`
+                    SELECT
+                        id,
+                        nome_empresa,
+                        nome_fantasia,
+                        cnpj,
+                        inscricao_estadual,
+                        endereco,
+                        numero,
+                        complemento,
+                        bairro,
+                        cidade,
+                        estado,
+                        cep,
+                        telefone,
+                        email,
+                        site,
+                        mensagem_padrao_pedido,
+                        logo_empresa,
+                        alterado_por,
+                        alterado_em
+
+                    FROM configuracoes_empresa
+
+                    ORDER BY id
+
+                    LIMIT 1
+                `);
+
+            if (
+                resultado.rows.length === 0
+            ) {
+
+                return res.status(404).json({
+
+                    sucesso: false,
+
+                    mensagem:
+                        'Configurações da empresa não encontradas.'
+
+                });
+
+            }
+
+            res.json({
+
+                sucesso: true,
+
+                configuracao:
+                    resultado.rows[0]
+
+            });
+
+        } catch (erro) {
+
+            console.error(
+                'Erro ao buscar configurações da empresa:',
+                erro
+            );
+
+            res.status(500).json({
+
+                sucesso: false,
+
+                mensagem:
+                    'Erro ao buscar configurações da empresa.'
+
+            });
+
+        }
+
+    }
+);
 
 
+// ============================================================
+// ALTERAR CONFIGURAÇÕES DA EMPRESA
+// ============================================================
+
+app.put(
+    '/api/configuracoes-empresa',
+    autenticar,
+    verificarAdmin,
+    async (req, res) => {
+
+        try {
+
+            const {
+
+                senha,
+
+                nome_empresa,
+                nome_fantasia,
+                cnpj,
+                inscricao_estadual,
+
+                endereco,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                estado,
+                cep,
+
+                telefone,
+                email,
+                site,
+
+                mensagem_padrao_pedido
+
+            } = req.body;
+
+
+            // ====================================================
+            // VALIDAR SENHA DO ADMINISTRADOR
+            // ====================================================
+
+            if (!senha) {
+
+                return res.status(400).json({
+
+                    sucesso: false,
+
+                    mensagem:
+                        'Informe a senha do administrador.'
+
+                });
+
+            }
+
+
+            // ====================================================
+            // BUSCAR SENHA DO USUÁRIO LOGADO
+            // ====================================================
+
+            const usuario =
+                await pool.query(`
+                    SELECT
+                        senha_hash
+
+                    FROM usuarios
+
+                    WHERE id = $1
+                `, [
+                    req.usuario.id
+                ]);
+
+
+            if (
+                usuario.rows.length === 0
+            ) {
+
+                return res.status(404).json({
+
+                    sucesso: false,
+
+                    mensagem:
+                        'Usuário não encontrado.'
+
+                });
+
+            }
+
+
+            // ====================================================
+            // COMPARAR SENHA
+            // ====================================================
+
+            const senhaCorreta =
+                await bcrypt.compare(
+                    senha,
+                    usuario.rows[0].senha_hash
+                );
+
+
+            if (!senhaCorreta) {
+
+                return res.status(401).json({
+
+                    sucesso: false,
+
+                    mensagem:
+                        'Senha do administrador incorreta.'
+
+                });
+
+            }
+
+
+            // ====================================================
+            // ATUALIZAR CONFIGURAÇÕES
+            // ====================================================
+
+            const resultado =
+                await pool.query(`
+
+                    UPDATE configuracoes_empresa
+
+                    SET
+
+                        nome_empresa = $1,
+                        nome_fantasia = $2,
+                        cnpj = $3,
+                        inscricao_estadual = $4,
+
+                        endereco = $5,
+                        numero = $6,
+                        complemento = $7,
+                        bairro = $8,
+                        cidade = $9,
+                        estado = $10,
+                        cep = $11,
+
+                        telefone = $12,
+                        email = $13,
+                        site = $14,
+
+                        mensagem_padrao_pedido = $15,
+
+                        alterado_por = $16,
+                        alterado_em = CURRENT_TIMESTAMP
+
+                    WHERE id = (
+                        SELECT id
+                        FROM configuracoes_empresa
+                        ORDER BY id
+                        LIMIT 1
+                    )
+
+                    RETURNING *
+
+                `, [
+
+                    nome_empresa,
+                    nome_fantasia,
+                    cnpj,
+                    inscricao_estadual,
+
+                    endereco,
+                    numero,
+                    complemento,
+                    bairro,
+                    cidade,
+                    estado,
+                    cep,
+
+                    telefone,
+                    email,
+                    site,
+
+                    mensagem_padrao_pedido,
+
+                    req.usuario.id
+
+                ]);
+
+
+            res.json({
+
+                sucesso: true,
+
+                mensagem:
+                    'Configurações atualizadas com sucesso.',
+
+                configuracao:
+                    resultado.rows[0]
+
+            });
+
+
+        } catch (erro) {
+
+            console.error(
+                'Erro ao atualizar configurações da empresa:',
+                erro
+            );
+
+            res.status(500).json({
+
+                sucesso: false,
+
+                mensagem:
+                    'Erro ao atualizar configurações da empresa.'
+
+            });
+
+        }
+
+    }
+);
 // ============================================================
 // SOMENTE ADMIN
 // ============================================================
