@@ -1,0 +1,400 @@
+/* ============================================================
+   CENTRAL DE INFORMAÇÕES
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    background: #f5f6f8;
+    color: #20242b;
+}
+
+
+/* ============================================================
+   CONTAINER
+   ============================================================ */
+
+.central-container {
+    width: min(1250px, calc(100% - 40px));
+    margin: 40px auto 80px;
+}
+
+
+/* ============================================================
+   CABEÇALHO
+   ============================================================ */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+
+.page-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #777f8c;
+    margin-bottom: 8px;
+}
+
+
+.page-header h1 {
+    margin: 0;
+    font-family: "Sora", sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: #171a1f;
+}
+
+
+.page-header p {
+    margin: 10px 0 0;
+    color: #737b87;
+    font-size: 14px;
+}
+
+
+.last-update {
+    min-width: 230px;
+    padding: 15px 18px;
+    background: #ffffff;
+    border: 1px solid #e4e7eb;
+    border-radius: 12px;
+}
+
+
+.update-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #858d98;
+    margin-bottom: 5px;
+}
+
+
+.last-update strong {
+    display: block;
+    font-size: 13px;
+    color: #292e36;
+}
+
+
+.last-update span:last-child {
+    display: block;
+    margin-top: 3px;
+    font-size: 12px;
+    color: #858d98;
+}
+
+
+/* ============================================================
+   CARD
+   ============================================================ */
+
+.config-card {
+    background: #ffffff;
+    border: 1px solid #e4e7eb;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 22px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+
+.card-header {
+    margin-bottom: 25px;
+}
+
+
+.card-header h2 {
+    margin: 0;
+    font-family: "Sora", sans-serif;
+    font-size: 18px;
+    color: #20242b;
+}
+
+
+.card-header p {
+    margin: 7px 0 0;
+    color: #7b838e;
+    font-size: 13px;
+}
+
+
+/* ============================================================
+   FORMULÁRIO
+   ============================================================ */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+
+.field-large {
+    grid-column: span 2;
+}
+
+
+.field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #4f5762;
+}
+
+
+.field input,
+.field textarea {
+    width: 100%;
+    border: 1px solid #dfe3e8;
+    border-radius: 9px;
+    background: #fafbfc;
+    padding: 11px 13px;
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    color: #252a31;
+    outline: none;
+    transition: 0.2s;
+}
+
+
+.field input {
+    height: 42px;
+}
+
+
+.field textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.5;
+}
+
+
+.field input:focus,
+.field textarea:focus {
+    border-color: #8c95a3;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(100, 110, 125, 0.08);
+}
+
+
+.field-help {
+    font-size: 11px;
+    color: #858d98;
+}
+
+
+/* ============================================================
+   BOTÃO
+   ============================================================ */
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+
+.btn-save {
+    border: 0;
+    border-radius: 9px;
+    padding: 13px 24px;
+    background: #20242b;
+    color: #ffffff;
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+
+.btn-save:hover {
+    background: #111318;
+    transform: translateY(-1px);
+}
+
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 18, 23, 0.55);
+    z-index: 9999;
+}
+
+
+.modal-overlay.active {
+    display: flex;
+}
+
+
+.password-modal {
+    position: relative;
+    width: min(430px, 100%);
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    border: 0;
+    background: transparent;
+    color: #777f8a;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+
+.modal-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+
+.password-modal h2 {
+    margin: 0;
+    font-family: "Sora", sans-serif;
+    font-size: 20px;
+    color: #20242b;
+}
+
+
+.password-modal > p {
+    margin: 10px 0 22px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #727a86;
+}
+
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+
+.btn-cancel,
+.btn-confirm {
+    border: 0;
+    border-radius: 8px;
+    padding: 11px 18px;
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+
+.btn-cancel {
+    background: #eef0f3;
+    color: #454c56;
+}
+
+
+.btn-confirm {
+    background: #20242b;
+    color: #ffffff;
+}
+
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+
+    .last-update {
+        width: 100%;
+    }
+
+
+    .form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+
+    .field-large {
+        grid-column: span 2;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .central-container {
+        width: min(100% - 24px, 1250px);
+        margin-top: 25px;
+    }
+
+
+    .page-header h1 {
+        font-size: 25px;
+    }
+
+
+    .config-card {
+        padding: 20px;
+    }
+
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .field-large {
+        grid-column: span 1;
+    }
+
+
+    .actions {
+        justify-content: stretch;
+    }
+
+
+    .btn-save {
+        width: 100%;
+    }
+
+}

@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -10,7 +11,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>informações da bm- BM36</title>
+    <title>Central de Informações - BM36</title>
 
 
     <link
@@ -20,7 +21,7 @@
 
     <link
         rel="preconnect"
-        href="https://fonts.gstatic.com"
+        href="https://fonts.googleapis.com"
         crossorigin
     >
 
@@ -73,66 +74,45 @@
         id="mainnav"
     >
 
-        <a
-            href="./inicio.html"
-            data-page="inicio"
-        >
+        <a href="./inicio.html" data-page="inicio">
             Início
         </a>
 
-
-        <a
-            href="./venda.html"
-            data-page="venda"
-        >
+        <a href="./venda.html" data-page="venda">
             Venda
         </a>
 
-
-        <a
-            href="./produtos.html"
-            data-page="produtos"
-        >
+        <a href="./produtos.html" data-page="produtos">
             Produtos
         </a>
 
-
-        <a
-            href="./estoque.html"
-            data-page="estoque"
-        >
+        <a href="./estoque.html" data-page="estoque">
             Estoque
         </a>
 
-
-        <a
-            href="./CadastroCliente.html"
-            data-page="clientes"
-        >
+        <a href="./CadastroCliente.html" data-page="clientes">
             Clientes
         </a>
 
-
-        <a
-            href="./vendido.html"
-            data-page="pedidos"
-        >
+        <a href="./vendido.html" data-page="pedidos">
             Pedidos
         </a>
-  <a href="./CadastroTransportadora.html" data-page="transportadoras" >
-        Transportadoras
-      </a>
 
+        <a
+            href="./CadastroTransportadora.html"
+            data-page="transportadoras"
+        >
+            Transportadoras
+        </a>
 
-<a href="./eventos.html">
-    Eventos
-</a>
+        <a href="./eventos.html">
+            Eventos
+        </a>
+
     </nav>
 
 
     <div class="topbar-right">
-
-        <!-- TEMA -->
 
         <button
             class="theme-toggle"
@@ -145,8 +125,6 @@
         </button>
 
 
-        <!-- USUÁRIO -->
-
         <div
             class="avatar"
             id="avatarInitials"
@@ -155,8 +133,6 @@
             FN
         </div>
 
-
-        <!-- MENU MOBILE -->
 
         <button
             class="menu-toggle"
@@ -172,12 +148,437 @@
 </header>
 
 
-<input type="text" class="input">
-<input type="text" class="input">
-<input type="text" class="input">
-<input type="text" class="input">
+<!-- ============================================================
+     CONTEÚDO
+     ============================================================ -->
+
+<main class="central-container">
 
 
+    <!-- TÍTULO -->
+
+    <section class="page-header">
+
+        <div>
+
+            <span class="page-label">
+                ADMINISTRAÇÃO
+            </span>
+
+            <h1>
+                Central de Informações
+            </h1>
+
+            <p>
+                Gerencie as informações da empresa e os padrões utilizados pelo sistema.
+            </p>
+
+        </div>
+
+
+        <div class="last-update">
+
+            <span class="update-label">
+                ÚLTIMA ALTERAÇÃO
+            </span>
+
+            <strong id="ultimoAlterador">
+                Nenhuma alteração registrada
+            </strong>
+
+            <span id="ultimaData">
+                —
+            </span>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================================
+         INFORMAÇÕES DA EMPRESA
+         ======================================================== -->
+
+    <section class="config-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Informações da empresa
+                </h2>
+
+                <p>
+                    Essas informações podem ser utilizadas em documentos e pedidos.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="field field-large">
+
+                <label for="nomeEmpresa">
+                    Nome da empresa
+                </label>
+
+                <input
+                    type="text"
+                    id="nomeEmpresa"
+                    placeholder="Ex.: BM36 Importadora"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="nomeFantasia">
+                    Nome fantasia
+                </label>
+
+                <input
+                    type="text"
+                    id="nomeFantasia"
+                    placeholder="Nome fantasia"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="cnpj">
+                    CNPJ
+                </label>
+
+                <input
+                    type="text"
+                    id="cnpj"
+                    placeholder="00.000.000/0000-00"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="inscricaoEstadual">
+                    Inscrição Estadual
+                </label>
+
+                <input
+                    type="text"
+                    id="inscricaoEstadual"
+                    placeholder="Inscrição Estadual"
+                >
+
+            </div>
+
+
+            <div class="field field-large">
+
+                <label for="endereco">
+                    Endereço
+                </label>
+
+                <input
+                    type="text"
+                    id="endereco"
+                    placeholder="Rua, avenida..."
+                >
+
+            </div>
+
+
+            <div class="field small">
+
+                <label for="numero">
+                    Número
+                </label>
+
+                <input
+                    type="text"
+                    id="numero"
+                    placeholder="Nº"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="complemento">
+                    Complemento
+                </label>
+
+                <input
+                    type="text"
+                    id="complemento"
+                    placeholder="Sala, galpão..."
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="bairro">
+                    Bairro
+                </label>
+
+                <input
+                    type="text"
+                    id="bairro"
+                    placeholder="Bairro"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="cidade">
+                    Cidade
+                </label>
+
+                <input
+                    type="text"
+                    id="cidade"
+                    placeholder="Cidade"
+                >
+
+            </div>
+
+
+            <div class="field small">
+
+                <label for="estado">
+                    Estado
+                </label>
+
+                <input
+                    type="text"
+                    id="estado"
+                    maxlength="2"
+                    placeholder="UF"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="cep">
+                    CEP
+                </label>
+
+                <input
+                    type="text"
+                    id="cep"
+                    placeholder="00000-000"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="telefone">
+                    Telefone
+                </label>
+
+                <input
+                    type="text"
+                    id="telefone"
+                    placeholder="(00) 00000-0000"
+                >
+
+            </div>
+
+
+            <div class="field field-large">
+
+                <label for="email">
+                    E-mail
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="empresa@email.com"
+                >
+
+            </div>
+
+
+            <div class="field field-large">
+
+                <label for="site">
+                    Site
+                </label>
+
+                <input
+                    type="text"
+                    id="site"
+                    placeholder="www.exemplo.com.br"
+                >
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================================
+         CONFIGURAÇÕES DO PEDIDO
+         ======================================================== -->
+
+    <section class="config-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Configurações dos pedidos
+                </h2>
+
+                <p>
+                    Defina informações que serão utilizadas automaticamente nos novos pedidos.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="field">
+
+            <label for="mensagemPadrao">
+                Mensagem padrão do pedido
+            </label>
+
+            <textarea
+                id="mensagemPadrao"
+                rows="5"
+                placeholder="Digite a mensagem que será utilizada automaticamente nos novos pedidos..."
+            ></textarea>
+
+            <span class="field-help">
+                Essa mensagem será utilizada automaticamente nos novos pedidos.
+            </span>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================================
+         BOTÃO SALVAR
+         ======================================================== -->
+
+    <section class="actions">
+
+        <button
+            type="button"
+            class="btn-save"
+            id="btnSalvar"
+        >
+            Salvar alterações
+        </button>
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ============================================================
+     MODAL DE SENHA
+     ============================================================ -->
+
+<div
+    class="modal-overlay"
+    id="modalSenha"
+>
+
+    <div class="password-modal">
+
+        <button
+            type="button"
+            class="modal-close"
+            id="fecharModal"
+        >
+            ×
+        </button>
+
+
+        <div class="modal-icon">
+            🔐
+        </div>
+
+
+        <h2>
+            Confirmar alterações
+        </h2>
+
+
+        <p>
+            Para salvar as alterações da Central de Informações,
+            confirme sua senha de administrador.
+        </p>
+
+
+        <div class="field">
+
+            <label for="senhaAdm">
+                Senha do administrador
+            </label>
+
+            <input
+                type="password"
+                id="senhaAdm"
+                placeholder="Digite sua senha"
+            >
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="btn-cancel"
+                id="cancelarSenha"
+            >
+                Cancelar
+            </button>
+
+
+            <button
+                type="button"
+                class="btn-confirm"
+                id="confirmarSenha"
+            >
+                Confirmar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 
 
@@ -188,3 +589,4 @@
 </body>
 
 </html>
+```
