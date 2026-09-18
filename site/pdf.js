@@ -71,12 +71,11 @@ async function gerarPdfPedido(
     const evento =
         pedido.evento_nome ||
         'Não informado';
-    
-        const transportadora =
+
+    const transportadora =
         pedido.transportadora_nome ||
         'Não informado';
 
-        
     console.log('PEDIDO:', pedido);
 
     // ============================================================
@@ -315,10 +314,64 @@ async function gerarPdfPedido(
     );
 
     // ============================================================
-    // TOTAIS DO PEDIDO
+    // OBSERVAÇÃO DO PEDIDO
+    // ============================================================
+    // Esta é a observação específica deste pedido.
+    // Ela fica entre os dados do pedido e os totais.
+    // É diferente de "observacoes_pedido", que continua
+    // aparecendo mais abaixo, antes da declaração/assinatura.
     // ============================================================
 
-    let yTotais = 82;
+    const textoObservacao =
+        pedido.observacao ||
+        '';
+
+    const linhasObservacao =
+        textoObservacao
+            ? pdf.splitTextToSize(
+                String(textoObservacao),
+                188
+            )
+            : [];
+
+    let yTotais;
+
+    if (linhasObservacao.length > 0) {
+
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(7);
+
+        pdf.text(
+            'OBSERVAÇÃO:',
+            5,
+            69
+        );
+
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(7);
+
+        pdf.text(
+            linhasObservacao,
+            5,
+            73
+        );
+
+        // Cada linha ocupa aproximadamente 3.6 mm.
+        yTotais =
+            73 +
+            (linhasObservacao.length * 3.6) +
+            6;
+
+    } else {
+
+        // Se não houver observação, mantém os totais
+        // praticamente na posição original.
+        yTotais = 82;
+    }
+
+    // ============================================================
+    // TOTAIS DO PEDIDO
+    // ============================================================
 
     const subtotal =
         Number(
@@ -365,29 +418,31 @@ async function gerarPdfPedido(
     function fatorTipoValorPDF(tipo) {
 
         if (tipo === 'cheio') {
-            return 1.2; // valor real + 20%
+            return 1.2;
         }
 
         if (tipo === 'terco') {
-            return 1 / 3; // valor real / 3
+            return 1 / 3;
         }
 
-        return 1; // valor real, sem alteração
+        return 1;
     }
 
     const FATOR_EXIBICAO_PDF =
         fatorTipoValorPDF(tipoValorPedido);
 
     // subtotal e IPI vêm em valor real do banco -> aplicamos o fator
-    const subtotalPDF = subtotal * FATOR_EXIBICAO_PDF;
-    const totalIpiPDF = totalIpi * FATOR_EXIBICAO_PDF;
+    const subtotalPDF =
+        subtotal * FATOR_EXIBICAO_PDF;
 
-    // "total" já vem certo/ajustado do banco (não multiplicar de novo)
+    const totalIpiPDF =
+        totalIpi * FATOR_EXIBICAO_PDF;
+
+    // "total" já vem certo/ajustado do banco
     const totalPDF = total;
 
     // "desconto" no banco é PORCENTAGEM, não valor em R$.
     // Calculamos o valor em reais coerente com o subtotal e o total
-    // já exibidos acima, para Subtotal - Desconto = Total sempre bater.
     const descontoPDF =
         Math.max(
             0,
@@ -486,17 +541,16 @@ async function gerarPdfPedido(
     // CABEÇALHO DOS PRODUTOS
     // ============================================================
 
-    let yTabela = 97;
+    let yTabela = yTotais + 15;
 
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(7);
 
-  pdf.text(
-    'Nº',
-    5,
-    yTabela
-);
-
+    pdf.text(
+        'Nº',
+        5,
+        yTabela
+    );
 
     pdf.text(
         'CÓDIGO',
@@ -559,11 +613,9 @@ async function gerarPdfPedido(
             ? pedido.itens
             : [];
 
-itens.forEach((item, indice) => {
+    itens.forEach((item, indice) => {
 
-    const numeroLinha = indice + 1;
-
-  
+        const numeroLinha = indice + 1;
 
         const codigo =
             textoSeguro(
@@ -586,35 +638,34 @@ itens.forEach((item, indice) => {
                 0
             );
 
-  const valorUnitario = 
-    Number( 
-        item.preco_unitario || 
-        item.valor_unitario || 
-        item.preco || 
-        0 
-    );
+        const valorUnitario =
+            Number(
+                item.preco_unitario ||
+                item.valor_unitario ||
+                item.preco ||
+                0
+            );
 
-const valorUnitarioPDF = valorUnitario * FATOR_EXIBICAO_PDF;
+        const valorUnitarioPDF =
+            valorUnitario *
+            FATOR_EXIBICAO_PDF;
 
-const valorTotal = 
-    Number( 
-        item.subtotal || 
-        item.valor_total || 
-        (valorUnitario * quantidade) 
-    );
+        const valorTotal =
+            Number(
+                item.subtotal ||
+                item.valor_total ||
+                (valorUnitario * quantidade)
+            );
 
-const valorTotalPDF = valorTotal * FATOR_EXIBICAO_PDF;
+        const valorTotalPDF =
+            valorTotal *
+            FATOR_EXIBICAO_PDF;
+
         const previsao =
             textoSeguro(
                 item.previsao ||
                 ''
             );
-
-
-
-
-
-
 
         // --------------------------------------------------------
         // DESCRIÇÃO
@@ -629,19 +680,20 @@ const valorTotalPDF = valorTotal * FATOR_EXIBICAO_PDF;
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(7);
 
-// --------------------------------------------------------
-// NÚMERO DA LINHA
-// --------------------------------------------------------
+        // --------------------------------------------------------
+        // NÚMERO DA LINHA
+        // --------------------------------------------------------
 
-pdf.text(
-    String(numeroLinha),
-    5,
-    yProduto
-);
+        pdf.text(
+            String(numeroLinha),
+            5,
+            yProduto
+        );
 
         // --------------------------------------------------------
         // CÓDIGO
         // --------------------------------------------------------
+
         pdf.text(
             codigo,
             15,
@@ -662,11 +714,11 @@ pdf.text(
         // VALOR UNITÁRIO
         // --------------------------------------------------------
 
-      pdf.text( 
-    fmtPdf(valorUnitarioPDF), 
-    100, 
-    yProduto 
-);
+        pdf.text(
+            fmtPdf(valorUnitarioPDF),
+            100,
+            yProduto
+        );
 
         // --------------------------------------------------------
         // QUANTIDADE
@@ -682,11 +734,11 @@ pdf.text(
         // VALOR TOTAL
         // --------------------------------------------------------
 
-    pdf.text( 
-    fmtPdf(valorTotalPDF), 
-    160, 
-    yProduto 
-);
+        pdf.text(
+            fmtPdf(valorTotalPDF),
+            160,
+            yProduto
+        );
 
         // --------------------------------------------------------
         // PREVISÃO
@@ -755,16 +807,20 @@ pdf.text(
         textoObservacoes
             .split('\n')
             .flatMap(linha =>
-                pdf.splitTextToSize(linha, 188)
+                pdf.splitTextToSize(
+                    linha,
+                    188
+                )
             );
 
-    // --------------------------------------------------------
+    // ============================================================
     // ALTURA NECESSÁRIA PARA O BLOCO INTEIRO
     // (observações + declaração + nome/assinatura)
-    // --------------------------------------------------------
+    // ============================================================
 
     const alturaBlocoFinal =
-        36 + linhasObservacoes.length * 3.6;
+        36 +
+        linhasObservacoes.length * 3.6;
 
     if (yProduto + alturaBlocoFinal > 285) {
 
@@ -775,7 +831,8 @@ pdf.text(
         yProduto = 55;
     }
 
-    let yObservacoes = yProduto + 6;
+    let yObservacoes =
+        yProduto + 6;
 
     pdf.setDrawColor(90, 90, 90);
     pdf.setLineWidth(0.25);
@@ -826,7 +883,9 @@ pdf.text(
     // NOME POR EXTENSO / ASSINATURA
     // --------------------------------------------------------
 
-    const yAssinatura = yDeclaracao + 8;
+    const yAssinatura =
+        yDeclaracao + 8;
+
     const alturaAssinatura = 16;
 
     pdf.rect(
