@@ -120,7 +120,7 @@ async function carregarConfiguracoes() {
 
         const token =
             obterToken();
-
+   console.log("TOKEN DA SESSÃO:", token);
 
         if (!token) {
 
@@ -557,7 +557,7 @@ async function salvarConfiguracoes() {
         console.error(
             "Erro ao salvar configurações:",
             erro
-        );
+        );  
 
 
         alert(
