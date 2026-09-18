@@ -105,7 +105,9 @@ const ultimaData =
 
 function obterToken() {
 
-   localStorage.getItem("bm36_token")
+    return localStorage.getItem(
+        "bm36_token"
+    );
 
 }
 
@@ -120,7 +122,7 @@ async function carregarConfiguracoes() {
 
         const token =
             obterToken();
-   
+
 
         if (!token) {
 
@@ -150,10 +152,13 @@ async function carregarConfiguracoes() {
 
                 }
             );
-console.log(
-    "STATUS CONFIGURAÇÕES:",
-    resposta.status
-);
+
+
+        console.log(
+            "STATUS CONFIGURAÇÕES:",
+            resposta.status
+        );
+
 
         const dados =
             await resposta.json();
@@ -407,82 +412,51 @@ async function salvarConfiguracoes() {
         const dados = {
 
             senha:
-
                 senha,
 
-
             nome_empresa:
-
                 campos.nome_empresa.value.trim(),
 
-
             nome_fantasia:
-
                 campos.nome_fantasia.value.trim(),
 
-
             cnpj:
-
                 campos.cnpj.value.trim(),
 
-
             inscricao_estadual:
-
                 campos.inscricao_estadual.value.trim(),
 
-
             endereco:
-
                 campos.endereco.value.trim(),
 
-
             numero:
-
                 campos.numero.value.trim(),
 
-
             complemento:
-
                 campos.complemento.value.trim(),
 
-
             bairro:
-
                 campos.bairro.value.trim(),
 
-
             cidade:
-
                 campos.cidade.value.trim(),
 
-
             estado:
-
                 campos.estado.value.trim(),
 
-
             cep:
-
                 campos.cep.value.trim(),
 
-
             telefone:
-
                 campos.telefone.value.trim(),
 
-
             email:
-
                 campos.email.value.trim(),
 
-
             site:
-
                 campos.site.value.trim(),
 
-
             mensagem_padrao_pedido:
-
                 campos.mensagem_padrao_pedido.value.trim()
 
         };
@@ -551,7 +525,10 @@ async function salvarConfiguracoes() {
         fecharModalSenha();
 
 
-        // Atualizar informações de alteração
+        // ====================================================
+        // ATUALIZAR INFORMAÇÕES DE ALTERAÇÃO
+        // ====================================================
+
         await carregarConfiguracoes();
 
 
@@ -560,8 +537,7 @@ async function salvarConfiguracoes() {
         console.error(
             "Erro ao salvar configurações:",
             erro
-        );  
-
+        );
 
         alert(
             "Erro ao conectar com o servidor."
