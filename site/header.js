@@ -664,8 +664,26 @@ ${
             `
             : ''
     }
+ ${
+        ehAdmin
+            ? `
 
+                <a
+                    href="./central.html"
+                    class="user-dropdown-item admin-item"
+                >
 
+                    <span>
+                        📝
+                    </span>
+
+                    Central de informações BM
+
+                </a>
+
+            `
+            : ''
+    }
     <button
         type="button"
         class="user-dropdown-item evento-menu-item"
