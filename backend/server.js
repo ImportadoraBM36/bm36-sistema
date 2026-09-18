@@ -4971,9 +4971,9 @@ function verificarAdmin(req, res, next) {
     }
 
     next();
-}
-// ============================================================
-// BUSCAR CONFIGURAÇÕES DA EMPRESA
+}// ============================================================
+// CONFIGURAÇÕES DA EMPRESA
+// BUSCAR
 // ============================================================
 
 app.get(
@@ -4987,78 +4987,46 @@ app.get(
             const resultado =
                 await pool.query(`
                     SELECT
-                        id,
-                        nome_empresa,
-                        nome_fantasia,
-                        cnpj,
-                        inscricao_estadual,
-                        endereco,
-                        numero,
-                        complemento,
-                        bairro,
-                        cidade,
-                        estado,
-                        cep,
-                        telefone,
-                        email,
-                        site,
-                        mensagem_padrao_pedido,
-                        logo_empresa,
-                        alterado_por,
-                        alterado_em
-
-                    FROM configuracoes_empresa
-
-                    ORDER BY id
-
+                        ce.*,
+                        u.nome AS alterado_por_nome
+                    FROM configuracoes_empresa ce
+                    LEFT JOIN usuarios u
+                        ON u.id = ce.alterado_por
+                    ORDER BY ce.id
                     LIMIT 1
                 `);
 
-            if (
-                resultado.rows.length === 0
-            ) {
+            if (resultado.rows.length === 0) {
 
                 return res.status(404).json({
-
                     sucesso: false,
-
                     mensagem:
                         'Configurações da empresa não encontradas.'
-
                 });
 
             }
 
-            res.json({
-
+            return res.json({
                 sucesso: true,
-
                 configuracao:
                     resultado.rows[0]
-
             });
 
         } catch (erro) {
 
             console.error(
-                'Erro ao buscar configurações da empresa:',
+                'Erro ao carregar configurações da empresa:',
                 erro
             );
 
-            res.status(500).json({
-
+            return res.status(500).json({
                 sucesso: false,
-
                 mensagem:
-                    'Erro ao buscar configurações da empresa.'
-
+                    'Erro ao carregar configurações da empresa.'
             });
-
         }
-
     }
 );
-
 
 // ============================================================
 // ALTERAR CONFIGURAÇÕES DA EMPRESA
