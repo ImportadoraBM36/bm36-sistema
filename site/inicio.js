@@ -323,11 +323,16 @@ async function carregarPedidos() {
 
     try {
 
-        const resposta =
-            await fetch(
-                `${API_URL}/pedidos`
-            );
-
+       const resposta =
+    await fetch(
+        `${API_URL}/vendas`,
+        {
+            headers: {
+                Authorization:
+                    `Bearer ${localStorage.getItem('bm36_token')}`
+            }
+        }
+    );
 
         if (
             !resposta.ok
