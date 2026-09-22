@@ -9085,6 +9085,29 @@ async function iniciarServidor() {
                 ADD COLUMN IF NOT EXISTS origem_sistema_antigo TEXT
         `);
 
+        // As planilhas históricas possuem endereços, cidades, telefones e
+        // nomes maiores que os VARCHAR usados no cadastro antigo. TEXT não
+        // corta nem remove dados: apenas elimina esse limite de tamanho.
+        await pool.query(`
+            ALTER TABLE clientes
+                ALTER COLUMN tipo_pessoa TYPE TEXT,
+                ALTER COLUMN nome TYPE TEXT,
+                ALTER COLUMN documento TYPE TEXT,
+                ALTER COLUMN telefone TYPE TEXT,
+                ALTER COLUMN email TYPE TEXT,
+                ALTER COLUMN cep TYPE TEXT,
+                ALTER COLUMN rua TYPE TEXT,
+                ALTER COLUMN numero TYPE TEXT,
+                ALTER COLUMN complemento TYPE TEXT,
+                ALTER COLUMN bairro TYPE TEXT,
+                ALTER COLUMN cidade TYPE TEXT,
+                ALTER COLUMN uf TYPE TEXT,
+                ALTER COLUMN ie TYPE TEXT,
+                ALTER COLUMN observacoes TYPE TEXT,
+                ALTER COLUMN codigo_sistema_antigo TYPE TEXT,
+                ALTER COLUMN origem_sistema_antigo TYPE TEXT
+        `);
+
         await pool.query(`
             ALTER TABLE configuracoes_empresa
                 ADD COLUMN IF NOT EXISTS logo_pdf TEXT,
