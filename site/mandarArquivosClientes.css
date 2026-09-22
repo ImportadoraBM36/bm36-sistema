@@ -195,7 +195,7 @@ body {
 .manual-origin { display: flex; align-items: center; gap: 7px; color: #53627a; font-size: 12px; font-weight: 800; white-space: nowrap; }
 .manual-origin select { padding: 7px; border: 1px solid #cfd9e7; border-radius: 7px; background: #fff; color: #33435c; font: inherit; font-size: 12px; }
 .manual-table-wrap { margin-top: 18px; overflow-x: auto; border: 1px solid #dce4ef; border-radius: 9px; background: #fff; }
-.manual-table { width: 100%; min-width: 720px; border-collapse: collapse; }
+.manual-table { width: 100%; min-width: 860px; border-collapse: collapse; }
 .manual-table th { padding: 10px; background: #f0f4f9; color: #718096; font-size: 10px; text-align: left; text-transform: uppercase; }
 .manual-table td { padding: 5px; border-top: 1px solid #e7edf5; }
 .manual-table input { width: 100%; padding: 8px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: #33435c; font: inherit; font-size: 12px; }

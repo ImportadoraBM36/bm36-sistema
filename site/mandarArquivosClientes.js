@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyHint = elemento('applyHint');
     const reviewNoticeText = elemento('reviewNoticeText');
 
-    const COLUNAS_MANUAIS = ['codigo', 'nome', 'telefone', 'email', 'ie'];
+    const COLUNAS_MANUAIS = ['codigo', 'nome', 'documento', 'telefone', 'email', 'ie'];
 
     let arquivosSelecionados = [];
     let analiseAtual = null;
@@ -203,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const linha = input.closest('tr');
         const valores = {
             nome: cliente.nome,
+            documento: cliente.documento,
             telefone: cliente.telefone,
             email: cliente.email,
             ie: cliente.ie
@@ -282,9 +283,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const colunas = [
             ['Código', 0],
             ['Nome', 1],
-            ['Telefone', 2],
-            ['E-mail', 3],
-            ['Inscrição Estadual', 4]
+            ['CPF/CNPJ', 2],
+            ['Telefone', 3],
+            ['E-mail', 4],
+            ['Inscrição Estadual', 5]
         ].filter(([, indice]) => indice === 0 || registros.some(linha => linha[indice]));
 
         const titulo = manualTipo?.value === 'PJ'
