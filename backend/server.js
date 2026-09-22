@@ -5094,7 +5094,6 @@ app.put(
 
             }
 
-
             // ====================================================
             // BUSCAR SENHA DO USUÁRIO LOGADO
             // ====================================================
@@ -9191,3 +9190,4 @@ POR FAVOR INDICAR 5 FORNECEDORES QUE JÁ COMPRA Á PRAZO (MÍNIMO DE 1 ANO)'
 
 
 iniciarServidor();
+// ola isso é um teste para ver se o railway enxergar a versão do git
