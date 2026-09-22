@@ -6423,9 +6423,12 @@ app.post('/api/importacoes-clientes/aplicar', autenticar, somenteAdmin,
                 }
                 analise.porCodigo.set(`${registro.origem}::${registro.codigo}`, cliente);
                 if (registro.documento) analise.porDocumento.set(registro.documento, cliente);
-                const temContato = atualizarContato && (registro.telefone || registro.email);
-                const temEndereco = atualizarEndereco && (registro.cep || registro.rua || registro.bairro || registro.cidade || registro.uf);
-                const temDados = atualizarDados && (registro.documento || registro.ie || registro.observacoes);
+                // O operador && retorna o último valor avaliado em JavaScript.
+                // Sem Boolean(...), um telefone como "(11)..." acabava sendo
+                // enviado ao PostgreSQL como o parâmetro booleano $1.
+                const temContato = Boolean(atualizarContato && (registro.telefone || registro.email));
+                const temEndereco = Boolean(atualizarEndereco && (registro.cep || registro.rua || registro.bairro || registro.cidade || registro.uf));
+                const temDados = Boolean(atualizarDados && (registro.documento || registro.ie || registro.observacoes));
                 if (temContato || temEndereco || temDados) {
                     await client.query(`
                         UPDATE clientes SET
