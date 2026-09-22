@@ -15,7 +15,9 @@ const jwt =
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+// A logo enviada pela Central é convertida para imagem em texto (base64).
+// O padrão do Express é 100 KB e rejeitava logos normais com 413.
+app.use(express.json({ limit: '3mb' }));
 
 
 // =========================
