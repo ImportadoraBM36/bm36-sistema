@@ -83,7 +83,12 @@ const campos = {
         document.getElementById("site"),
 
     mensagem_padrao_pedido:
-        document.getElementById("mensagemPadrao")
+        document.getElementById("mensagemPadrao"),
+    logo_pdf: document.getElementById("logoPdf"),
+    percentual_16001: document.getElementById("percentual16001"),
+    percentual_16002: document.getElementById("percentual16002"),
+    percentual_18001: document.getElementById("percentual18001"),
+    percentual_18002: document.getElementById("percentual18002")
 
 };
 
@@ -228,6 +233,10 @@ async function carregarConfiguracoes() {
 
         campos.mensagem_padrao_pedido.value =
             configuracao.mensagem_padrao_pedido || "";
+        campos.percentual_16001.value = configuracao.percentual_16001 ?? 33.33;
+        campos.percentual_16002.value = configuracao.percentual_16002 ?? 66.67;
+        campos.percentual_18001.value = configuracao.percentual_18001 ?? 100;
+        campos.percentual_18002.value = configuracao.percentual_18002 ?? 120;
 
 
         // ====================================================
@@ -409,6 +418,9 @@ async function salvarConfiguracoes() {
         // MONTAR DADOS
         // ====================================================
 
+        const logo = campos.logo_pdf.files[0];
+        if (logo && logo.size > 2 * 1024 * 1024) { alert('A logo deve ter no máximo 2 MB.'); return; }
+        const logoPdf = logo ? await new Promise((resolve, reject) => { const leitor = new FileReader(); leitor.onload = () => resolve(leitor.result); leitor.onerror = reject; leitor.readAsDataURL(logo); }) : null;
         const dados = {
 
             senha:
@@ -456,8 +468,12 @@ async function salvarConfiguracoes() {
             site:
                 campos.site.value.trim(),
 
-            mensagem_padrao_pedido:
-                campos.mensagem_padrao_pedido.value.trim()
+            mensagem_padrao_pedido: campos.mensagem_padrao_pedido.value.trim(),
+            logo_pdf: logoPdf,
+            percentual_16001: Number(campos.percentual_16001.value),
+            percentual_16002: Number(campos.percentual_16002.value),
+            percentual_18001: Number(campos.percentual_18001.value),
+            percentual_18002: Number(campos.percentual_18002.value)
 
         };
 

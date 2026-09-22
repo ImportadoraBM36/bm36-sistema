@@ -37,7 +37,12 @@ async function gerarPdfPedido(
 
     const larguraPagina = 210;
     const margem = 10;
-    const logo = './imagem/logofolha-removebg-preview.png';
+    let configuracaoPdf = {};
+    try {
+        const respostaConfiguracao = await fetch('https://bm36-sistema-production.up.railway.app/api/configuracoes-pdf');
+        configuracaoPdf = (await respostaConfiguracao.json()).configuracao || {};
+    } catch (_) { /* mantém os dados visuais atuais se estiver offline */ }
+    const logo = configuracaoPdf.logo_pdf || './imagem/logofolha-removebg-preview.png';
     const right = 180;
 
     // ============================================================
@@ -142,7 +147,7 @@ async function gerarPdfPedido(
         pdf.setFontSize(9);
 
         pdf.text(
-            'BM36 CIE LTDA',
+            configuracaoPdf.nome_empresa || 'BM36 CIE LTDA',
             35,
             10
         );
@@ -152,7 +157,7 @@ async function gerarPdfPedido(
         pdf.setFontSize(10);
 
         pdf.text(
-            'C.N.P.J.: 09.648.255/0001-30 - I.E.: 140085675118',
+            `C.N.P.J.: ${configuracaoPdf.cnpj || '09.648.255/0001-30'} - I.E.: ${configuracaoPdf.inscricao_estadual || '140085675118'}`,
             35,
             15
         );
@@ -161,37 +166,37 @@ async function gerarPdfPedido(
         pdf.setFontSize(7);
 
         pdf.text(
-            'AV SENADOR QUEIROZ, N°605',
+            `${configuracaoPdf.endereco || 'AV SENADOR QUEIROZ'}, N°${configuracaoPdf.numero || '605'}`,
             35,
             20
         );
 
         pdf.text(
-            'COMPL: SALA 1405/1406, BAIRRO: CENTRO',
+            `COMPL: ${configuracaoPdf.complemento || 'SALA 1405/1406'}, BAIRRO: ${configuracaoPdf.bairro || 'CENTRO'}`,
             35,
             23
         );
 
         pdf.text(
-            'SÃO PAULO - SP - CEP: 01026-001',
+            `${configuracaoPdf.cidade || 'SÃO PAULO'} - ${configuracaoPdf.estado || 'SP'} - CEP: ${configuracaoPdf.cep || '01026-001'}`,
             35,
             27
         );
 
         pdf.text(
-            'FONE: (11) 3315-8669, CELULAR: (11) 94108-5905',
+            `FONE: ${configuracaoPdf.telefone || '(11) 3315-8669'}`,
             35,
             31
         );
 
         pdf.text(
-            'EMAIL: contato@bm36importadora.com.br',
+            `EMAIL: ${configuracaoPdf.email || 'contato@bm36importadora.com.br'}`,
             35,
             35
         );
 
         pdf.text(
-            'SITE: www.bm36importadora.com.br',
+            `SITE: ${configuracaoPdf.site || 'www.bm36importadora.com.br'}`,
             35,
             39
         );
@@ -416,6 +421,8 @@ async function gerarPdfPedido(
         'real';
 
     function fatorTipoValorPDF(tipo) {
+        const percentual = Number(configuracaoPdf[`percentual_${tipo}`]);
+        if (Number.isFinite(percentual)) return percentual / 100;
 
         if (tipo === 'cheio') {
             return 1.2;
@@ -799,9 +806,7 @@ async function gerarPdfPedido(
         'PEDIDOS Á PRAZO, SUJEITO A CONSULTA E LIBERAÇÃO FINANCEIRA\n' +
         'POR FAVOR INDICAR 5 FORNECEDORES QUE JÁ COMPRA Á PRAZO (MÍNIMO DE 1 ANO)';
 
-    const textoObservacoes =
-        pedido.observacoes_pedido ||
-        textoObservacoesPadrao;
+    const textoObservacoes = pedido.observacoes_pedido || configuracaoPdf.mensagem_padrao_pedido || textoObservacoesPadrao;
 
     const linhasObservacoes =
         textoObservacoes

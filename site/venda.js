@@ -45,7 +45,21 @@ let cart =
 
 // 'cheio' | 'real' | 'terco' — controla qual dos 3 valores é usado como Total
 let tipoValorSelecionado =
-    'real';
+    '18001';
+
+let percentuaisTabela = { '16001': 33.33, '16002': 66.67, '18001': 100, '18002': 120 };
+
+async function carregarPercentuaisTabela() {
+    try {
+        const resposta = await fetch(`${API_BASE}/configuracoes-pdf`);
+        const config = (await resposta.json()).configuracao || {};
+        ['16001', '16002', '18001', '18002'].forEach(codigo => {
+            const valor = Number(config[`percentual_${codigo}`]);
+            if (Number.isFinite(valor) && valor >= 0) percentuaisTabela[codigo] = valor;
+        });
+        renderSummary();
+    } catch (_) { /* usa os percentuais padrão enquanto estiver offline */ }
+}
 
 // calcula os 3 valores a partir do valor real (valor já com desconto aplicado)
 function calcularValoresPorTipo(valorReal) {
@@ -53,15 +67,7 @@ function calcularValoresPorTipo(valorReal) {
     const base =
         Number(valorReal || 0);
 
-    return {
-        cheio:
-            base +
-            (base * 0.2), // vlr + 20%vlr = vlc
-        real:
-            base,
-        terco:
-            base / 3 // valor real / 3
-    };
+    return Object.fromEntries(Object.entries(percentuaisTabela).map(([codigo, percentual]) => [codigo, base * percentual / 100]));
 
 }
 // ============================================================
@@ -3350,20 +3356,22 @@ document
 
     const tipoValorCheioPreco =
         document.getElementById('tipoValorCheioPreco');
+    const tipoValor16002Preco = document.getElementById('tipoValor16002Preco');
     const tipoValorRealPreco =
         document.getElementById('tipoValorRealPreco');
     const tipoValorTercoPreco =
         document.getElementById('tipoValorTercoPreco');
 
     if (tipoValorCheioPreco) {
-        tipoValorCheioPreco.textContent = fmt(valoresPorTipo.cheio);
+        tipoValorCheioPreco.textContent = fmt(valoresPorTipo['18002']);
     }
     if (tipoValorRealPreco) {
-        tipoValorRealPreco.textContent = fmt(valoresPorTipo.real);
+        tipoValorRealPreco.textContent = fmt(valoresPorTipo['18001']);
     }
     if (tipoValorTercoPreco) {
-        tipoValorTercoPreco.textContent = fmt(valoresPorTipo.terco);
+        tipoValorTercoPreco.textContent = fmt(valoresPorTipo['16001']);
     }
+    if (tipoValor16002Preco) tipoValor16002Preco.textContent = fmt(valoresPorTipo['16002']);
 
 document
     .getElementById(
@@ -3785,9 +3793,9 @@ if (!formaPagamento) {
 // ============================================================
 
 const nomesTipoValor = {
-    cheio: 'Valor Cheio',
-    real: 'Valor Real',
-    terco: 'Valor 1/3'
+    '16001': 'Valor 16/001', '16002': 'Valor 16/002',
+    '18001': 'Valor 18/001', '18002': 'Valor 18/002',
+    cheio: 'Valor Cheio', real: 'Valor Real', terco: 'Valor 1/3'
 };
 
 const confirmouPagamento =
@@ -4656,3 +4664,4 @@ carregarTransportadoras();
 carregarProdutos();
 
 renderCart();
+carregarPercentuaisTabela();

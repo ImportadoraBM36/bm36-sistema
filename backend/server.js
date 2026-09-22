@@ -2472,7 +2472,7 @@ app.post(
 
             // 'cheio' | 'real' | 'terco' — qual valor foi usado na venda
             const tiposValorPermitidos =
-                ['cheio', 'real', 'terco'];
+                ['16001', '16002', '18001', '18002', 'cheio', 'real', 'terco'];
 
             const tipoValorFinal =
                 tiposValorPermitidos.includes(tipoValor)
@@ -5028,6 +5028,15 @@ app.get(
     }
 );
 
+// Dados que podem aparecer no PDF e nas tabelas de venda. Não expõe dados
+// administrativos nem permite alteração sem autenticação de administrador.
+app.get('/api/configuracoes-pdf', async (req, res) => {
+    try {
+        const resultado = await pool.query(`SELECT nome_empresa, nome_fantasia, cnpj, inscricao_estadual, endereco, numero, complemento, bairro, cidade, estado, cep, telefone, email, site, mensagem_padrao_pedido, logo_pdf, percentual_16001, percentual_16002, percentual_18001, percentual_18002 FROM configuracoes_empresa ORDER BY id LIMIT 1`);
+        res.json({ sucesso: true, configuracao: resultado.rows[0] || {} });
+    } catch (erro) { res.status(500).json({ sucesso: false, mensagem: 'Erro ao carregar configurações do PDF.' }); }
+});
+
 // ============================================================
 // ALTERAR CONFIGURAÇÕES DA EMPRESA
 // ============================================================
@@ -5061,7 +5070,7 @@ app.put(
                 email,
                 site,
 
-                mensagem_padrao_pedido
+                mensagem_padrao_pedido, logo_pdf, percentual_16001, percentual_16002, percentual_18001, percentual_18002
 
             } = req.body;
 
@@ -5171,8 +5180,11 @@ app.put(
                         site = $14,
 
                         mensagem_padrao_pedido = $15,
+                        logo_pdf = COALESCE($16, logo_pdf),
+                        percentual_16001 = $17, percentual_16002 = $18,
+                        percentual_18001 = $19, percentual_18002 = $20,
 
-                        alterado_por = $16,
+                        alterado_por = $21,
                         alterado_em = CURRENT_TIMESTAMP
 
                     WHERE id = (
@@ -5205,7 +5217,7 @@ app.put(
 
                     mensagem_padrao_pedido,
 
-                    req.usuario.id
+                    logo_pdf, percentual_16001, percentual_16002, percentual_18001, percentual_18002, req.usuario.id
 
                 ]);
 
@@ -9058,6 +9070,15 @@ async function iniciarServidor() {
                 ADD COLUMN IF NOT EXISTS ie TEXT,
                 ADD COLUMN IF NOT EXISTS codigo_sistema_antigo TEXT,
                 ADD COLUMN IF NOT EXISTS origem_sistema_antigo TEXT
+        `);
+
+        await pool.query(`
+            ALTER TABLE configuracoes_empresa
+                ADD COLUMN IF NOT EXISTS logo_pdf TEXT,
+                ADD COLUMN IF NOT EXISTS percentual_16001 NUMERIC DEFAULT 33.33,
+                ADD COLUMN IF NOT EXISTS percentual_16002 NUMERIC DEFAULT 66.67,
+                ADD COLUMN IF NOT EXISTS percentual_18001 NUMERIC DEFAULT 100,
+                ADD COLUMN IF NOT EXISTS percentual_18002 NUMERIC DEFAULT 120
         `);
 
         // Planilhas históricas nem sempre trazem CPF/CNPJ. O cadastro
