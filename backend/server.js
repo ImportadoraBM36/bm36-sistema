@@ -6409,11 +6409,20 @@ app.post('/api/importacoes-clientes/aplicar', autenticar, somenteAdmin,
                         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,TRUE,$13,$14) RETURNING *
                     `, [registro.documento?.length === 14 ? 'JURIDICA' : 'FISICA', registro.nome, registro.documento, registro.telefone || null, registro.email || null, registro.cep || null, registro.rua || null, registro.bairro || null, registro.cidade || null, registro.uf || null, registro.ie || null, registro.observacoes || null, registro.codigo, registro.origem]);
                     cliente = inserido.rows[0]; criados += 1;
+                    // A mesma planilha (ou duas origens enviadas juntas)
+                    // pode repetir o CPF/CNPJ em códigos diferentes. Inclui
+                    // o registro recém-criado nos índices da análise para o
+                    // próximo item reutilizá-lo, em vez de violar o UNIQUE
+                    // de documento e cancelar toda a transação.
+                    analise.porCodigo.set(`${registro.origem}::${registro.codigo}`, cliente);
+                    if (registro.documento) analise.porDocumento.set(registro.documento, cliente);
                     if (registro.telefone || registro.email) contatoAtualizado += 1;
                     if (registro.cep || registro.rua || registro.bairro || registro.cidade || registro.uf) enderecoAtualizado += 1;
                     if (registro.documento || registro.ie || registro.observacoes) dadosAtualizados += 1;
                     continue;
                 }
+                analise.porCodigo.set(`${registro.origem}::${registro.codigo}`, cliente);
+                if (registro.documento) analise.porDocumento.set(registro.documento, cliente);
                 const temContato = atualizarContato && (registro.telefone || registro.email);
                 const temEndereco = atualizarEndereco && (registro.cep || registro.rua || registro.bairro || registro.cidade || registro.uf);
                 const temDados = atualizarDados && (registro.documento || registro.ie || registro.observacoes);
