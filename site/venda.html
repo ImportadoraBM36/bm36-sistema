@@ -742,6 +742,34 @@
     </div>
 
 </div>
+
+
+<div class="senha-tabela-overlay" id="modalSenhaTabela" aria-hidden="true">
+  <div class="senha-tabela-modal">
+
+    <div class="senha-tabela-head">
+      <h2>Autorizar troca de tabela</h2>
+      <button type="button" class="senha-tabela-fechar" id="btnFecharSenhaTabela">✕</button>
+    </div>
+
+    <p class="senha-tabela-info">
+      Trocar para a tabela <b id="senhaTabelaNome">-</b>.<br>
+      Digite sua senha de login para autorizar.
+    </p>
+
+    <input type="password" id="inputSenhaTabela"
+           class="senha-tabela-input"
+           placeholder="Senha" autocomplete="current-password">
+
+    <div id="mensagemSenhaTabela" class="senha-tabela-erro"></div>
+
+    <div class="senha-tabela-acoes">
+      <button type="button" class="senha-tabela-btn senha-tabela-btn-sec" id="btnCancelarSenhaTabela">CANCELAR</button>
+      <button type="button" class="senha-tabela-btn senha-tabela-btn-ok" id="btnConfirmarSenhaTabela">AUTORIZAR</button>
+    </div>
+
+  </div>
+</div>
 <!-- ============================================================
      MODAL AUTORIZAÇÃO - PRODUTO SEM ESTOQUE
      ============================================================ -->
@@ -875,30 +903,7 @@
 
 </div>
 
-<div class="overlay" id="modalSenhaTabela" aria-hidden="true">
-  <div class="modal" style="max-width:420px">
-    <div class="modal-head">
-      <h2>Autorizar troca de tabela</h2>
-      <button type="button" class="modal-close-x" id="btnFecharSenhaTabela">✕</button>
-    </div>
 
-    <p class="senha-tabela-info">
-      Trocar para a tabela <b id="senhaTabelaNome">-</b>.<br>
-      Digite sua senha de login para autorizar.
-    </p>
-
-    <input type="password" id="inputSenhaTabela"
-           class="senha-tabela-input"
-           placeholder="Senha" autocomplete="current-password">
-
-    <div id="mensagemSenhaTabela" class="senha-tabela-erro"></div>
-
-    <div class="modal-actions">
-      <button type="button" class="btn btn-secondary" id="btnCancelarSenhaTabela">CANCELAR</button>
-      <button type="button" class="btn" id="btnConfirmarSenhaTabela">AUTORIZAR</button>
-    </div>
-  </div>
-</div>
     <script src="./header.js"></script>
 
    <script src="https://unpkg.com/html5-qrcode"></script>
