@@ -667,24 +667,30 @@ if (modalFormaPagamento) {
     const modalStatus = document.getElementById('modalStatus');
     if (modalStatus) modalStatus.textContent = statusLabel(pedidoAberto.status);
 
-    const modalTipoValor =
+     const modalTipoValor =
         document.getElementById('modalTipoValor');
 
     if (modalTipoValor) {
 
         const nomesTipoValor = {
-            cheio: 'Valor Cheio',
-            real: 'Valor Real',
-            terco: 'Valor 1/3'
+            '16001': 'Valor 16/001',
+            '18001': 'Valor 18/001',
+            '18002': 'Valor 18/002',
+            '16002': 'Valor 22/002',   // a chave 16002 é a tabela 22/002
+
+            // pedidos antigos, gravados antes das 4 tabelas
+            terco: 'Valor 16/001',
+            real:  'Valor 18/001',
+            cheio: 'Valor 18/002'
         };
 
         const tipo =
             String(
-                pedidoAberto.tipo_valor || 'real'
+                pedidoAberto.tipo_valor || '18001'
             ).toLowerCase();
 
         modalTipoValor.textContent =
-            nomesTipoValor[tipo] || 'Valor Real';
+            nomesTipoValor[tipo] || 'Valor 18/001';
 
     }
 
