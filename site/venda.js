@@ -47,18 +47,28 @@ let cart =
 let tipoValorSelecionado =
     '18001';
 
-let percentuaisTabela = { '16001': percentual_16001, '22002': percentual_22002, '18001': percentual_18001, '18002': percentual_18002 };
+// Chaves iguais às do banco / Central de Informações:
+// 16001, 16002, 18001, 18002  (coluna percentual_<chave>)
+const PERCENTUAIS_PADRAO = { '16001': 33.33, '16002': 66.67, '18001': 100, '18002': 120 };
+
+let percentuaisTabela = { ...PERCENTUAIS_PADRAO };
 
 async function carregarPercentuaisTabela() {
     try {
-        const resposta = await fetch(`${API_BASE}/configuracoes-pdf`);
+        const token = localStorage.getItem('bm36_token');
+        const resposta = await fetch(`${API_URL}/configuracoes-empresa`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
         const config = (await resposta.json()).configuracao || {};
-        ['16001', '22002', '18001', '18002'].forEach(codigo => {
+        Object.keys(PERCENTUAIS_PADRAO).forEach(codigo => {
             const valor = Number(config[`percentual_${codigo}`]);
             if (Number.isFinite(valor) && valor >= 0) percentuaisTabela[codigo] = valor;
         });
-        renderSummary();
-    } catch (_) { /* usa os percentuais padrão enquanto estiver offline */ }
+    } catch (erro) {
+        console.warn('Percentuais padrão em uso:', erro.message);
+    }
+    renderSummary();
 }
 
 // calcula os 3 valores a partir do valor real (valor já com desconto aplicado)
@@ -3354,24 +3364,16 @@ document
     const valoresPorTipo =
         calcularValoresPorTipo(total);
 
-    const tipoValorCheioPreco =
-        document.getElementById('tipoValorCheioPreco');
-    const tipoValor16002Preco = document.getElementById('tipoValor16002Preco');
-    const tipoValorRealPreco =
-        document.getElementById('tipoValorRealPreco');
-    const tipoValorTercoPreco =
-        document.getElementById('tipoValorTercoPreco');
-
-    if (tipoValorCheioPreco) {
-        tipoValorCheioPreco.textContent = fmt(valoresPorTipo['18002']);
-    }
-    if (tipoValorRealPreco) {
-        tipoValorRealPreco.textContent = fmt(valoresPorTipo['18001']);
-    }
-    if (tipoValorTercoPreco) {
-        tipoValorTercoPreco.textContent = fmt(valoresPorTipo['16001']);
-    }
-    if (tipoValor16002Preco) tipoValor16002Preco.textContent = fmt(valoresPorTipo['16002']);
+    const idsPreco = {
+        '16001': 'tipoValor16001Preco',
+        '16002': 'tipoValor16002Preco',
+        '18001': 'tipoValor18001Preco',
+        '18002': 'tipoValor18002Preco'
+    };
+    Object.entries(idsPreco).forEach(([codigo, id]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = fmt(valoresPorTipo[codigo]);
+    });
 
 document
     .getElementById(
@@ -3793,9 +3795,8 @@ if (!formaPagamento) {
 // ============================================================
 
 const nomesTipoValor = {
-    '16001': 'Valor 16/001', '16002': 'Valor 16/002',
-    '18001': 'Valor 18/001', '22002': 'Valor 22/002',
-    cheio: 'Valor Cheio', real: 'Valor Real', terco: 'Valor 1/3'
+    '16001': 'Valor 16/001', '16002': 'Valor 22/002',
+    '18001': 'Valor 18/001', '18002': 'Valor 18/002'
 };
 
 const confirmouPagamento =
