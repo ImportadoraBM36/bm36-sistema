@@ -1,44 +1,24 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Central de Informações - BM36</title>
+    <title>Nova Venda - BM36</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-        crossorigin
-    >
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap"
-        rel="stylesheet"
-    >
+        rel="stylesheet">
 
-
-    <link
-        rel="stylesheet"
-        href="./central.css"
-    >
-
-    <link
-        rel="stylesheet"
-        href="./header.css"
-    >
+    <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./venda.css">
 
 </head>
 
@@ -46,555 +26,859 @@
 <body>
 
 
-<!-- ============================================================
+    <!-- ============================================================
      HEADER
      ============================================================ -->
 
-<header class="topbar">
+    <header class="topbar">
 
-    <div class="brand">
+        <div class="brand">
 
-        <div class="logo">
+            <div class="logo">
 
-            <img
-                src="./imagem/logo2.jpg"
-                alt="BM36"
-            >
+                <img src="./imagem/logo2.jpg" alt="BM36">
+
+            </div>
+
+            <span class="wordmark"></span>
 
         </div>
 
-        <span class="wordmark"></span>
 
-    </div>
-
-
-    <nav
-        class="mainnav"
-        id="mainnav"
+        <nav
+      class="mainnav"
+      id="mainnav"
     >
 
-        <a href="./inicio.html" data-page="inicio">
-            Início
-        </a>
+      <a
+        href="./inicio.html"
+        
+        data-page="inicio"
+      >
+        Início
+      </a>
 
-        <a href="./venda.html" data-page="venda">
-            Venda
-        </a>
 
-        <a href="./produtos.html" data-page="produtos">
-            Produtos
-        </a>
+      <a
+        href="./venda.html"
+        data-page="venda"
+        class="active"
+      >
+        Venda
+      </a>
 
-        <a href="./estoque.html" data-page="estoque">
-            Estoque
-        </a>
 
-        <a href="./CadastroCliente.html" data-page="clientes">
-            Clientes
-        </a>
+      <a
+        href="./produtos.html"
+        data-page="produtos"
+      >
+        Produtos
+      </a>
 
-        <a href="./vendido.html" data-page="pedidos">
-            Pedidos
-        </a>
 
-        <a
-            href="./CadastroTransportadora.html"
-            data-page="transportadoras"
-        >
-            Transportadoras
-        </a>
+ 
 
-        <a href="./eventos.html">
-            Eventos
-        </a>
 
+      <a
+        href="./estoque.html"
+        data-page="estoque"
+      >
+        Estoque
+      </a>
+
+
+      <a
+        href="./CadastroCliente.html"
+        data-page="clientes"
+      >
+        Clientes
+      </a>
+
+
+      <a
+        href="./vendido.html"
+        data-page="pedidos"
+      >
+        Pedidos
+      </a>
+
+     <a href="./CadastroTransportadora.html" data-page="transportadoras" >
+        Transportadoras
+      </a>
+<a href="./eventos.html">
+    Eventos
+</a>
     </nav>
 
 
-    <div class="topbar-right">
+        <div class="topbar-right">
 
-        <button
-            class="theme-toggle"
-            id="themeToggle"
-            type="button"
-            aria-label="Alternar tema"
-            title="Alternar tema"
-        >
-            🌙
-        </button>
+            <div class="avatar" id="avatarInitials">
+                FN
+            </div>
 
+            <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu">
 
-        <div
-            class="avatar"
-            id="avatarInitials"
-            title="Minha conta"
-        >
-            FN
+                <span></span>
+
+            </button>
+
         </div>
 
-
-        <button
-            class="menu-toggle"
-            id="menuToggle"
-            type="button"
-            aria-label="Abrir menu"
-        >
-            <span></span>
-        </button>
-
-    </div>
-
-</header>
+    </header>
 
 
-<!-- ============================================================
+    <!-- ============================================================
      CONTEÚDO
      ============================================================ -->
 
-<main class="central-container">
+    <main>
 
+        <div class="page-title">
+            Nova Venda
+        </div>
 
-    <!-- TÍTULO -->
-
-    <section class="page-header">
-
-        <div>
-
-            <span class="page-label">
-                ADMINISTRAÇÃO
-            </span>
-
-            <h1>
-                Central de Informações
-            </h1>
-
-            <p>
-                Gerencie as informações da empresa e os padrões utilizados pelo sistema.
-            </p>
-
+        <div class="page-sub">
+            Selecione o cliente e adicione os produtos da venda.
         </div>
 
 
-        <div class="last-update">
-
-            <span class="update-label">
-                ÚLTIMA ALTERAÇÃO
-            </span>
-
-            <strong id="ultimoAlterador">
-                Nenhuma alteração registrada
-            </strong>
-
-            <span id="ultimaData">
-                —
-            </span>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ========================================================
-         INFORMAÇÕES DA EMPRESA
+        <!-- ========================================================
+         CLIENTE
          ======================================================== -->
 
-    <section class="config-card">
+        <section class="card cliente-card">
 
-        <div class="card-header">
+            <h2>
+                Cliente da Venda
+            </h2>
 
-            <div>
+
+            <div class="cliente-search-area">
+
+
+                <div class="search-wrap cliente-search">
+
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#171528" stroke-width="2">
+
+                        <circle cx="11" cy="11" r="7"></circle>
+
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+
+                    </svg>
+
+
+                    <input id="clienteSearch" type="text" placeholder="Buscar cliente por nome, CPF ou CNPJ..."
+                        autocomplete="off">
+
+                </div>
+
+
+                <a href="./CadastroCliente.html" class="btn-novo-cliente">
+                    + NOVO CLIENTE
+                </a>
+
+            </div>
+
+
+            <div id="clientesResultados" class="clientes-resultados">
+            </div>
+
+
+            <div id="clienteSelecionadoBox" class="cliente-selecionado-box">
+
+                <div class="cliente-vazio">
+
+                    <span>
+                        Nenhum cliente selecionado.
+                    </span>
+
+                    <small>
+                        Pesquise acima para selecionar um cliente.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================
+         TRANSPORTADORA
+         ======================================================== -->
+
+        <section class="card cliente-card">
+
+            <h2>
+                Transportadora da Venda
+            </h2>
+
+
+            <div class="cliente-search-area">
+
+
+                <div class="search-wrap cliente-search">
+
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#171528" stroke-width="2">
+
+                        <circle cx="11" cy="11" r="7"></circle>
+
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+
+                    </svg>
+
+
+                    <input id="transportadoraSearch" type="text" placeholder="Buscar transportadora por nome ou CNPJ..."
+                        autocomplete="off">
+
+                </div>
+
+
+                <a href="./CadastroTransportadora.html" class="btn-novo-cliente">
+                    + NOVA TRANSPORTADORA
+                </a>
+
+            </div>
+
+
+            <div id="transportadoraResultados" class="clientes-resultados">
+            </div>
+
+
+            <div id="transportadoraSelecionadoBox" class="cliente-selecionado-box">
+
+                <div class="cliente-vazio">
+
+                    <span>
+                        Nenhuma transportadora selecionada.
+                    </span>
+
+                    <small>
+                        Pesquise acima para selecionar uma transportadora.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================
+         PRODUTOS + RESUMO
+         ======================================================== -->
+
+        <div class="grid">
+
+
+            <!-- ====================================================
+             PRODUTOS
+             ==================================================== -->
+
+            <section class="card">
+                <h2>
+                    Produtos
+                </h2>
+                
+                
+                <button
+                    type="button"
+                    id="abrirScannerBtn"
+                    class="btn-scanner"
+                >
+                    📷 Ler código de barras
+                </button>
+                <div class="search-wrap">
+
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#171528" stroke-width="2">
+
+                        <circle cx="11" cy="11" r="7"></circle>
+
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+
+                    </svg>
+
+
+                    <input id="productSearch" type="text" placeholder="Código ou nome..." autocomplete="off">
+
+                </div>
+
+
+                <div class="tabela-venda-wrapper">
+
+                    <table class="prod-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Código
+                                </th>
+
+                                <th>
+                                    Produto
+                                </th>
+
+                                <th>
+                                    Embalagem
+                                </th>
+
+                                <th>
+                                    Preço
+                                </th>
+
+                                <th>
+                                    Est.
+                                </th>
+
+                                <th></th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="productsBody">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- PAGINAÇÃO -->
+
+                <div class="rodape-produtos-venda">
+
+                    <span id="contadorProdutosVenda">
+                        Mostrando 0 produtos
+                    </span>
+
+
+                    <div class="paginacao-produtos-venda">
+
+                        <button id="produtoAnterior" type="button">
+                            ◀
+                        </button>
+
+
+                        <div id="paginasProdutosVenda">
+                        </div>
+
+
+                        <button id="produtoProximo" type="button">
+                            ▶
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ====================================================
+             RESUMO
+             ==================================================== -->
+
+            <section class="card">
 
                 <h2>
-                    Informações da empresa
+                    Resumo da Venda
                 </h2>
 
-                <p>
-                    Essas informações podem ser utilizadas em documentos e pedidos.
-                </p>
+
+                <div class="resumo-cliente">
+
+                    <span class="resumo-label">
+                        Cliente
+                    </span>
+
+                    <strong id="resumoCliente">
+                        Nenhum selecionado
+                    </strong>
+
+                </div>
+
+            <div class="formaPagamento">
+                <div class="formaPagamento-linha">
+                    <label for="formaPagamentoSelect">Forma de Pagamento</label>
+                    <select id="formaPagamentoSelect" class="forma-pagamento-select">
+                        <option value="" selected>Selecione a forma de pagamento</option>
+                        <option value="dinheiro">Dinheiro</option>
+                        <option value="pix">PIX</option>
+                        <option value="boleto">Boleto</option>
+                        <option value="debito">Cartão de débito</option>
+                        <option value="credito">Cartão de crédito</option>
+                    </select>
+                </div>
+
+                <div class="tipo-valor-wrap">
+                    <label>Tipo de Valor</label>
+                    <div class="tipo-valor-segmented" id="tipoValorSegmented">
+                        <button type="button" class="tipo-valor-btn" data-tipo="16001">
+                            <span class="tipo-valor-nome">Valor 16/001</span>
+                            <span class="tipo-valor-preco" id="tipoValor16001Preco">R$ 0,00</span>
+                        </button>
+                        
+                        <button type="button" class="tipo-valor-btn ativo" data-tipo="18001">
+                            <span class="tipo-valor-nome">Valor 18/001</span>
+                            <span class="tipo-valor-preco" id="tipoValor18001Preco">R$ 0,00</span>
+                        </button>
+                        
+                        <button type="button" class="tipo-valor-btn" data-tipo="18002">
+                            <span class="tipo-valor-nome">Valor 18/002</span>
+                            <span class="tipo-valor-preco" id="tipoValor18002Preco">R$ 0,00</span>
+                        </button>
+                        
+                        <button type="button" class="tipo-valor-btn" data-tipo="16002">
+                           <span class="tipo-valor-nome">Valor 22/002</span>
+                           <span class="tipo-valor-preco" id="tipoValor16002Preco">R$ 0,00</span>
+                       </button>
+                    </div>
+                </div>
 
             </div>
 
-        </div>
+                <div class="summary-row">
 
+                    <span>
+                        Itens
+                    </span>
 
-        <div class="form-grid">
+                    <span id="sumItens">
+                        0
+                    </span>
 
+                </div>
 
-            <div class="field field-large">
 
-                <label for="nomeEmpresa">
-                    Nome da empresa
-                </label>
+                <div class="summary-row">
 
-                <input
-                    type="text"
-                    id="nomeEmpresa"
-                    placeholder="Ex.: BM36 Importadora"
-                >
+                    <span>
+                        Quantidade
+                    </span>
 
-            </div>
+                    <span id="sumQtd">
+                        0
+                    </span>
 
+                </div>
 
-            <div class="field">
 
-                <label for="nomeFantasia">
-                    Nome fantasia
-                </label>
+                <div class="summary-row">
 
-                <input
-                    type="text"
-                    id="nomeFantasia"
-                    placeholder="Nome fantasia"
-                >
+                    <span>
+                        Subtotal
+                    </span>
 
-            </div>
+                    <span id="sumSubtotal">
+                        R$ 0,00
+                    </span>
 
+                </div>
 
-            <div class="field">
 
-                <label for="cnpj">
-                    CNPJ
-                </label>
-
-                <input
-                    type="text"
-                    id="cnpj"
-                    placeholder="00.000.000/0000-00"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="inscricaoEstadual">
-                    Inscrição Estadual
-                </label>
-
-                <input
-                    type="text"
-                    id="inscricaoEstadual"
-                    placeholder="Inscrição Estadual"
-                >
-
-            </div>
-
-
-            <div class="field field-large">
-
-                <label for="endereco">
-                    Endereço
-                </label>
-
-                <input
-                    type="text"
-                    id="endereco"
-                    placeholder="Rua, avenida..."
-                >
-
-            </div>
-
-
-            <div class="field small">
-
-                <label for="numero">
-                    Número
-                </label>
-
-                <input
-                    type="text"
-                    id="numero"
-                    placeholder="Nº"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="complemento">
-                    Complemento
-                </label>
-
-                <input
-                    type="text"
-                    id="complemento"
-                    placeholder="Sala, galpão..."
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="bairro">
-                    Bairro
-                </label>
-
-                <input
-                    type="text"
-                    id="bairro"
-                    placeholder="Bairro"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="cidade">
-                    Cidade
-                </label>
-
-                <input
-                    type="text"
-                    id="cidade"
-                    placeholder="Cidade"
-                >
-
-            </div>
-
-
-            <div class="field small">
-
-                <label for="estado">
-                    Estado
-                </label>
-
-                <input
-                    type="text"
-                    id="estado"
-                    maxlength="2"
-                    placeholder="UF"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="cep">
-                    CEP
-                </label>
-
-                <input
-                    type="text"
-                    id="cep"
-                    placeholder="00000-000"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="telefone">
-                    Telefone
-                </label>
-
-                <input
-                    type="text"
-                    id="telefone"
-                    placeholder="(00) 00000-0000"
-                >
-
-            </div>
-
-
-            <div class="field field-large">
-
-                <label for="email">
-                    E-mail
-                </label>
-
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="empresa@email.com"
-                >
-
-            </div>
-
-
-            <div class="field field-large">
-
-                <label for="site">
-                    Site
-                </label>
-
-                <input
-                    type="text"
-                    id="site"
-                    placeholder="www.exemplo.com.br"
-                >
-
-            </div>
-
-        </div>
-
-    </section>
-
-    <section class="config-card">
-        <div class="card-header"><div><h2>PDF e tabelas de preço</h2><p>A logo e a mensagem abaixo serão o padrão de todos os novos PDFs. Um pedido ainda pode ter seu texto alterado individualmente por um administrador.</p></div></div>
-        <div class="field"><label for="logoPdf">Logo do cabeçalho do PDF</label><input id="logoPdf" type="file" accept="image/png,image/jpeg,image/webp"><span class="field-help">PNG, JPG ou WEBP, até 2 MB. Deixe vazio para manter a logo atual.</span></div>
-        <div class="form-grid tabela-percentuais">
-            <div class="field"><label for="percentual16001">16/001 (% do 18/001)</label><input id="percentual16001" type="number" min="0" max="1000" step="0.01"></div>
-            <div class="field"><label for="percentual16002">22/002 (% do 18/002)</label><input id="percentual16002" type="number" min="0" max="1000" step="0.01"></div>
-            <div class="field"><label for="percentual18001">18/001 (% do 18/001)</label><input id="percentual18001" type="number" min="0" max="1000" step="0.01"></div>
-            <div class="field"><label for="percentual18002">18/002 (% do 18/001)</label><input id="percentual18002" type="number" min="0" max="1000" step="0.01"></div>
-        </div>
-    </section>
-
-
-
-    <!-- ========================================================
-         CONFIGURAÇÕES DO PEDIDO
-         ======================================================== -->
-
-    <section class="config-card">
-
-        <div class="card-header">
-
-            <div>
-
-                <h2>
-                    Configurações dos pedidos
-                </h2>
-
-                <p>
-                    Defina informações que serão utilizadas automaticamente nos novos pedidos.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="field">
-
-            <label for="mensagemPadrao">
-                Mensagem padrão do pedido
-            </label>
-
-            <textarea
-                id="mensagemPadrao"
-                rows="5"
-                placeholder="Digite a mensagem que será utilizada automaticamente nos novos pedidos..."
-            ></textarea>
-
-            <span class="field-help">
-                Essa mensagem será utilizada automaticamente nos novos pedidos.
-            </span>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ========================================================
-         BOTÃO SALVAR
-         ======================================================== -->
-
-    <section class="actions">
-
-        <button
-            type="button"
-            class="btn-save"
-            id="btnSalvar"
+             <!-- COMO DEVE FICAR: -->
+<div class="summary-row">
+    <label for="inputDesconto" style="cursor: pointer;">
+        Desconto (%)
+    </label>
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <input 
+            type="number" 
+            id="inputDesconto" 
+            value="0" 
+            min="0" 
+            step="0.01"
+            placeholder="0 %"
+            style="width: 80px; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; text-align: right;"
         >
-            Salvar alterações
-        </button>
-
-    </section>
-
-
-</main>
+        <span id="sumDesconto" style="display: none;">0 %</span>
+    </div>
+</div>
 
 
+                <div class="summary-row total">
 
-<!-- ============================================================
-     MODAL DE SENHA
+                    <span>
+                        Total
+                    </span>
+
+                    <span id="sumTotal">
+                        R$ 0,00
+                    </span>
+
+                </div>
+
+
+                <button class="btn btn-primary" id="finalizarBtn" type="button">
+                    Finalizar Venda
+                </button>
+
+
+                <button class="btn btn-ghost" id="cancelarBtn" type="button">
+                    Cancelar Venda
+                </button>
+
+            </section>
+
+        </div>
+
+
+        <!-- ========================================================
+         ITENS DA VENDA
+         ======================================================== -->
+
+        <section class="card items-card">
+
+            <h2>
+                Itens da Venda
+            </h2>
+
+
+            <div class="tabela-venda-wrapper">
+
+                <table class="items-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Produto
+                            </th>
+
+                            <th>
+                                Embalagem
+                            </th>
+
+                            <th>
+                                Preço
+                            </th>
+
+                            <th>
+                                Caixas
+                            </th>
+
+                            <th>
+                                Quantidade
+                            </th>
+
+                            <th>
+                                Desconto (%)
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <th></th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="itemsBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="empty-note" id="emptyNote">
+                Nenhum item adicionado à venda ainda.
+            </div>
+
+        </section>
+<br><br>
+
+    </main>
+
+
+    <!-- ============================================================
+     MODAL
      ============================================================ -->
 
-<div
-    class="modal-overlay"
-    id="modalSenha"
->
+    <div id="modalAviso" class="modal-overlay">
 
-    <div class="password-modal">
+        <div class="modal-aviso">
 
-        <button
-            type="button"
-            class="modal-close"
-            id="fecharModal"
-        >
-            ×
-        </button>
+            <div class="modal-aviso-header">
+
+                <h2 id="modalAvisoTitulo">
+                    Atenção
+                </h2>
 
 
-        <div class="modal-icon">
-            🔐
+                <button id="btnFecharModalAviso" type="button" class="btn-fechar-modal">
+                    ×
+                </button>
+
+            </div>
+
+
+            <p id="modalAvisoMensagem">
+                Mensagem
+            </p>
+
+
+            <div class="acoes-modal-aviso">
+
+                <button id="btnCancelarModalAviso" type="button" class="btn-modal-cancelar">
+                    CANCELAR
+                </button>
+
+
+                <button id="btnConfirmarModalAviso" type="button" class="btn-modal-confirmar">
+                    CONTINUAR
+                </button>
+
+            </div>
+
         </div>
 
-
-        <h2>
-            Confirmar alterações
-        </h2>
+    </div>
 
 
-        <p>
-            Para salvar as alterações da Central de Informações,
-            confirme sua senha de administrador.
-        </p>
+    <div id="modalQuantidade" class="modal-overlay modal-quantidade-overlay" aria-hidden="true">
 
+        <section class="modal-quantidade" role="dialog" aria-modal="true" aria-labelledby="modalQuantidadeTitulo">
 
-        <div class="field">
+            <div class="modal-aviso-header">
 
-            <label for="senhaAdm">
-                Senha do administrador
+                <h2 id="modalQuantidadeTitulo">Adicionar produto</h2>
+
+                <button id="btnFecharModalQuantidade" type="button" class="btn-fechar-modal" aria-label="Fechar">
+                    ×
+                </button>
+
+            </div>
+
+            <div class="produto-confirmacao">
+
+                <strong id="modalQuantidadeNome"></strong>
+
+                <span id="modalQuantidadeCodigo"></span>
+
+                <div class="produto-confirmacao-detalhes">
+
+                    <span id="modalQuantidadeEmbalagem"></span>
+
+                    <strong id="modalQuantidadePreco"></strong>
+
+                </div>
+
+                <span id="modalQuantidadeEstoque" class="produto-confirmacao-estoque"></span>
+
+            </div>
+
+            <label class="campo-quantidade" for="inputQuantidadeProduto">
+
+                Quantidade a adicionar
+
+                <input id="inputQuantidadeProduto" type="number" min="1" step="1" value="1" inputmode="numeric" required>
+
             </label>
 
-            <input
-                type="password"
-                id="senhaAdm"
-                placeholder="Digite sua senha"
-            >
+            <label class="campo-quantidade" for="inputDescontoProduto">
 
-        </div>
+                Desconto deste item (%)
 
+                <span class="input-percentual">
+                    <input id="inputDescontoProduto" type="text" inputmode="decimal" value="0" placeholder="0">
+                    <span aria-hidden="true">%</span>
+                </span>
 
-        <div class="modal-actions">
+            </label>
+
+            <div class="acoes-modal-aviso">
+
+                <button id="btnCancelarModalQuantidade" type="button" class="btn-modal-cancelar">
+                    CANCELAR
+                </button>
+
+                <button id="btnAdicionarModalQuantidade" type="button" class="btn-modal-confirmar">
+                    ADICIONAR AO CARRINHO
+                </button>
+
+            </div>
+
+        </section>
+
+    </div>
+<div
+    id="scannerOverlay"
+    class="scanner-overlay"
+>
+
+    <div class="scanner-modal">
+
+        <div class="scanner-header">
+
+            <h2>
+                Ler código de barras
+            </h2>
 
             <button
                 type="button"
-                class="btn-cancel"
-                id="cancelarSenha"
+                id="fecharScannerBtn"
             >
-                Cancelar
-            </button>
-
-
-            <button
-                type="button"
-                class="btn-confirm"
-                id="confirmarSenha"
-            >
-                Confirmar
+                ✕
             </button>
 
         </div>
+
+        <div id="reader"></div>
+
+        <p id="scannerStatus">
+            Aponte a câmera para o código de barras.
+        </p>
 
     </div>
 
 </div>
+<!-- ============================================================
+     MODAL AUTORIZAÇÃO - PRODUTO SEM ESTOQUE
+     ============================================================ -->
+
+<div
+    id="modalAutorizacaoEstoque"
+    class="modal-overlay"
+    aria-hidden="true"
+>
+
+    <section
+        class="modal-quantidade"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalAutorizacaoEstoqueTitulo"
+    >
+
+        <div class="modal-aviso-header">
+
+            <h2 id="modalAutorizacaoEstoqueTitulo">
+                Produto sem estoque
+            </h2>
+
+            <button
+                id="btnFecharAutorizacaoEstoque"
+                type="button"
+                class="btn-fechar-modal"
+            >
+                ×
+            </button>
+
+        </div>
 
 
+        <div class="produto-confirmacao">
 
-<script src="./header.js"></script>
-<script src="./central.js"></script>
+            <strong id="autorizacaoEstoqueNome">
+                Produto
+            </strong>
 
+            <span>
+                Este produto está sem estoque.
+            </span>
+
+            <div class="produto-confirmacao-detalhes">
+
+                <span>
+                    Código do produto:
+                </span>
+
+                <strong id="autorizacaoEstoqueCodigo">
+                    -
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- CONFIRMAÇÃO DO CÓDIGO -->
+
+        <label
+            class="campo-quantidade"
+            for="inputConfirmarCodigoEstoque"
+        >
+
+            Digite o código do produto
+
+            <input
+                id="inputConfirmarCodigoEstoque"
+                type="text"
+                autocomplete="off"
+                placeholder="Digite o código acima"
+            >
+
+        </label>
+
+
+        <!-- SENHA -->
+
+        <label
+            class="campo-quantidade"
+            for="inputSenhaEstoque"
+        >
+
+            Digite sua senha de login
+
+            <input
+                id="inputSenhaEstoque"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Sua senha"
+            >
+
+        </label>
+
+
+        <p
+            id="mensagemAutorizacaoEstoque"
+            style="
+                display: none;
+                margin: 10px 0;
+                color: #b42318;
+                font-size: 14px;
+                font-weight: 600;
+            "
+        ></p>
+
+
+        <div class="acoes-modal-aviso">
+
+            <button
+                id="btnCancelarAutorizacaoEstoque"
+                type="button"
+                class="btn-modal-cancelar"
+            >
+                CANCELAR
+            </button>
+
+            <button
+                id="btnConfirmarAutorizacaoEstoque"
+                type="button"
+                class="btn-modal-confirmar"
+            >
+                AUTORIZAR
+            </button>
+
+        </div>
+
+    </section>
+
+</div>
+    <script src="./header.js"></script>
+
+   <script src="https://unpkg.com/html5-qrcode"></script>
+
+<script src="./venda.js"></script>
 
 </body>
 
