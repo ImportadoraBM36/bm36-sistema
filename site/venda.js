@@ -43,9 +43,9 @@ let listaProdutosCompacta =
 let cart =
     [];
 
-// 'cheio' | 'real' | 'terco' — controla qual dos 3 valores é usado como Total
+// Tabela usada como Total: '16001' | '18001' | '18002' | '16002' (22/002 é a padrão)
 let tipoValorSelecionado =
-    '18001';
+    '16002';
 
 // Chaves iguais às do banco / Central de Informações:
 // 16001, 16002, 18001, 18002  (coluna percentual_<chave>)
