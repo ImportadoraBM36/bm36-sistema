@@ -414,29 +414,44 @@ async function gerarPdfPedido(
     // dos itens e do subtotal, para o PDF nunca misturar números
     // de "moedas" diferentes (real / cheio / 1-3) na mesma folha.
     // ============================================================
-
     const tipoValorPedido =
         pedido.tipo_valor ||
         pedido.tipoValor ||
-        'real';
+        '18001';
 
+    // Fallback pela configuração (só usado se o pedido não tiver total)
     function fatorTipoValorPDF(tipo) {
-        const percentual = Number(configuracaoPdf[`percentual_${tipo}`]);
-        if (Number.isFinite(percentual)) return percentual / 100;
+        const pct = (chave, padrao) => {
+            const n = Number(configuracaoPdf[`percentual_${chave}`]);
+            return Number.isFinite(n) ? n : padrao;
+        };
 
-        if (tipo === 'cheio') {
-            return 1.2;
+        switch (String(tipo)) {
+            case '16001': return pct('16001', 33.33) / 100;
+            case '18001': return pct('18001', 100) / 100;
+            case '18002': return pct('18002', 120) / 100;
+            // 22/002 = 18/002 x percentual_16002
+            case '16002': return (pct('18002', 120) / 100) * (pct('16002', 66.67) / 100);
+
+            // pedidos antigos
+            case 'cheio': return 1.2;
+            case 'terco': return 1 / 3;
+            default:      return 1;
         }
-
-        if (tipo === 'terco') {
-            return 1 / 3;
-        }
-
-        return 1;
     }
 
+    // Fator real do pedido: total cobrado / subtotal já com o desconto.
+    // Assim o PDF sempre bate com o que foi cobrado.
+    const descontoSeguro =
+        Math.min(100, Math.max(0, desconto));
+
+    const baseLiquida =
+        subtotal * (1 - descontoSeguro / 100);
+
     const FATOR_EXIBICAO_PDF =
-        fatorTipoValorPDF(tipoValorPedido);
+        (baseLiquida > 0 && total > 0)
+            ? total / baseLiquida
+            : fatorTipoValorPDF(tipoValorPedido);
 
     // subtotal e IPI vêm em valor real do banco -> aplicamos o fator
     const subtotalPDF =
