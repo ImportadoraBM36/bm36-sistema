@@ -874,6 +874,31 @@
     </section>
 
 </div>
+
+<div class="overlay" id="modalSenhaTabela" aria-hidden="true">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head">
+      <h2>Autorizar troca de tabela</h2>
+      <button type="button" class="modal-close-x" id="btnFecharSenhaTabela">✕</button>
+    </div>
+
+    <p class="senha-tabela-info">
+      Trocar para a tabela <b id="senhaTabelaNome">-</b>.<br>
+      Digite sua senha de login para autorizar.
+    </p>
+
+    <input type="password" id="inputSenhaTabela"
+           class="senha-tabela-input"
+           placeholder="Senha" autocomplete="current-password">
+
+    <div id="mensagemSenhaTabela" class="senha-tabela-erro"></div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="btnCancelarSenhaTabela">CANCELAR</button>
+      <button type="button" class="btn" id="btnConfirmarSenhaTabela">AUTORIZAR</button>
+    </div>
+  </div>
+</div>
     <script src="./header.js"></script>
 
    <script src="https://unpkg.com/html5-qrcode"></script>

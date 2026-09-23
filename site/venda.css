@@ -2055,6 +2055,37 @@ select {
   outline: none;
 }
 
+
+
+.senha-tabela-info {
+    font-size: 14px;
+    color: #c9c6ec;
+    margin-bottom: 14px;
+    line-height: 1.5;
+}
+
+.senha-tabela-input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--navy-border);
+    background: rgba(255,255,255,.06);
+    color: white;
+    font-size: 15px;
+    outline: none;
+}
+
+.senha-tabela-input:focus {
+    border-color: #8b7cff;
+}
+
+.senha-tabela-erro {
+    display: none;
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ff8a8a;
+}
 /* =========================
    RESPONSIVO MODAL
    ========================= */

@@ -3408,38 +3408,159 @@ document
 // TIPO DE VALOR (Cheio / Real / 1/3)
 // ============================================================
 
+// ============================================================
+// TIPO DE VALOR (troca de tabela COM SENHA)
+// ============================================================
+
 const tipoValorSegmented =
     document.getElementById('tipoValorSegmented');
 
+const modalSenhaTabela        = document.getElementById('modalSenhaTabela');
+const senhaTabelaNome         = document.getElementById('senhaTabelaNome');
+const inputSenhaTabela        = document.getElementById('inputSenhaTabela');
+const mensagemSenhaTabela     = document.getElementById('mensagemSenhaTabela');
+const btnFecharSenhaTabela    = document.getElementById('btnFecharSenhaTabela');
+const btnCancelarSenhaTabela  = document.getElementById('btnCancelarSenhaTabela');
+const btnConfirmarSenhaTabela = document.getElementById('btnConfirmarSenhaTabela');
+
+const nomesTabelaModal = {
+    '16001': '16/001',
+    '18001': '18/001',
+    '18002': '18/002',
+    '16002': '22/002'
+};
+
+let botaoTabelaPendente = null;
+
+function aplicarTipoValor(botao) {
+    tipoValorSegmented
+        .querySelectorAll('.tipo-valor-btn')
+        .forEach(b => b.classList.remove('ativo'));
+
+    botao.classList.add('ativo');
+    tipoValorSelecionado = botao.dataset.tipo;
+    renderSummary();
+}
+
+function abrirModalSenhaTabela(botao) {
+    botaoTabelaPendente = botao;
+
+    senhaTabelaNome.textContent =
+        nomesTabelaModal[botao.dataset.tipo] || botao.dataset.tipo;
+
+    inputSenhaTabela.value = '';
+    mensagemSenhaTabela.style.display = 'none';
+    mensagemSenhaTabela.textContent = '';
+
+    btnConfirmarSenhaTabela.disabled = false;
+    btnConfirmarSenhaTabela.textContent = 'AUTORIZAR';
+
+    modalSenhaTabela.classList.add('show');
+    modalSenhaTabela.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(() => inputSenhaTabela.focus(), 50);
+}
+
+function fecharModalSenhaTabela() {
+    modalSenhaTabela.classList.remove('show');
+    modalSenhaTabela.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    botaoTabelaPendente = null;
+}
+
+function erroSenhaTabela(texto) {
+    mensagemSenhaTabela.textContent = texto;
+    mensagemSenhaTabela.style.display = 'block';
+}
+
+async function confirmarSenhaTabela() {
+
+    const botao = botaoTabelaPendente;
+    if (!botao) return;
+
+    const senha = inputSenhaTabela.value;
+
+    if (!senha) {
+        erroSenhaTabela('Digite sua senha para continuar.');
+        inputSenhaTabela.focus();
+        return;
+    }
+
+    const token = localStorage.getItem('bm36_token');
+
+    if (!token) {
+        erroSenhaTabela('Sua sessão expirou. Faça login novamente.');
+        return;
+    }
+
+    btnConfirmarSenhaTabela.disabled = true;
+    btnConfirmarSenhaTabela.textContent = 'VALIDANDO...';
+
+    try {
+
+        const resposta = await fetch(`${API_URL}/auth/confirmar-senha`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ senha })
+        });
+
+        const resultado = await resposta.json().catch(() => ({}));
+
+        if (!resposta.ok) {
+            erroSenhaTabela(resultado.mensagem || 'Senha incorreta.');
+            inputSenhaTabela.value = '';
+            inputSenhaTabela.focus();
+            btnConfirmarSenhaTabela.disabled = false;
+            btnConfirmarSenhaTabela.textContent = 'AUTORIZAR';
+            return;
+        }
+
+        // AUTORIZADO: agora sim troca a tabela
+        aplicarTipoValor(botao);
+        fecharModalSenhaTabela();
+
+    } catch (erro) {
+
+        console.error('Erro ao validar senha da tabela:', erro);
+        erroSenhaTabela('Não foi possível validar a senha. Tente novamente.');
+        btnConfirmarSenhaTabela.disabled = false;
+        btnConfirmarSenhaTabela.textContent = 'AUTORIZAR';
+
+    }
+}
+
+// Clique nos botões de tabela: em vez de trocar direto, pede a senha
 tipoValorSegmented
     ?.querySelectorAll('.tipo-valor-btn')
     .forEach(botao => {
 
-        botao.addEventListener(
-            'click',
-            () => {
+        botao.addEventListener('click', () => {
 
-                tipoValorSegmented
-                    .querySelectorAll('.tipo-valor-btn')
-                    .forEach(b => b.classList.remove('ativo'));
+            // clicou na tabela que já está ativa: não precisa de senha
+            if (botao.dataset.tipo === tipoValorSelecionado) return;
 
-                botao.classList.add('ativo');
+            abrirModalSenhaTabela(botao);
 
-                tipoValorSelecionado =
-                    botao.dataset.tipo;
-
-                renderSummary();
-
-            }
-        );
+        });
 
     });
 
+btnConfirmarSenhaTabela.addEventListener('click', confirmarSenhaTabela);
+btnFecharSenhaTabela.addEventListener('click', fecharModalSenhaTabela);
+btnCancelarSenhaTabela.addEventListener('click', fecharModalSenhaTabela);
 
-inputDesconto?.addEventListener(
-    'input',
-    renderSummary
-);
+modalSenhaTabela.addEventListener('click', evento => {
+    if (evento.target === modalSenhaTabela) fecharModalSenhaTabela();
+});
+
+inputSenhaTabela.addEventListener('keydown', evento => {
+    if (evento.key === 'Enter') confirmarSenhaTabela();
+    if (evento.key === 'Escape') fecharModalSenhaTabela();
+});
 
 
 // ============================================================
