@@ -20,6 +20,145 @@
     <link rel="stylesheet" href="./header.css">
     <link rel="stylesheet" href="./venda.css">
 
+
+    <style>
+.senha-tabela-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 13, 35, .62);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+    z-index: 6000;
+}
+
+.senha-tabela-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.senha-tabela-modal {
+    width: 100%;
+    max-width: 420px;
+    background: #2b2860;
+    color: #fff;
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
+    transform: translateY(14px);
+    transition: transform .2s ease;
+}
+
+.senha-tabela-overlay.show .senha-tabela-modal {
+    transform: translateY(0);
+}
+
+.senha-tabela-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.senha-tabela-head h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.senha-tabela-fechar {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #c9c6ec;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.senha-tabela-fechar:hover {
+    background: rgba(255, 255, 255, .1);
+    color: #fff;
+}
+
+.senha-tabela-info {
+    margin: 0 0 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #c9c6ec;
+}
+
+.senha-tabela-info b {
+    color: #fff;
+}
+
+.senha-tabela-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, .2);
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+}
+
+.senha-tabela-input::placeholder {
+    color: #9d9ac9;
+}
+
+.senha-tabela-input:focus {
+    border-color: #ec4899;
+}
+
+.senha-tabela-erro {
+    display: none;
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ff8a8a;
+}
+
+.senha-tabela-acoes {
+    display: flex;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.senha-tabela-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.senha-tabela-btn-sec {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, .25);
+    color: #fff;
+}
+
+.senha-tabela-btn-ok {
+    background: #ec4899;
+    color: #fff;
+}
+
+.senha-tabela-btn:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+</style>
+
 </head>
 
 
