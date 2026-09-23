@@ -68,6 +68,7 @@ async function carregarPercentuaisTabela() {
     } catch (erro) {
         console.warn('Percentuais padrão em uso:', erro.message);
     }
+    console.log('Percentuais em uso na venda:', percentuaisTabela);
     renderSummary();
 }
 
