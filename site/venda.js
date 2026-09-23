@@ -85,13 +85,11 @@ function calcularValoresPorTipo(valorReal) {
     const p =
         percentuaisTabela;
 
-    const valor18002 =
-        base * p['18002'] / 100;
 
     return {
         '16001': base * p['16001'] / 100,
         '18001': base * p['18001'] / 100,
-        '18002': valor18002,
+        '18002': base * p[valor18002],
         '16002': valor18002 * p['16002'] / 100
     };
 
