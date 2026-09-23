@@ -71,13 +71,29 @@ async function carregarPercentuaisTabela() {
     renderSummary();
 }
 
-// calcula os 3 valores a partir do valor real (valor já com desconto aplicado)
+// Calcula os 4 valores a partir do valor real (18/001, já com desconto).
+//   16/001 = 18/001 x percentual_16001
+//   18/001 = 18/001 x percentual_18001
+//   18/002 = 18/001 x percentual_18002
+//   22/002 = 18/002 x percentual_16002   <- em cima do 18/002, não do 18/001
+// (a chave 16002 é a tabela 22/002, como no botão data-tipo="16002")
 function calcularValoresPorTipo(valorReal) {
 
     const base =
         Number(valorReal || 0);
 
-    return Object.fromEntries(Object.entries(percentuaisTabela).map(([codigo, percentual]) => [codigo, base * percentual / 100]));
+    const p =
+        percentuaisTabela;
+
+    const valor18002 =
+        base * p['18002'] / 100;
+
+    return {
+        '16001': base * p['16001'] / 100,
+        '18001': base * p['18001'] / 100,
+        '18002': valor18002,
+        '16002': valor18002 * p['16002'] / 100
+    };
 
 }
 // ============================================================
