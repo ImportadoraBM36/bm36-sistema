@@ -2,7 +2,10 @@ async function gerarPdfPedido(
     pedido,
     imprimir = false,
     janelaDeImpressao = null
-) {
+)
+
+
+{
     if (!pedido) {
         if (janelaDeImpressao) {
             janelaDeImpressao.close();
@@ -30,7 +33,8 @@ async function gerarPdfPedido(
         unit: 'mm',
         format: 'a4'
     });
-
+console.log("ENTROU NA FUNÇÃO GERAR PDF");
+console.log("PEDIDO RECEBIDO:", pedido);
     // ============================================================
     // CONFIGURAÇÕES
     // ============================================================
