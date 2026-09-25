@@ -4981,7 +4981,6 @@ function verificarAdmin(req, res, next) {
 app.get(
     '/api/configuracoes-empresa',
     autenticar,
-    verificarAdmin,
     async (req, res) => {
 
         try {
@@ -5046,7 +5045,6 @@ app.get('/api/configuracoes-pdf', async (req, res) => {
 app.put(
     '/api/configuracoes-empresa',
     autenticar,
-    verificarAdmin,
     async (req, res) => {
 
         try {
