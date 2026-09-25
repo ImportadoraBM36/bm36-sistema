@@ -6,6 +6,9 @@ async function gerarPdfPedido(
 
 
 {
+
+    console.log("ENTROU NA FUNÇÃO GERAR PDF");
+console.log("PEDIDO RECEBIDO:", pedido);
     if (!pedido) {
         if (janelaDeImpressao) {
             janelaDeImpressao.close();
