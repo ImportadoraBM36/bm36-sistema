@@ -1,3 +1,4 @@
+console.log("ARQUIVO DO PDF FOI CARREGADO");
 async function gerarPdfPedido(
     pedido,
     imprimir = false,
