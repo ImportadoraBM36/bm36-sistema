@@ -233,10 +233,10 @@ async function carregarConfiguracoes() {
 
         campos.mensagem_padrao_pedido.value =
             configuracao.mensagem_padrao_pedido || "";
-        campos.percentual_16001.value = configuracao.percentual_16001 ?? 33.33;
-        campos.percentual_16002.value = configuracao.percentual_16002 ?? 66.67;
-        campos.percentual_18001.value = configuracao.percentual_18001 ?? 100;
-        campos.percentual_18002.value = configuracao.percentual_18002 ?? 120;
+        campos.percentual_16001.value = configuracao.percentual_16001 ;
+        campos.percentual_16002.value = configuracao.percentual_16002 ;
+        campos.percentual_18001.value = configuracao.percentual_18001 ;
+        campos.percentual_18002.value = configuracao.percentual_18002 ;
 
 
         // ====================================================
